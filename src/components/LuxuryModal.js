@@ -52,7 +52,7 @@ function LuxuryModal({ currentCash, onPurchase }) {
             <input
               value={cardId}
               onChange={(e) => setCardId(e.target.value)}
-              placeholder="e.g. LUX001"
+              placeholder="e.g. L1"
               className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-pink-500 outline-none"
             />
             <button

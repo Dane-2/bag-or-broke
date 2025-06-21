@@ -59,7 +59,7 @@ function CardModal({ onApply, currentCash }) {
             <input
               value={cardId}
               onChange={(e) => setCardId(e.target.value)}
-              placeholder="e.g. INV001"
+              placeholder="e.g. I1"
               className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
             />
             <button
