@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import StartScreen from './components/StartScreen';
+import PlayerDashboard from './components/PlayerDashboard';
+import FinalScoreboard from './components/FinalScoreboard';
 
 function App() {
+  const [gameStarted, setGameStarted] = useState(false);
+  const [playerName, setPlayerName] = useState('');
+  const [startingCash, setStartingCash] = useState(null);
+  const [avatar, setAvatar] = useState(''); // NIL Tier label
+  const [finalScoresVisible, setFinalScoresVisible] = useState(false);
+  const [finalData, setFinalData] = useState(null);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {!gameStarted ? (
+        <StartScreen
+          onStart={(name, cash, label) => {
+            setPlayerName(name);
+            setAvatar(label); // <- use NIL Tier label
+            setStartingCash(cash);
+            setGameStarted(true);
+          }}
+        />
+      ) : finalScoresVisible ? (
+        <FinalScoreboard data={finalData} />
+      ) : (
+        <PlayerDashboard
+          playerName={playerName}
+          avatar={avatar}
+          startingCash={startingCash}
+          showFinal={(data) => {
+            setFinalData(data);
+            setFinalScoresVisible(true);
+          }}
+        />
+      )}
     </div>
   );
 }
