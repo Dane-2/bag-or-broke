@@ -37,7 +37,7 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
           <button
             className="w-1/2 bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700"
             onClick={() => {
-              const amount = parseInt(prompt('Enter amount to add:'), 10);
+              const amount = parseInt(prompt('Enter amount to add:').replace(/,/g, ''), 10);
               if (!isNaN(amount)) setCash(cash + amount);
             }}
           >
@@ -46,7 +46,7 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
           <button
             className="w-1/2 bg-red-600 text-white font-semibold py-2 rounded hover:bg-red-700"
             onClick={() => {
-              const amount = parseInt(prompt('Enter amount to subtract:'), 10);
+              const amount = parseInt(prompt('Enter amount to subtract:').replace(/,/g, ''), 10);
               if (!isNaN(amount)) setCash(cash - amount);
             }}
           >
