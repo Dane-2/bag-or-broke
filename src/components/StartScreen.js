@@ -17,45 +17,50 @@ function StartScreen({ onStart }) {
   const totalCash = selectedTier ? selectedTier.amount + 2500 : 0;
 
   return (
-    <div className="max-w-md mx-auto p-6 space-y-4 bg-white rounded-xl shadow-md">
-      <h1 className="text-2xl font-bold text-center text-gray-800">🎓 Start Your NIL Journey</h1>
+    <div
+      className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
+      style={{ backgroundImage: 'url(/backgroundFinal.png)' }}
+    >
+      <div className="w-[90%] max-w-md p-6 space-y-4 bg-white/70 backdrop-blur-md rounded-xl shadow-lg">
+        <h1 className="text-2xl font-bold text-center text-gray-800">🎓 Start Your NIL Journey</h1>
 
-      <input
-        value={playerName}
-        onChange={(e) => setPlayerName(e.target.value)}
-        placeholder="Enter your name"
-        className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-      />
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">What did you roll (1–6)?</label>
-        <select
-          value={rollValue}
-          onChange={(e) => setRollValue(e.target.value)}
+        <input
+          value={playerName}
+          onChange={(e) => setPlayerName(e.target.value)}
+          placeholder="Enter your name"
           className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">-- Select your NIL Deal --</option>
-          {[1, 2, 3, 4, 5, 6].map(num => (
-            <option key={num} value={num}>{num}</option>
-          ))}
-        </select>
-      </div>
+        />
 
-      {selectedTier && (
-        <div className="p-4 bg-gray-100 rounded text-center space-y-2">
-          <p className="text-lg font-semibold">🎲 NIL Tier: {selectedTier.label}</p>
-          <p className="text-gray-700">Base Cash: ${selectedTier.amount.toLocaleString()}</p>
-          <p className="text-gray-700">+ $2,500 Scholarship</p>
-          <p className="text-xl font-bold text-blue-600">Total: ${totalCash.toLocaleString()}</p>
-
-          <button
-            onClick={() => onStart(playerName, totalCash, selectedTier.label)}
-            className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition"
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">What did you roll (1–6)?</label>
+          <select
+            value={rollValue}
+            onChange={(e) => setRollValue(e.target.value)}
+            className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
           >
-            Start Game
-          </button>
+            <option value="">-- Select your NIL Deal --</option>
+            {[1, 2, 3, 4, 5, 6].map(num => (
+              <option key={num} value={num}>{num}</option>
+            ))}
+          </select>
         </div>
-      )}
+
+        {selectedTier && (
+          <div className="p-4 bg-gray-100 rounded text-center space-y-2">
+            <p className="text-lg font-semibold">🎲 NIL Tier: {selectedTier.label}</p>
+            <p className="text-gray-700">Base Cash: ${selectedTier.amount.toLocaleString()}</p>
+            <p className="text-gray-700">+ $2,500 Scholarship</p>
+            <p className="text-xl font-bold text-blue-600">Total: ${totalCash.toLocaleString()}</p>
+
+            <button
+              onClick={() => onStart(playerName, totalCash, selectedTier.label)}
+              className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition"
+            >
+              Start Game
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

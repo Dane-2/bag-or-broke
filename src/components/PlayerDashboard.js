@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import  CardModal  from './InvestmentModal'; // formerly CardModal
 import LuxuryModal  from './LuxuryModal';
 
+
+
 function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
   const [cash, setCash] = useState(startingCash || 0);
   const [rep, setRep] = useState(0);
@@ -13,12 +15,18 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
   const [investments, setInvestments] = useState([]);
 
   return (
+  <div
+    className="min-h-screen bg-no-repeat bg-center bg-[length:100%_auto] sm:bg-cover"
+    style={{ backgroundImage: "url('/moneyBG.png')" }}
+  >
+    <div className="max-w-md mx-auto px-4 py-6 space-y-6 bg-white/80 rounded-xl shadow-xl"></div>
+
     <div className="max-w-md mx-auto px-4 py-6 space-y-6">
-      <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">Player Dashboard</h2>
-      <div className="text-center text-gray-600">
-        <p><strong>Name:</strong> {playerName}</p>
-        <p><strong>NIL Tier:</strong> {avatar}</p>
-    </div>
+      <div className="bg-white rounded-xl shadow-md p-4 text-center space-y-1">
+        <h2 className="text-2xl font-bold text-gray-800">Player Dashboard</h2>
+        <p className="text-gray-600"><strong>Name:</strong> {playerName}</p>
+        <p className="text-gray-600"><strong>NIL Tier:</strong> {avatar}</p>
+      </div>
       
 
       {/* 💵 Cash Tracker */}
@@ -118,17 +126,29 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
 
 
       {/* 💳 Debt & Credit Tracker */}
-      <section className="bg-white rounded-xl shadow-md p-4">
+<section className="bg-white rounded-xl shadow-md p-4">
   <h3 className="text-lg font-semibold text-black mb-2 flex items-center gap-2">
     💳 Debt & Credit
   </h3>
 
+  {/* Loan Form */}
   <form
     onSubmit={(e) => {
       e.preventDefault();
       const amount = parseInt(e.target.loan.value, 10);
       if (isNaN(amount)) return;
-      const interest = Math.floor(amount * 0.25);
+
+      const getInterestRate = (score) => {
+        if (score >= 750) return 0.05;
+        if (score >= 700) return 0.10;
+        if (score >= 650) return 0.15;
+        if (score >= 600) return 0.20;
+        return 0.25;
+      };
+
+      const rate = getInterestRate(credit);
+      const interest = Math.floor(amount * rate);
+
       setDebt(debt + amount + interest);
       setCash(cash + amount);
       setCredit(credit - 20);
@@ -146,10 +166,11 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
       type="submit"
       className="w-full bg-black text-white font-semibold py-2 rounded hover:bg-gray-800 transition"
     >
-      Take Loan (25% Interest)
+      Take Loan 
     </button>
   </form>
 
+  {/* Info Display */}
   <div className="mt-4 text-sm text-gray-700 space-y-1">
     <p>
       <strong>Total Debt:</strong>{' '}
@@ -167,52 +188,108 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
         {credit}
       </span>
     </p>
+    <p>
+      <strong>Interest Rate:</strong>{' '}
+      {credit >= 750 ? '5%' :
+        credit >= 700 ? '10%' :
+        credit >= 650 ? '15%' :
+        credit >= 600 ? '20%' : '25%'}
+    </p>
   </div>
 
-  <button
-    onClick={() => {
-      if (cash >= debt && debt > 0) {
-        setCash(cash - debt);
-        setDebt(0);
-        setCredit(credit + 50);
-      } else {
-        alert("Not enough cash or no debt to pay off.");
-      }
-    }}
-    className="w-full bg-black text-white font-semibold py-2 rounded mt-3 hover:bg-gray-800 transition"
-  >
-    Pay Off Debt
-  </button>
-</section>
-
-      
-      <section className="bg-white rounded-xl shadow-md p-4">
-  <h3 className="text-lg font-semibold text-red-600 mb-2 flex items-center gap-2">
-    ❌ Curveballs
-  </h3>
+  {/* Custom Payment */}
   <form
     onSubmit={(e) => {
       e.preventDefault();
-      const desc = e.target.desc.value;
-      const amount = parseInt(e.target.loss.value, 10);
-      if (!desc || isNaN(amount)) return;
-      setCurveballs([...curveballs, { desc, amount }]);
-      setCash(cash - amount);
+      const payment = parseInt(e.target.payment.value, 10);
+      if (isNaN(payment) || payment <= 0) return;
+
+      if (cash >= payment && debt > 0) {
+        const actualPayment = Math.min(payment, debt);
+        setCash(cash - actualPayment);
+        setDebt(debt - actualPayment);
+        if (actualPayment === debt) {
+          setCredit(credit + 50); // Full payoff bonus
+        }
+        e.target.reset();
+      } else {
+        alert("Not enough cash or no debt to pay.");
+      }
+    }}
+    className="space-y-3 mt-4"
+  >
+    <input
+      name="payment"
+      type="number"
+      placeholder="Amount to Pay"
+      className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-black outline-none"
+    />
+    <button
+      type="submit"
+      className="w-full bg-black text-white font-semibold py-2 rounded hover:bg-gray-800 transition"
+    >
+      Pay Debt (Partial or Full)
+    </button>
+  </form>
+</section>
+
+
+      
+  <section className="bg-white rounded-xl shadow-md p-4">
+  <h3 className="text-lg font-semibold text-red-600 mb-2 flex items-center gap-2">
+    ❌ Curveballs
+  </h3>
+
+  <form
+    onSubmit={(e) => {
+      e.preventDefault();
+      const redVal = e.target.redCurveball.value;
+      const blueVal = e.target.blueCurveball.value;
+      const selected = redVal || blueVal;
+      if (!selected) return;
+
+      const [desc, amountStr, effect] = selected.split('|');
+      const amount = parseInt(amountStr, 10);
+
+      // Apply effects
+      if (effect === 'cash' && amount > 0) setCash(cash - amount);
+      if (effect === 'rep') setRep((prev) => Math.max(0, prev - amount)); // adjust rep in parent state
+      if (effect === 'none') {
+        // Just a display-only curveball like "skip turn"
+      }
+
+      setCurveballs([...curveballs, { desc, amount, effect }]);
       e.target.reset();
     }}
     className="space-y-3"
   >
-    <input
-      name="desc"
-      placeholder="e.g. Missed Media Training"
-      className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-red-500 outline-none"
-    />
-    <input
-      name="loss"
-      type="number"
-      placeholder="Loss $"
-      className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-red-500 outline-none"
-    />
+    <div className="flex gap-2">
+      {/* 🔴 Financial Curveballs */}
+      <select name="redCurveball" className="w-1/2 px-4 py-2 border rounded-md shadow-sm">
+        <option value="">Select Financial</option>
+        <option value="IRS Audit – Lose $40,000|40000|cash">IRS Audit – Lose $40,000</option>
+        <option value="NIL Lawsuit – Pay $35,000|35000|cash">NIL Lawsuit – Pay $35,000</option>
+        <option value="Shady Business Deal – Lose $25,000|25000|cash">Shady Business Deal – Lose $25,000</option>
+        <option value="Credit Card Debt – Lose $15,000|15000|cash">Credit Card Debt – Lose $15,000</option>
+        <option value="Family Emergency – Pay $10,000|10000|cash">Family Emergency – Pay $10,000</option>
+        <option value="Back Pay Reversal – Lose $25,000|25000|cash">Back Pay Reversal – Lose $25,000</option>
+        <option value="Gain $25K Now, Owe $40K Later|40000|cash">Gain $25K Now, Owe $40K Later</option>
+      </select>
+
+      {/* 🔵 Life Curveballs */}
+      <select name="blueCurveball" className="w-1/2 px-4 py-2 border rounded-md shadow-sm">
+        <option value="">Select Life</option>
+        <option value="Season-Ending Injury – Skip Career Point|0|none">Season-Ending Injury – Skip Career Point</option>
+        <option value="Unexpected Pregnancy – Pay $10,000|10000|cash">Unexpected Pregnancy – Pay $10,000</option>
+        <option value="Transfer Portal Chaos – Skip NIL payout|0|none">Transfer Portal Chaos – Skip NIL payout</option>
+        <option value="NIL Contract Terminated – Lose 1 REP|1|rep">NIL Contract Terminated – Lose 1 REP</option>
+        <option value="Media Feature Gone Wrong – Lose $15,000|15000|cash">Media Feature Gone Wrong – Lose $15,000</option>
+        <option value="Public Scandal – Lose 2 REP|2|rep">Public Scandal – Lose 2 REP</option>
+        <option value="Sponsorship Dropped – Lose $10,000|10000|cash">Sponsorship Dropped – Lose $10,000</option>
+        <option value="Social Blowup – REP cut in half|0|none">Social Blowup – REP cut in half</option>
+      </select>
+    </div>
+
     <button
       type="submit"
       className="w-full bg-red-600 text-white font-semibold py-2 rounded hover:bg-red-700 transition"
@@ -225,12 +302,16 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
     <ul className="mt-4 text-sm text-gray-700 space-y-1">
       {curveballs.map((c, idx) => (
         <li key={idx}>
-          <span className="font-semibold text-red-600">{c.desc}</span>: -${c.amount.toLocaleString()}
+          <span className="font-semibold text-red-600">{c.desc}</span>
+          {c.effect === 'cash' && <>: -${c.amount.toLocaleString()}</>}
+          {c.effect === 'rep' && <>: -{c.amount} REP</>}
         </li>
       ))}
     </ul>
   )}
 </section>
+
+
 
 <section className="bg-white rounded-xl shadow-md p-4">
   <h3 className="text-lg font-semibold text-yellow-600 mb-2 flex items-center gap-2">
@@ -334,9 +415,8 @@ if (rep >= 10 && luxuries.length <= 2 && debt <= 20000) {
   })()}
 </section>
 
-</div>
-
-    
+  </div>
+ </div>
   );
 }
 

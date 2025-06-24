@@ -89,8 +89,11 @@ function FinalScoreboard({ data }) {
   const description = avatarDescriptions[finalAvatar];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md space-y-6">
+    <div
+      className="min-h-screen flex items-center justify-center bg-no-repeat bg-center bg-cover"
+      style={{ backgroundImage: "url('/moneyBG.png')" }}
+    >
+      <div className="bg-white/90 p-6 rounded-xl shadow-md w-full max-w-md space-y-6">
         <h2 className="text-2xl font-bold text-center text-indigo-700">🏁 Final Scoreboard</h2>
 
         <div className="text-center space-y-1 text-gray-700">

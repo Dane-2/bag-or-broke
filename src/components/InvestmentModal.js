@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import  investmentCards  from '../data/investments';
+import investmentCards from '../data/investments';
 
-function CardModal({ onApply, currentCash }) {
+function CardModal({ onApply, onCancel, currentCash }) {
   const [cardId, setCardId] = useState('');
   const [cardData, setCardData] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('cash');
@@ -42,19 +42,24 @@ function CardModal({ onApply, currentCash }) {
       interest
     });
 
+    resetAndCancel();
+  };
+
+  const resetAndCancel = () => {
     setCardId('');
     setCardData(null);
     setPaymentMethod('cash');
     setDiceRoll('');
+    if (onCancel) onCancel();
   };
 
   return (
     <div className="bg-white rounded-xl shadow-md p-4 space-y-4">
-      <h3 className="text-lg font-semibold text-blue-700 mb-1">📦 Investment Card Scanner</h3>
+      <h3 className="text-lg font-semibold text-blue-700 mb-1">📦 Enter Investment Card</h3>
 
       {!cardData ? (
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Enter Card ID (simulate scan):</label>
+          <label className="block text-sm font-medium text-gray-700">Enter Card ID:</label>
           <div className="flex gap-2">
             <input
               value={cardId}
@@ -66,19 +71,15 @@ function CardModal({ onApply, currentCash }) {
               onClick={handleScan}
               className="bg-blue-600 text-white font-semibold px-4 rounded hover:bg-blue-700 transition"
             >
-              Scan
+              Play Card
             </button>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
           <div className="border-t border-gray-300 pt-2">
-            <p className="text-sm text-gray-600">
-              <strong>Card:</strong> {cardData.title}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Cost:</strong> ${cardData.cost.toLocaleString()}
-            </p>
+            <p className="text-sm text-gray-600"><strong>Card:</strong> {cardData.title}</p>
+            <p className="text-sm text-gray-600"><strong>Cost:</strong> ${cardData.cost.toLocaleString()}</p>
           </div>
 
           <div>
@@ -112,6 +113,13 @@ function CardModal({ onApply, currentCash }) {
             className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition"
           >
             Apply Investment Result
+          </button>
+
+          <button
+            onClick={resetAndCancel}
+            className="w-full bg-gray-300 text-gray-800 font-semibold py-2 rounded hover:bg-gray-400 transition"
+          >
+            Cancel
           </button>
         </div>
       )}
