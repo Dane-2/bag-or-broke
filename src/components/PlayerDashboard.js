@@ -37,18 +37,24 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
           <button
             className="w-1/2 bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700"
             onClick={() => {
-              const amount = parseInt(prompt('Enter amount to add:').replace(/,/g, ''), 10);
-              if (!isNaN(amount)) setCash(cash + amount);
-            }}
+  const input = prompt('Enter amount to add:');
+  if (!input) return; // if Cancel or empty
+  const amount = parseInt(input.replace(/,/g, ''), 10);
+  if (!isNaN(amount)) setCash(cash + amount);
+}}
+
           >
             + Add Cash
           </button>
           <button
             className="w-1/2 bg-red-600 text-white font-semibold py-2 rounded hover:bg-red-700"
             onClick={() => {
-              const amount = parseInt(prompt('Enter amount to subtract:').replace(/,/g, ''), 10);
-              if (!isNaN(amount)) setCash(cash - amount);
-            }}
+  const input = prompt('Enter amount to subtract:');
+  if (!input) return;
+  const amount = parseInt(input.replace(/,/g, ''), 10);
+  if (!isNaN(amount)) setCash(cash - amount);
+}}
+
           >
             - Subtract Cash
           </button>
@@ -378,6 +384,7 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
 
             const curveballLoss = curveballs.reduce((acc, c) => acc + c.amount, 0);
 const totalLuxuries = luxuries.length;
+
 
 let assignedProfile = "The CEO in Training"; // Default
 
