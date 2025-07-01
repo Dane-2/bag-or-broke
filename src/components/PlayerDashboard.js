@@ -79,17 +79,27 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
 
       {/* 📦 Investment Modal */}
       <CardModal
-        currentCash={cash}
-        onApply={({ card, cost, result, newValue, percent, borrowed, interest }) => {
-          setCash(prev => prev - (borrowed ? 0 : cost) + newValue);
-          if (borrowed) {
-            setDebt(prev => prev + cost + interest);
-            setCredit(prev => prev - 20);
-          }
-          setInvestments(prev => [...prev, { card, result, percent }]);
-          alert(`Result: ${percent}% → New Value: $${newValue.toLocaleString()}`);
-        }}
-      />
+          currentCash={cash}
+          onApply={({ card, cost, result, newValue, percent, borrowed, interest }) => {
+            setCash(prev => prev - (borrowed ? 0 : cost) + newValue);
+
+            if (borrowed) {
+              setDebt(prev => prev + cost + interest);
+              setCredit(prev => prev - 20);
+            }
+
+            // ✅ Save full newValue!
+            setInvestments(prev => [
+              ...prev,
+              { card, cost, result, newValue, percent, borrowed, interest }
+            ]);
+
+            alert(`Result: ${percent}% → New Value: $${newValue.toLocaleString()}`);
+          }}
+        />
+
+
+
 
       {/* 💎 Luxury Modal */}
       <LuxuryModal
@@ -410,7 +420,8 @@ if (rep >= 10 && luxuries.length <= 2 && debt <= 20000) {
               rep,
               career,
               debt,
-              credit
+              credit,
+              investments,
             });
           }}
           className="w-full bg-indigo-600 text-white font-semibold py-2 mt-4 rounded hover:bg-indigo-700 transition"

@@ -126,30 +126,29 @@ function FinalScoreboard({ data }) {
         </ul>
 
         <h3 className="text-xl font-bold text-center">
-  Net Worth: ${netWorth.toLocaleString()}
-</h3>
+          Net Worth: ${netWorth.toLocaleString()}
+        </h3>
 
-<div className="flex justify-center">
-  <PieChart width={320} height={250}>
-    <Pie
-      data={breakdownData}
-      dataKey="value"
-      nameKey="name"
-      cx="50%"
-      cy="50%"
-      outerRadius={80}
-      fill="#8884d8"
-      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-    >
-      {breakdownData.map((entry, index) => (
-        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-      ))}
-    </Pie>
-    <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
-    <Legend verticalAlign="bottom" height={36} />
-  </PieChart>
-</div>
-
+        <div className="flex justify-center">
+          <PieChart width={320} height={250}>
+            <Pie
+              data={breakdownData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              fill="#8884d8"
+              label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+            >
+              {breakdownData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+            <Legend verticalAlign="bottom" height={36} />
+          </PieChart>
+        </div>
 
         {description && (
           <div className="bg-indigo-50 border border-indigo-200 rounded mt-4 p-4 shadow-sm">
