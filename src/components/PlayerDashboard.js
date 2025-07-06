@@ -4,7 +4,7 @@ import LuxuryModal  from './LuxuryModal';
 
 
 
-function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
+function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLaps: initialTotalLaps }) {
   const [cash, setCash] = useState(startingCash || 0);
   const [rep, setRep] = useState(0);
   const [career, setCareer] = useState(0);
@@ -13,6 +13,11 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
   const [debt, setDebt] = useState(0);
   const [credit, setCredit] = useState(500);
   const [investments, setInvestments] = useState([]);
+  const [laps, setLaps] = useState(0);
+  const [totalLaps] = useState(initialTotalLaps || 5);
+  const [shadyDebt, setShadyDebt] = useState(0);
+
+
 
   return (
   <div
@@ -28,6 +33,42 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
         <p className="text-gray-600"><strong>NIL Tier:</strong> {avatar}</p>
       </div>
       
+      {/* 🔁 Lap Tracker */}
+        <section className="bg-white rounded-xl shadow-md p-4">
+          <h3 className="text-lg font-semibold text-indigo-700 mb-2 flex items-center gap-2">🔁 Laps</h3>
+          <p className="text-gray-800 text-sm mb-3">Laps Completed: <span className="font-bold">{laps}</span> / {totalLaps}</p>
+          <button
+            onClick={() => {
+              const newLap = laps + 1;
+              setLaps(newLap);
+
+              // Increase investment value by 5% each lap
+              setInvestments(prev =>
+                prev.map(inv => ({
+                  ...inv,
+                  newValue: Math.floor(inv.newValue * 1.05)
+                }))
+              );
+
+              // End game if max laps reached
+              if (newLap >= totalLaps) {
+                showFinal({
+                  playerName,
+                  cash,
+                  luxuries,
+                  rep,
+                  career,
+                  debt,
+                  credit,
+                  investments,
+                });
+              }
+            }}
+            className="w-full bg-indigo-600 text-white font-semibold py-2 rounded hover:bg-indigo-700 transition"
+          >
+            Complete Lap
+          </button>
+        </section>
 
       {/* 💵 Cash Tracker */}
       <section className="bg-white rounded-xl shadow-md p-4">
@@ -62,20 +103,33 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
       </section>
 
       {/* 📈 Investments Log */}
-      <section className="bg-white rounded-xl shadow-md p-4">
-        <h3 className="text-lg font-semibold text-blue-700 mb-2">📈 Investments</h3>
-        {investments.length === 0 ? (
-          <p className="text-gray-500">No investments yet</p>
-        ) : (
-          <ul className="space-y-1 text-sm text-gray-700">
-            {investments.map((inv, idx) => (
-              <li key={idx}>
-                {inv.card} → {inv.percent}% → ${inv.result >= 0 ? '+' : ''}{inv.result.toLocaleString()}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+<section className="bg-white rounded-xl shadow-md p-4">
+  <h3 className="text-lg font-semibold text-blue-700 mb-2">📈 Investments</h3>
+  {investments.length === 0 ? (
+    <p className="text-gray-500">No investments yet</p>
+  ) : (
+    <ul className="space-y-1 text-sm text-gray-700">
+      {investments.map((inv, idx) => (
+        <li key={idx} className="flex justify-between items-center">
+          <span>
+            {inv.card} → ROI: {inv.percent}% → Current Value: ${inv.newValue.toLocaleString()}
+          </span>
+          <button
+            onClick={() => {
+              setCash(prev => prev + inv.newValue);
+              setInvestments(prev => prev.filter((_, i) => i !== idx));
+              alert(`${inv.card} sold for $${inv.newValue.toLocaleString()}`);
+            }}
+            className="ml-2 bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
+          >
+            Sell
+          </button>
+        </li>
+      ))}
+    </ul>
+  )}
+</section>
+
 
       {/* 📦 Investment Modal */}
       <CardModal
@@ -251,7 +305,7 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
 
 
       
-  <section className="bg-white rounded-xl shadow-md p-4">
+ <section className="bg-white rounded-xl shadow-md p-4">
   <h3 className="text-lg font-semibold text-red-600 mb-2 flex items-center gap-2">
     ❌ Curveballs
   </h3>
@@ -267,11 +321,14 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
       const [desc, amountStr, effect] = selected.split('|');
       const amount = parseInt(amountStr, 10);
 
-      // Apply effects
       if (effect === 'cash' && amount > 0) setCash(cash - amount);
-      if (effect === 'rep') setRep((prev) => Math.max(0, prev - amount)); // adjust rep in parent state
+      if (effect === 'rep') setRep((prev) => Math.max(0, prev - amount));
       if (effect === 'none') {
-        // Just a display-only curveball like "skip turn"
+      if (effect === 'shady') {
+        setCash(prev => prev + 25000);
+        setShadyDebt(prev => prev + 40000);
+      } 
+        // just display-only, skip turn etc
       }
 
       setCurveballs([...curveballs, { desc, amount, effect }]);
@@ -280,29 +337,23 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
     className="space-y-3"
   >
     <div className="flex gap-2">
-      {/* 🔴 Financial Curveballs */}
-      <select name="redCurveball" className="w-1/2 px-4 py-2 border rounded-md shadow-sm">
+      {/* 🔴 Red – Financial Curveballs */}
+      <select name="redCurveball" className="w-1/2 px-4 py-2 border rounded-md shadow-sm bg-red-100">
         <option value="">Select Financial</option>
-        <option value="IRS Audit – Lose $40,000|40000|cash">IRS Audit – Lose $40,000</option>
-        <option value="NIL Lawsuit – Pay $35,000|35000|cash">NIL Lawsuit – Pay $35,000</option>
-        <option value="Shady Business Deal – Lose $25,000|25000|cash">Shady Business Deal – Lose $25,000</option>
-        <option value="Credit Card Debt – Lose $15,000|15000|cash">Credit Card Debt – Lose $15,000</option>
-        <option value="Family Emergency – Pay $10,000|10000|cash">Family Emergency – Pay $10,000</option>
-        <option value="Back Pay Reversal – Lose $25,000|25000|cash">Back Pay Reversal – Lose $25,000</option>
-        <option value="Gain $25K Now, Owe $40K Later|40000|cash">Gain $25K Now, Owe $40K Later</option>
+        <option value="Pay Your Taxes – Lose $15,000|15000|cash">Pay Your Taxes – Lose $15,000</option>
+        <option value="IRS Audit – Lose $25,000|25000|cash">IRS Audit – Lose $25,000</option>
+        <option value="Credit Card Debt Hits – Lose $10,000|10000|cash">Credit Card Debt Hits – Lose $10,000</option>
+        <option value="Last-Minute NIL Lawsuit – Pay $35,000|35000|cash">Last-Minute NIL Lawsuit – Pay $35,000</option>
+        <option value="Shady Business Deal – Gain $25K Now, Owe $40K Later|40000|cash">Shady Business Deal – Gain $25K Now, Owe $40K Later</option>
       </select>
 
-      {/* 🔵 Life Curveballs */}
-      <select name="blueCurveball" className="w-1/2 px-4 py-2 border rounded-md shadow-sm">
+      {/* 🔵 Blue – Life Curveballs */}
+      <select name="blueCurveball" className="w-1/2 px-4 py-2 border rounded-md shadow-sm bg-blue-100">
         <option value="">Select Life</option>
-        <option value="Season-Ending Injury – Skip Career Point|0|none">Season-Ending Injury – Skip Career Point</option>
-        <option value="Unexpected Pregnancy – Pay $10,000|10000|cash">Unexpected Pregnancy – Pay $10,000</option>
-        <option value="Transfer Portal Chaos – Skip NIL payout|0|none">Transfer Portal Chaos – Skip NIL payout</option>
-        <option value="NIL Contract Terminated – Lose 1 REP|1|rep">NIL Contract Terminated – Lose 1 REP</option>
-        <option value="Media Feature Gone Wrong – Lose $15,000|15000|cash">Media Feature Gone Wrong – Lose $15,000</option>
-        <option value="Public Scandal – Lose 2 REP|2|rep">Public Scandal – Lose 2 REP</option>
-        <option value="Sponsorship Dropped – Lose $10,000|10000|cash">Sponsorship Dropped – Lose $10,000</option>
-        <option value="Social Blowup – REP cut in half|0|none">Social Blowup – REP cut in half</option>
+        <option value="Transfer Portal Chaos – Lose $30,000|30000|cash">Transfer Portal Chaos – Lose $30,000</option>
+        <option value="Unexpected Pregnancy – Lose $25,000|25000|cash">Unexpected Pregnancy – Lose $25,000</option>
+        <option value="Family Emergency – Lose $10,000|10000|cash">Family Emergency – Lose $10,000</option>
+        <option value="Season-Ending Injury – Lose $40,000|40000|cash">Season-Ending Injury – Lose $40,000</option>
       </select>
     </div>
 
@@ -313,6 +364,7 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
       Add Curveball
     </button>
   </form>
+  
 
   {curveballs.length > 0 && (
     <ul className="mt-4 text-sm text-gray-700 space-y-1">
@@ -321,6 +373,8 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
           <span className="font-semibold text-red-600">{c.desc}</span>
           {c.effect === 'cash' && <>: -${c.amount.toLocaleString()}</>}
           {c.effect === 'rep' && <>: -{c.amount} REP</>}
+
+          
         </li>
       ))}
     </ul>
@@ -392,7 +446,7 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal }) {
         <button
           onClick={() => {
 
-            const curveballLoss = curveballs.reduce((acc, c) => acc + c.amount, 0);
+const curveballLoss = curveballs.reduce((acc, c) => acc + c.amount, 0);
 const totalLuxuries = luxuries.length;
 
 
@@ -422,6 +476,8 @@ if (rep >= 10 && luxuries.length <= 2 && debt <= 20000) {
               debt,
               credit,
               investments,
+              shadyDebt,
+              assignedProfile
             });
           }}
           className="w-full bg-indigo-600 text-white font-semibold py-2 mt-4 rounded hover:bg-indigo-700 transition"

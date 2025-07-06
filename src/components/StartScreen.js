@@ -12,6 +12,7 @@ const tiers = {
 function StartScreen({ onStart }) {
   const [playerName, setPlayerName] = useState('');
   const [rollValue, setRollValue] = useState('');
+  const [gameLength, setGameLength] = useState('');
 
   const selectedTier = rollValue ? tiers[parseInt(rollValue)] : null;
   const totalCash = selectedTier ? selectedTier.amount + 2500 : 0;
@@ -45,6 +46,19 @@ function StartScreen({ onStart }) {
           </select>
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Select Game Length:</label>
+          <select
+            value={gameLength}
+            onChange={(e) => setGameLength(e.target.value)}
+            className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">-- Choose --</option>
+            <option value="5">Short Game (5 Laps)</option>
+            <option value="10">Long Game (10 Laps)</option>
+          </select>
+        </div>
+
         {selectedTier && (
           <div className="p-4 bg-gray-100 rounded text-center space-y-2">
             <p className="text-lg font-semibold">🎲 NIL Tier: {selectedTier.label}</p>
@@ -53,8 +67,11 @@ function StartScreen({ onStart }) {
             <p className="text-xl font-bold text-blue-600">Total: ${totalCash.toLocaleString()}</p>
 
             <button
-              onClick={() => onStart(playerName, totalCash, selectedTier.label)}
-              className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition"
+              onClick={() =>
+                onStart(playerName, totalCash, selectedTier.label, parseInt(gameLength, 10))
+              }
+              disabled={!playerName || !rollValue || !gameLength}
+              className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition disabled:opacity-50"
             >
               Start Game
             </button>

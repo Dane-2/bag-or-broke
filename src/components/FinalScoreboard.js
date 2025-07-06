@@ -74,6 +74,7 @@ function FinalScoreboard({ data }) {
     debt,
     credit,
     investments = []
+  , shadyDebt = 0
   } = data;
 
   const luxuryResale = luxuries.reduce((acc, item) => acc + item.resale, 0);
@@ -86,7 +87,7 @@ function FinalScoreboard({ data }) {
     credit >= 500 ? 2000 : 0;
 
   const netWorth =
-    cash + investmentReturns + luxuryResale + repValue + careerValue + creditBonus - debt;
+    cash + investmentReturns + luxuryResale + repValue + careerValue + creditBonus - debt - shadyDebt;
 
   const finalAvatar = determineAvatar({ cash, luxuries, rep, career, debt, credit });
   const description = avatarDescriptions[finalAvatar];
@@ -123,6 +124,7 @@ function FinalScoreboard({ data }) {
           <li>📚 <strong>Career Value:</strong> ${careerValue.toLocaleString()}</li>
           <li>🧠 <strong>Credit Bonus:</strong> ${creditBonus.toLocaleString()}</li>
           <li>💳 <strong>Debt:</strong> -${debt.toLocaleString()}</li>
+          <li>📉 <strong>Shady Deal Debt:</strong> -${shadyDebt.toLocaleString()}</li>
         </ul>
 
         <h3 className="text-xl font-bold text-center">
