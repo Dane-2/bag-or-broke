@@ -268,39 +268,52 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
   </div>
 
   {/* Custom Payment */}
-  <form
-    onSubmit={(e) => {
-      e.preventDefault();
-      const payment = parseInt(e.target.payment.value, 10);
-      if (isNaN(payment) || payment <= 0) return;
+  {/* Custom Payment */}
+<form
+  onSubmit={(e) => {
+    e.preventDefault();
+    const payment = parseInt(e.target.payment.value, 10);
+    if (isNaN(payment) || payment <= 0) return;
 
-      if (cash >= payment && debt > 0) {
-        const actualPayment = Math.min(payment, debt);
-        setCash(cash - actualPayment);
-        setDebt(debt - actualPayment);
-        if (actualPayment === debt) {
-          setCredit(credit + 50); // Full payoff bonus
-        }
-        e.target.reset();
+    if (cash >= payment && debt > 0) {
+      const actualPayment = Math.min(payment, debt);
+      setCash(cash - actualPayment);
+      setDebt(debt - actualPayment);
+
+      if (actualPayment === debt) {
+        // Full payoff bonus
+        setCredit(credit + 50);
       } else {
-        alert("Not enough cash or no debt to pay.");
+        // Partial payment bonus based on size
+        const paymentPercent = actualPayment / debt;
+        const bump = Math.ceil(paymentPercent * 20); // example: paying 50% of debt gives +10
+        setCredit(credit + bump);
       }
-    }}
-    className="space-y-3 mt-4"
+
+      // Automatically update interest rate display by adjusting credit score
+      // No other changes needed here since getInterestRate already uses `credit`
+
+      e.target.reset();
+    } else {
+      alert("Not enough cash or no debt to pay.");
+    }
+  }}
+  className="space-y-3 mt-4"
+>
+  <input
+    name="payment"
+    type="number"
+    placeholder="Amount to Pay"
+    className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-black outline-none"
+  />
+  <button
+    type="submit"
+    className="w-full bg-black text-white font-semibold py-2 rounded hover:bg-gray-800 transition"
   >
-    <input
-      name="payment"
-      type="number"
-      placeholder="Amount to Pay"
-      className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-black outline-none"
-    />
-    <button
-      type="submit"
-      className="w-full bg-black text-white font-semibold py-2 rounded hover:bg-gray-800 transition"
-    >
-      Pay Debt (Partial or Full)
-    </button>
-  </form>
+    Pay Debt (Partial or Full)
+  </button>
+</form>
+
 </section>
 
 
