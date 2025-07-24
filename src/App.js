@@ -7,7 +7,8 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [playerName, setPlayerName] = useState('');
   const [startingCash, setStartingCash] = useState(null);
-  const [avatar, setAvatar] = useState(''); // NIL Tier label
+  const [avatar, setAvatar] = useState('');
+  const [totalLaps, setTotalLaps] = useState(5); // ✅ default to 5
   const [finalScoresVisible, setFinalScoresVisible] = useState(false);
   const [finalData, setFinalData] = useState(null);
 
@@ -15,10 +16,11 @@ function App() {
     <div>
       {!gameStarted ? (
         <StartScreen
-          onStart={(name, cash, label) => {
+          onStart={(name, cash, label, laps) => {
             setPlayerName(name);
-            setAvatar(label); // <- use NIL Tier label
+            setAvatar(label);
             setStartingCash(cash);
+            setTotalLaps(laps); // ✅ store laps from StartScreen
             setGameStarted(true);
           }}
         />
@@ -29,6 +31,7 @@ function App() {
           playerName={playerName}
           avatar={avatar}
           startingCash={startingCash}
+          totalLaps={totalLaps} // ✅ pass into PlayerDashboard
           showFinal={(data) => {
             setFinalData(data);
             setFinalScoresVisible(true);
