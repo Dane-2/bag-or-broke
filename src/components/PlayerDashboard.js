@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import CardModal from './InvestmentModal';
-import LuxuryModal from './LuxuryModal';
-
+import CardSelector from './CardSelector';
 
 import LapTracker from './LapTracker';
 import CashTracker from './CashTracker';
@@ -11,9 +9,6 @@ import DebtCreditTracker from './DebtCreditTracker';
 import CurveballSection from './CurveballSection';
 import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
-import CategoryPicker from './CategoryPicker';
-
-
 
 function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLaps: initialTotalLaps }) {
   const [cash, setCash] = useState(startingCash || 0);
@@ -27,10 +22,50 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
   const [laps, setLaps] = useState(0);
   const totalLaps = initialTotalLaps || 5;
   const [shadyDebt, setShadyDebt] = useState(0);
+  const [cardType, setCardType] = useState(''); // start empty
 
+  const handleCardSelection = (cardResult) => {
+    if (cardResult.type === 'investment') {
+      const {
+        cardTitle,
+        cost,
+        result,
+        newValue,
+        percent,
+        borrowed,
+        interest
+      } = cardResult;
+
+      setCash(prev => prev - (borrowed ? 0 : cost) + newValue);
+      if (borrowed) {
+        setDebt(prev => prev + cost + interest);
+        setCredit(prev => prev - 20);
+      }
+
+      setInvestments(prev => [...prev, { ...cardResult }]);
+      alert(`Result: ${percent}% → New Value: $${newValue.toLocaleString()}`);
+    }
+
+    if (cardResult.type === 'luxury') {
+      const {
+        cardTitle,
+        cost,
+        resale,
+        rep: repGain
+      } = cardResult;
+
+      setCash(prev => prev - cost);
+      setRep(prev => prev + repGain);
+      setLuxuries(prev => [...prev, { name: cardTitle, resale, rep: repGain }]);
+      alert(`Purchased ${cardTitle}! +${repGain} REP`);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-no-repeat bg-center bg-[length:100%_auto] sm:bg-cover" style={{ backgroundImage: "url('/moneyBG.png')" }}>
+    <div
+      className="min-h-screen bg-no-repeat bg-center bg-[length:100%_auto] sm:bg-cover"
+      style={{ backgroundImage: "url('/moneyBG.png')" }}
+    >
       <div className="max-w-md mx-auto px-4 py-6 space-y-6 bg-white/80 rounded-xl shadow-xl">
         <div className="bg-white rounded-xl shadow-md p-4 text-center space-y-1">
           <h2 className="text-2xl font-bold text-gray-800">Player Dashboard</h2>
@@ -38,65 +73,49 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
           <p className="text-gray-600"><strong>NIL Tier:</strong> {avatar}</p>
         </div>
 
-          <LapTracker
-            laps={laps}
-            totalLaps={totalLaps}
-            setLaps={setLaps}
-            investments={investments}
-            setInvestments={setInvestments}
-            showFinal={showFinal}
-            playerSnapshot={{
-              playerName,
-              cash,
-              luxuries,
-              rep,
-              career,
-              debt,
-              credit,
-              curveballs,
-              shadyDebt
-            }}
-          />
-
+        <LapTracker
+          laps={laps}
+          totalLaps={totalLaps}
+          setLaps={setLaps}
+          investments={investments}
+          setInvestments={setInvestments}
+          showFinal={showFinal}
+          playerSnapshot={{
+            playerName,
+            cash,
+            luxuries,
+            rep,
+            career,
+            debt,
+            credit,
+            curveballs,
+            shadyDebt
+          }}
+        />
 
         <CashTracker cash={cash} setCash={setCash} />
 
-        <CategoryPicker
-          cash={cash}
-          setCash={setCash}
-          setInvestments={setInvestments}
-          setRep={setRep}
-          setLuxuries={setLuxuries}
-        />
+        {/* 🔽 Dropdown with Tailwind styling */}
+        <div className="text-center">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Choose Card Type</label>
+          <select
+            value={cardType}
+            onChange={(e) => setCardType(e.target.value)}
+            className="mx-auto w-60 px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">-- Select Card Type --</option>
+            <option value="investment">💼 Investment Cards</option>
+            <option value="luxury">💎 Luxury Cards</option>
+          </select>
+        </div>
 
+        {/* Only show CardSelector once a type is chosen */}
+        {cardType && <CardSelector type={cardType} onSelect={handleCardSelection} />}
 
         <InvestmentLog
           investments={investments}
           setInvestments={setInvestments}
           setCash={setCash}
-        />
-
-        <CardModal
-          currentCash={cash}
-          onApply={({ card, cost, result, newValue, percent, borrowed, interest }) => {
-            setCash(prev => prev - (borrowed ? 0 : cost) + newValue);
-            if (borrowed) {
-              setDebt(prev => prev + cost + interest);
-              setCredit(prev => prev - 20);
-            }
-            setInvestments(prev => [...prev, { card, cost, result, newValue, percent, borrowed, interest }]);
-            alert(`Result: ${percent}% → New Value: $${newValue.toLocaleString()}`);
-          }}
-        />
-
-        <LuxuryModal
-          currentCash={cash}
-          onPurchase={({ card, cost, resale, rep: repGain }) => {
-            setCash(prev => prev - cost);
-            setRep(prev => prev + repGain);
-            setLuxuries(prev => [...prev, { name: card, resale, rep: repGain }]);
-            alert(`Purchased ${card}! +${repGain} REP`);
-          }}
         />
 
         <LuxuryLog

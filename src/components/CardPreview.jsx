@@ -1,20 +1,29 @@
-// CardPreview.jsx
+import React from 'react';
+
 export default function CardPreview({ card, onSelect }) {
+  const isInvestment = card.roiTables !== undefined;
+
   return (
-    <div className="border rounded-xl p-4 shadow-sm hover:shadow-md transition">
-      <h3 className="font-bold text-lg">{card.title}</h3>
-      <p className="text-sm text-gray-600">Category: {card.category}</p>
-      <p className="mt-1">Cost: ${card.cost.toLocaleString()}</p>
-      {card.rep !== undefined && <p>REP: +{card.rep}</p>}
-      {card.availableRisks && (
-        <p className="text-sm text-gray-500">Risk: {card.availableRisks.join(', ')}</p>
+    <div
+      className="border rounded-lg p-4 bg-white hover:shadow-md cursor-pointer transition"
+      onClick={() => onSelect(card)}
+    >
+      <h3 className="text-md font-semibold text-gray-800">{card.title}</h3>
+      <p className="text-sm text-gray-600">Cost: ${card.cost.toLocaleString()}</p>
+
+      {isInvestment ? (
+        <p className="text-xs text-blue-600 mt-1">
+          Risk: {card.availableRisks?.[0] || 'N/A'}
+        </p>
+      ) : (
+        <p className="text-xs text-pink-600 mt-1">
+          REP: +{card.rep}
+        </p>
       )}
-      <button
-        onClick={() => onSelect(card)}
-        className="mt-2 px-3 py-1 bg-green-600 text-white rounded-full text-sm"
-      >
-        Select
-      </button>
+
+      <p className="text-xs text-gray-500 mt-1">
+        Category: {card.category}
+      </p>
     </div>
   );
 }

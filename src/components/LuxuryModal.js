@@ -1,110 +1,171 @@
 import React, { useState } from 'react';
-import luxuryCards from '../data/luxuryCards';
+import CardSelector from './CardSelector'; // ✅ Use CardSelector instead of InvestmentModal
+import LuxuryModal from './LuxuryModal';
 
-function LuxuryModal({ currentCash, onPurchase, onCancel }) {
-  const [cardId, setCardId] = useState('');
-  const [cardData, setCardData] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('cash');
+import LapTracker from './LapTracker';
+import CashTracker from './CashTracker';
+import InvestmentLog from './InvestmentLog';
+import LuxuryLog from './LuxuryLog';
+import DebtCreditTracker from './DebtCreditTracker';
+import CurveballSection from './CurveballSection';
+import RepCareerPoints from './RepCareerPoints';
+import FinalNetWorth from './FinalNetWorth';
+import CategoryPicker from './CategoryPicker';
 
-  const handleScan = () => {
-    const found = luxuryCards.find(card => card.id === cardId);
-    if (found) {
-      setCardData(found);
-    } else {
-      alert('Card not found.');
+function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLaps: initialTotalLaps }) {
+  const [cash, setCash] = useState(startingCash || 0);
+  const [rep, setRep] = useState(0);
+  const [career, setCareer] = useState(0);
+  const [luxuries, setLuxuries] = useState([]);
+  const [curveballs, setCurveballs] = useState([]);
+  const [debt, setDebt] = useState(0);
+  const [credit, setCredit] = useState(500);
+  const [investments, setInvestments] = useState([]);
+  const [laps, setLaps] = useState(0);
+  const totalLaps = initialTotalLaps || 5;
+  const [shadyDebt, setShadyDebt] = useState(0);
+
+  const handleCardSelection = (cardResult) => {
+    if (cardResult.type === 'investment') {
+      const {
+        cardTitle,
+        cost,
+        result,
+        newValue,
+        percent,
+        borrowed,
+        interest
+      } = cardResult;
+
+      // Apply cash/debt logic
+      setCash(prev => prev - (borrowed ? 0 : cost) + newValue);
+      if (borrowed) {
+        setDebt(prev => prev + cost + interest);
+        setCredit(prev => prev - 20);
+      }
+
+      // Add to investments
+      setInvestments(prev => [...prev, { ...cardResult }]);
+
+      alert(`Result: ${percent}% → New Value: $${newValue.toLocaleString()}`);
     }
-  };
 
-  const handleBuy = () => {
-    if (!cardData) return;
+    if (cardResult.type === 'luxury') {
+      const {
+        cardTitle,
+        cost,
+        resale,
+        rep: repGain,
+        borrowed,
+        interest
+      } = cardResult;
 
-    const cost = cardData.cost;
-    const interest = Math.floor(cost * 0.25);
-    const borrowed = paymentMethod === 'finance';
-
-    if (!borrowed && currentCash < cost) {
-      alert("Not enough cash to buy this luxury.");
-      return;
+      setCash(prev => prev - cost);
+      setRep(prev => prev + repGain);
+      setLuxuries(prev => [...prev, { name: cardTitle, resale, rep: repGain }]);
+      alert(`Purchased ${cardTitle}! +${repGain} REP`);
     }
-
-    onPurchase({
-      card: cardData.title,
-      cost,
-      resale: cardData.resale,
-      rep: cardData.rep,
-      borrowed,
-      interest
-    });
-
-    resetAndCancel();
-  };
-
-  const resetAndCancel = () => {
-    setCardId('');
-    setCardData(null);
-    setPaymentMethod('cash');
-    if (onCancel) onCancel();
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-4 space-y-4">
-      <h3 className="text-lg font-semibold text-pink-600 mb-1">💎 Enter Luxury Card</h3>
-
-      {!cardData ? (
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Enter Card ID:</label>
-          <div className="flex gap-2">
-            <input
-              value={cardId}
-              onChange={(e) => setCardId(e.target.value)}
-              placeholder="e.g. L50"
-              className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-pink-500 outline-none"
-            />
-            <button
-              onClick={handleScan}
-              className="bg-pink-600 text-white font-semibold px-4 rounded hover:bg-pink-700 transition"
-            >
-              Play Card
-            </button>
-          </div>
+    <div
+      className="min-h-screen bg-no-repeat bg-center bg-[length:100%_auto] sm:bg-cover"
+      style={{ backgroundImage: "url('/moneyBG.png')" }}
+    >
+      <div className="max-w-md mx-auto px-4 py-6 space-y-6 bg-white/80 rounded-xl shadow-xl">
+        <div className="bg-white rounded-xl shadow-md p-4 text-center space-y-1">
+          <h2 className="text-2xl font-bold text-gray-800">Player Dashboard</h2>
+          <p className="text-gray-600"><strong>Name:</strong> {playerName}</p>
+          <p className="text-gray-600"><strong>NIL Tier:</strong> {avatar}</p>
         </div>
-      ) : (
-        <div className="space-y-3 border-t border-gray-300 pt-2 text-sm text-gray-800">
-          <p><strong>Title:</strong> {cardData.title}</p>
-          <p><strong>Cost:</strong> ${cardData.cost.toLocaleString()}</p>
-          <p><strong>Resale:</strong> ${cardData.resale.toLocaleString()}</p>
-          <p><strong>REP:</strong> +{cardData.rep}</p>
-          <p><strong>Category:</strong> {cardData.category}</p>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method:</label>
-            <select
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-pink-500 outline-none"
-            >
-              <option value="cash">Pay with Cash</option>
-              <option value="finance">Finance (25% interest)</option>
-            </select>
-          </div>
+        <LapTracker
+          laps={laps}
+          totalLaps={totalLaps}
+          setLaps={setLaps}
+          investments={investments}
+          setInvestments={setInvestments}
+          showFinal={showFinal}
+          playerSnapshot={{
+            playerName,
+            cash,
+            luxuries,
+            rep,
+            career,
+            debt,
+            credit,
+            curveballs,
+            shadyDebt
+          }}
+        />
 
-          <button
-            onClick={handleBuy}
-            className="w-full bg-pink-600 text-white font-semibold py-2 mt-2 rounded hover:bg-pink-700 transition"
-          >
-            Buy Luxury
-          </button>
+        <CashTracker cash={cash} setCash={setCash} />
 
-          <button
-            onClick={resetAndCancel}
-            className="w-full bg-gray-300 text-gray-800 font-semibold py-2 rounded hover:bg-gray-400 transition"
-          >
-            Cancel
-          </button>
-        </div>
-      )}
+        <CategoryPicker
+          cash={cash}
+          setCash={setCash}
+          setInvestments={setInvestments}
+          setRep={setRep}
+          setLuxuries={setLuxuries}
+        />
+
+        <InvestmentLog
+          investments={investments}
+          setInvestments={setInvestments}
+          setCash={setCash}
+        />
+
+        {/* 🔁 Unified Selector: Replaces old modals */}
+        <CardSelector type="investment" onSelect={handleCardSelection} />
+        <CardSelector type="luxury" onSelect={handleCardSelection} />
+
+        <LuxuryLog
+          luxuries={luxuries}
+          setLuxuries={setLuxuries}
+          setCash={setCash}
+          setRep={setRep}
+        />
+
+        <DebtCreditTracker
+          cash={cash}
+          setCash={setCash}
+          debt={debt}
+          setDebt={setDebt}
+          credit={credit}
+          setCredit={setCredit}
+        />
+
+        <CurveballSection
+          curveballs={curveballs}
+          setCurveballs={setCurveballs}
+          setCash={setCash}
+          setRep={setRep}
+          setShadyDebt={setShadyDebt}
+        />
+
+        <RepCareerPoints
+          rep={rep}
+          career={career}
+          setRep={setRep}
+          setCareer={setCareer}
+        />
+
+        <FinalNetWorth
+          cash={cash}
+          luxuries={luxuries}
+          rep={rep}
+          career={career}
+          credit={credit}
+          debt={debt}
+          curveballs={curveballs}
+          playerName={playerName}
+          showFinal={showFinal}
+          shadyDebt={shadyDebt}
+          investments={investments}
+        />
+      </div>
     </div>
   );
 }
 
-export default LuxuryModal;
+export default PlayerDashboard;
