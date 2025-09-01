@@ -20,16 +20,13 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
   const [credit, setCredit] = useState(500);
   const [investments, setInvestments] = useState([]);
   const [laps, setLaps] = useState(0);
-  const totalLaps = initialTotalLaps || 5;
   const [shadyDebt, setShadyDebt] = useState(0);
-  const [cardType, setCardType] = useState(''); // start empty
+  const totalLaps = initialTotalLaps || 5;
 
   const handleCardSelection = (cardResult) => {
     if (cardResult.type === 'investment') {
       const {
-        cardTitle,
         cost,
-        result,
         newValue,
         percent,
         borrowed,
@@ -95,22 +92,8 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
 
         <CashTracker cash={cash} setCash={setCash} />
 
-        {/* 🔽 Dropdown with Tailwind styling */}
-        <div className="text-center">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Choose Card Type</label>
-          <select
-            value={cardType}
-            onChange={(e) => setCardType(e.target.value)}
-            className="mx-auto w-60 px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">-- Select Card Type --</option>
-            <option value="investment">💼 Investment Cards</option>
-            <option value="luxury">💎 Luxury Cards</option>
-          </select>
-        </div>
-
-        {/* Only show CardSelector once a type is chosen */}
-        {cardType && <CardSelector type={cardType} onSelect={handleCardSelection} />}
+        {/* 🔁 Unified Selector with built-in dropdown */}
+        <CardSelector onSelect={handleCardSelection} />
 
         <InvestmentLog
           investments={investments}

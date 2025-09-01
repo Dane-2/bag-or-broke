@@ -18,34 +18,33 @@ const tabs = {
   ]
 };
 
-export default function CardSelector({ type, onSelect }) {
+export default function CardSelector({ onSelect }) {
+  const [cardType, setCardType] = useState('');
   const [activeTab, setActiveTab] = useState('All');
   const [selectedCard, setSelectedCard] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [diceRoll, setDiceRoll] = useState('');
 
-  const cards = type === 'investment' ? investmentCards : luxuryCards;
+  const cards = cardType === 'investment' ? investmentCards : luxuryCards;
   const filtered = cards.filter((card) =>
     activeTab === 'All' ? true : card.category.includes(activeTab)
   );
 
   const handleCardClick = (card) => {
-    if (type === 'investment') {
+    if (cardType === 'investment') {
       setSelectedCard(card);
       setPaymentMethod('cash');
       setDiceRoll('');
-      return;
-    }
-
-    // Luxury card
-    if (onSelect) {
-      onSelect({
-        type: 'luxury',
-        cardTitle: card.title,
-        cost: card.cost,
-        resale: card.resale,
-        rep: card.rep,
-      });
+    } else {
+      if (onSelect) {
+        onSelect({
+          type: 'luxury',
+          cardTitle: card.title,
+          cost: card.cost,
+          resale: card.resale,
+          rep: card.rep
+        });
+      }
     }
   };
 
@@ -63,28 +62,24 @@ export default function CardSelector({ type, onSelect }) {
     const roiTable = selectedCard.roiTables?.[risk] || [];
     const percent = roiTable[rollIndex];
 
-    if (typeof percent !== 'number') {
-      console.warn('Invalid ROI lookup for', { risk, rollIndex, roiTable, card: selectedCard });
-      return;
-    }
+    if (typeof percent !== 'number') return;
 
     const cost = selectedCard.cost;
-    const result = Math.floor((percent / 100) * cost);
-    const newValue = cost + result;
     const borrowed = paymentMethod === 'finance';
     const interest = borrowed ? Math.floor(cost * 0.25) : 0;
+    const result = Math.floor((percent / 100) * cost);
+    const newValue = cost + result;
 
     if (onSelect) {
       onSelect({
         type: 'investment',
         cardTitle: selectedCard.title,
         cost,
-        borrowed,
-        interest,
-        diceRoll: parseInt(diceRoll, 10),
-        percent,
         result,
-        newValue
+        newValue,
+        percent,
+        borrowed,
+        interest
       });
     }
 
@@ -93,30 +88,51 @@ export default function CardSelector({ type, onSelect }) {
 
   return (
     <div className="space-y-4">
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2">
-        {tabs[type].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-3 py-1 rounded-full border text-sm ${
-              activeTab === tab ? 'bg-black text-white' : 'bg-white text-black'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+      {/* Styled Dropdown Selector */}
+      <div className="bg-white rounded-xl shadow-md p-4 text-center space-y-2">
+        <h3 className="text-lg font-semibold text-blue-700">🎴 Card Selector</h3>
+        <select
+          value={cardType}
+          onChange={(e) => {
+            setCardType(e.target.value);
+            setActiveTab('All');
+            setSelectedCard(null);
+          }}
+          className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">-- Select Card Type --</option>
+          <option value="investment">💼 Investment Cards</option>
+          <option value="luxury">💎 Luxury Cards</option>
+        </select>
       </div>
 
-      {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {filtered.map((card) => (
-          <CardPreview key={card.id} card={card} onSelect={handleCardClick} />
-        ))}
-      </div>
+      {/* Tabs and Cards */}
+      {cardType && (
+        <>
+          <div className="flex flex-wrap gap-2">
+            {tabs[cardType].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-3 py-1 rounded-full border text-sm ${
+                  activeTab === tab ? 'bg-black text-white' : 'bg-white text-black'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {filtered.map((card) => (
+              <CardPreview key={card.id} card={card} onSelect={handleCardClick} />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Investment Apply Panel */}
-      {type === 'investment' && selectedCard && (
+      {cardType === 'investment' && selectedCard && (
         <div className="mt-2 rounded-xl border shadow-sm bg-white">
           <div className="p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
@@ -125,7 +141,9 @@ export default function CardSelector({ type, onSelect }) {
                   Play Investment: <span className="text-blue-700">{selectedCard.title}</span>
                 </h3>
                 <p className="text-sm text-gray-600">Cost: ${selectedCard.cost.toLocaleString()}</p>
-                <p className="text-sm text-gray-600">Risk: <strong>{selectedCard.availableRisks?.[0] || '—'}</strong></p>
+                <p className="text-sm text-gray-600">
+                  Risk: <span className="font-medium">{selectedCard.availableRisks?.[0] || '—'}</span>
+                </p>
               </div>
               <button
                 onClick={cancelApply}
@@ -135,9 +153,9 @@ export default function CardSelector({ type, onSelect }) {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1">Payment Method</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
@@ -149,7 +167,7 @@ export default function CardSelector({ type, onSelect }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Dice Roll (1–6)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Dice Roll (1–6)</label>
                 <select
                   value={diceRoll}
                   onChange={(e) => setDiceRoll(e.target.value)}
@@ -160,15 +178,6 @@ export default function CardSelector({ type, onSelect }) {
                     <option key={n} value={n}>{n}</option>
                   ))}
                 </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">ROI Table</label>
-                <div className="text-xs text-gray-700 border rounded-md p-2">
-                  {(selectedCard.roiTables?.[selectedCard.availableRisks?.[0]] || [])
-                    .map((p, i) => `Roll ${i + 1}: ${p}%`)
-                    .join('  •  ')}
-                </div>
               </div>
             </div>
 
