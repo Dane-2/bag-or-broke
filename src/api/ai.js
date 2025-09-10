@@ -2,7 +2,7 @@
 
 export async function fetchAiSummary(playerData) {
   try {
-    const response = await fetch('http://localhost:3001/api/generate-summary', {
+    const response = await fetch('https://bag-or-broke.onrender.com/api/generate-summary', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(playerData),
