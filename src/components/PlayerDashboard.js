@@ -10,6 +10,8 @@ import CurveballSection from './CurveballSection';
 import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
 
+import { fetchAiSummary } from '../api/ai'; // ✅ NEW
+
 function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLaps: initialTotalLaps }) {
   const [cash, setCash] = useState(startingCash || 0);
   const [rep, setRep] = useState(0);
@@ -25,37 +27,51 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
 
   const handleCardSelection = (cardResult) => {
     if (cardResult.type === 'investment') {
-      const {
-        cost,
-        newValue,
-        percent,
-        borrowed,
-        interest
-      } = cardResult;
-
+      const { cost, newValue, percent, borrowed, interest } = cardResult;
       setCash(prev => prev - (borrowed ? 0 : cost) + newValue);
       if (borrowed) {
         setDebt(prev => prev + cost + interest);
         setCredit(prev => prev - 20);
       }
-
       setInvestments(prev => [...prev, { ...cardResult }]);
       alert(`Result: ${percent}% → New Value: $${newValue.toLocaleString()}`);
     }
 
     if (cardResult.type === 'luxury') {
-      const {
-        cardTitle,
-        cost,
-        resale,
-        rep: repGain
-      } = cardResult;
-
+      const { cardTitle, cost, resale, rep: repGain } = cardResult;
       setCash(prev => prev - cost);
       setRep(prev => prev + repGain);
       setLuxuries(prev => [...prev, { name: cardTitle, resale, rep: repGain }]);
       alert(`Purchased ${cardTitle}! +${repGain} REP`);
     }
+  };
+
+  const handleEndGame = async () => {
+    const summary = await fetchAiSummary({
+      playerName,
+      cash,
+      luxuries,
+      rep,
+      career,
+      credit,
+      debt,
+      curveballs,
+      shadyDebt,
+      investments,
+    });
+
+    showFinal({
+      playerName,
+      cash,
+      luxuries,
+      rep,
+      career,
+      debt,
+      credit,
+      investments,
+      shadyDebt,
+      summary, // ✅ Include the AI-generated summary
+    });
   };
 
   return (
@@ -76,23 +92,12 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
           setLaps={setLaps}
           investments={investments}
           setInvestments={setInvestments}
-          showFinal={showFinal}
-          playerSnapshot={{
-            playerName,
-            cash,
-            luxuries,
-            rep,
-            career,
-            debt,
-            credit,
-            curveballs,
-            shadyDebt
-          }}
+          showFinal={handleEndGame}
+          playerSnapshot={{ playerName, cash, luxuries, rep, career, debt, credit, curveballs, shadyDebt }}
         />
 
         <CashTracker cash={cash} setCash={setCash} />
 
-        {/* 🔁 Unified Selector with built-in dropdown */}
         <CardSelector onSelect={handleCardSelection} />
 
         <InvestmentLog
@@ -141,9 +146,9 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
           debt={debt}
           curveballs={curveballs}
           playerName={playerName}
-          showFinal={showFinal}
           shadyDebt={shadyDebt}
           investments={investments}
+          showFinal={handleEndGame}
         />
       </div>
     </div>
