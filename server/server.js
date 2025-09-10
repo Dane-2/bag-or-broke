@@ -1,15 +1,34 @@
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import { spawn } from 'child_process';
+// server/server.js
+
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const { spawn } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+// ✅ Allow both deployed and local frontend origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://bag-or-broke.vercel.app'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['POST'],
+  credentials: false
+}));
+
 app.use(bodyParser.json());
 
-app.post('/api/summary', async (req, res) => {
+app.post('/api/generate-summary', async (req, res) => {
   const playerData = req.body;
 
   const prompt = `
@@ -41,7 +60,7 @@ ${JSON.stringify(playerData, null, 2)}
       if (code === 0 && result.trim()) {
         res.json({ summary: result.trim() });
       } else {
-        console.error('Ollama stderr:', errorOutput);
+        console.error('❌ Ollama stderr:', errorOutput);
         res.status(500).json({ summary: 'AI Summary could not be generated.' });
       }
     });
@@ -50,11 +69,11 @@ ${JSON.stringify(playerData, null, 2)}
     ollama.stdin.end();
 
   } catch (err) {
-    console.error('❌ Server error:', err);
+    console.error('❌ Internal server error:', err);
     res.status(500).json({ summary: 'Internal error while generating summary.' });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`🧠 AI Summary server running at http://localhost:${PORT}`);
+  console.log(`🧠 AI Summary server running on http://localhost:${PORT}`);
 });
