@@ -10,7 +10,7 @@ import CurveballSection from './CurveballSection';
 import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
 
-import { fetchAiSummary } from '../api/ai'; // ✅ NEW
+import { fetchAiSummary } from '../utils/fetchAiSummary'; // ✅ NEW
 
 function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLaps: initialTotalLaps }) {
   const [cash, setCash] = useState(startingCash || 0);
