@@ -1,14 +1,12 @@
-// server/server.js
-
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { spawn } = require('child_process');
+const fetch = require('node-fetch');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// ✅ Allow both deployed and local frontend origins
 const allowedOrigins = [
   'http://localhost:3000',
   'https://bag-or-broke.vercel.app'
@@ -22,11 +20,15 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['POST'],
+  methods: ['GET', 'POST', 'OPTIONS'],
   credentials: false
 }));
 
 app.use(bodyParser.json());
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'Backend is running!' });
+});
 
 app.post('/api/generate-summary', async (req, res) => {
   const playerData = req.body;
@@ -43,33 +45,28 @@ ${JSON.stringify(playerData, null, 2)}
 `;
 
   try {
-    const ollama = spawn('ollama', ['run', 'mistral']);
-
-    let result = '';
-    let errorOutput = '';
-
-    ollama.stdout.on('data', (data) => {
-      result += data.toString();
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 180,
+        temperature: 0.7,
+      }),
     });
 
-    ollama.stderr.on('data', (data) => {
-      errorOutput += data.toString();
-    });
-
-    ollama.on('close', (code) => {
-      if (code === 0 && result.trim()) {
-        res.json({ summary: result.trim() });
-      } else {
-        console.error('❌ Ollama stderr:', errorOutput);
-        res.status(500).json({ summary: 'AI Summary could not be generated.' });
-      }
-    });
-
-    ollama.stdin.write(prompt);
-    ollama.stdin.end();
-
+    const data = await response.json();
+    if (data.choices && data.choices.length > 0) {
+      res.json({ summary: data.choices[0].message.content.trim() });
+    } else {
+      res.status(500).json({ summary: 'AI Summary could not be generated.' });
+    }
   } catch (err) {
-    console.error('❌ Internal server error:', err);
+    console.error('❌ OpenAI API error:', err);
     res.status(500).json({ summary: 'Internal error while generating summary.' });
   }
 });
