@@ -4,7 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const fetch = require('node-fetch');
+// 🚫 No node-fetch import needed in Node 18+
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -72,7 +72,7 @@ ${JSON.stringify(playerData, null, 2)}
     }
   } catch (err) {
     console.error('❌ OpenAI API error:', err);
-    res.status(500).json({ summary: 'Internal error while generating summary.' });
+    res.status(500).json({ summary: `Internal error while generating summary: ${err.message}` });
   }
 });
 
