@@ -1,3 +1,5 @@
+// server/server.js
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -7,6 +9,7 @@ const fetch = require('node-fetch');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Allow deployed Vercel frontend and local dev
 const allowedOrigins = [
   'http://localhost:3000',
   'https://bag-or-broke.vercel.app'
@@ -26,10 +29,12 @@ app.use(cors({
 
 app.use(bodyParser.json());
 
+// Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Backend is running!' });
 });
 
+// AI Summary Endpoint (OpenAI)
 app.post('/api/generate-summary', async (req, res) => {
   const playerData = req.body;
 
@@ -52,7 +57,7 @@ ${JSON.stringify(playerData, null, 2)}
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-3.5-turbo', // or 'gpt-4o' if you want
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 180,
         temperature: 0.7,
