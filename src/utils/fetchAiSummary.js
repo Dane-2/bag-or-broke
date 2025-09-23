@@ -1,6 +1,10 @@
+// src/utils/fetchAiSummary.js
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "https://bag-or-broke-47pl.onrender.com";
+
 export async function fetchAiSummary(playerData) {
   try {
-    const response = await fetch('https://bag-or-broke.onrender.com/api/generate-summary', {
+    const response = await fetch(`${API_URL}/api/generate-summary`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
