@@ -10,7 +10,7 @@ import CurveballSection from './CurveballSection';
 import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
 
-import { fetchAiSummary } from '../utils/fetchAiSummary'; // ✅ NEW
+import { fetchAiSummary } from '../utils/fetchAiSummary';
 
 function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLaps: initialTotalLaps }) {
   const [cash, setCash] = useState(startingCash || 0);
@@ -27,27 +27,31 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
 
   const handleCardSelection = (cardResult) => {
     if (cardResult.type === 'investment') {
-      const { cost, newValue, percent, borrowed, interest } = cardResult;
-      setCash(prev => prev - (borrowed ? 0 : cost) + newValue);
+      const { cost, borrowed, interest } = cardResult;
+
       if (borrowed) {
         setDebt(prev => prev + cost + interest);
         setCredit(prev => prev - 20);
+      } else {
+        setCash(prev => prev - cost);
       }
+
       setInvestments(prev => [...prev, { ...cardResult }]);
-      alert(`Result: ${percent}% → New Value: $${newValue.toLocaleString()}`);
+      alert(`Investment purchased for $${cost.toLocaleString()}`);
     }
 
     if (cardResult.type === 'luxury') {
       const { cardTitle, cost, resale, rep: repGain } = cardResult;
       setCash(prev => prev - cost);
       setRep(prev => prev + repGain);
-      setLuxuries(prev => [...prev, { name: cardTitle, resale, rep: repGain }]);
+      setLuxuries(prev => [...prev, { name: cardTitle, cost, resale, rep: repGain }]);
       alert(`Purchased ${cardTitle}! +${repGain} REP`);
     }
   };
 
+  // This triggers at game end
   const handleEndGame = async () => {
-    const summary = await fetchAiSummary({
+    const { summary, archetype } = await fetchAiSummary({
       playerName,
       cash,
       luxuries,
@@ -60,17 +64,22 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
       investments,
     });
 
+    // Pass the *entire* game state to the parent as one data object
     showFinal({
       playerName,
+      avatar,
       cash,
       luxuries,
       rep,
       career,
-      debt,
       credit,
-      investments,
+      debt,
+      curveballs,
       shadyDebt,
-      summary, // ✅ Include the AI-generated summary
+      investments,
+      summary,
+      archetype,
+      totalLaps,
     });
   };
 

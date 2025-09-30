@@ -1,8 +1,23 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
+// Archetype descriptions
+const archetypeDescriptions = {
+  "The Architect": "Strategic, analytical, methodical planner; builds value quietly.",
+  "The Legacy Maker": "Impact-first, community-driven, cautious and consistent.",
+  "The Hot Shot": "Flashy, impulsive, starts strong but often struggles late-game.",
+  "The Hustler": "Relentless, street-smart, flips every loss, aggressive investor.",
+  "The Survivor": "Quiet underdog, faces many setbacks but shows resilience.",
+  "The CEO in Training": "Balanced, polished, invests wisely for the long-term.",
+  "The Flexer": "Status-driven, trendsetter, spends on luxury, weak financial discipline.",
+  "The Flameout": "High-risk, ego-driven, impulsive, often crashes out."
+};
+
 function FinalScoreboard({ data }) {
   if (!data) return <p>No final data to show.</p>;
+
+  // Log to debug
+  console.log('FinalScoreboard data:', data);
 
   const {
     playerName,
@@ -14,7 +29,8 @@ function FinalScoreboard({ data }) {
     credit,
     investments = [],
     shadyDebt = 0,
-    summary, // ✅ NEW: AI summary
+    summary,   // AI summary
+    archetype, // AI/Rule archetype
   } = data;
 
   const luxuryResale = luxuries.reduce((acc, item) => acc + item.resale, 0);
@@ -83,10 +99,23 @@ function FinalScoreboard({ data }) {
           </PieChart>
         </div>
 
+        {/* AI Summary */}
         {summary && (
           <div className="bg-indigo-50 border border-indigo-200 rounded mt-4 p-4 shadow-sm">
-            <h3 className="text-lg font-bold text-indigo-800">💬 AI Summary</h3>
+            <h3 className="text-lg font-bold text-indigo-800">How did you Play?</h3>
             <p className="text-gray-800 whitespace-pre-line">{summary}</p>
+          </div>
+        )}
+
+        {/* Archetype Section */}
+        {archetype && (
+          <div className="bg-white border-l-4 border-indigo-600 mt-4 p-4 rounded shadow-sm">
+            <h4 className="text-base font-bold text-indigo-700 mb-1">
+              🧩 Your Archetype: <span className="underline">{archetype}</span>
+            </h4>
+            <p className="text-gray-700">
+              {archetypeDescriptions[archetype] || "Unique player style!"}
+            </p>
           </div>
         )}
 

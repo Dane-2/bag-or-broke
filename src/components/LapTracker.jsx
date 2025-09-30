@@ -1,6 +1,6 @@
 import React from 'react';
 
-function LapTracker({ laps, totalLaps, setLaps, investments, setInvestments, showFinal, playerSnapshot }) {
+function LapTracker({ laps, totalLaps, setLaps, investments, setInvestments }) {
   const handleCompleteLap = () => {
     if (laps >= totalLaps) return;
 
@@ -37,15 +37,6 @@ function LapTracker({ laps, totalLaps, setLaps, investments, setInvestments, sho
         >
           Complete Lap
         </button>
-
-        {laps >= totalLaps && showFinal && (
-          <button
-            onClick={() => console.log(playerSnapshot)}
-            className="px-4 py-2 bg-gray-700 text-white rounded text-sm"
-          >
-            View Final Snapshot
-          </button>
-        )}
       </div>
     </section>
   );

@@ -4,18 +4,16 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-// No need for node-fetch; Node 18+ has fetch built-in
+const assignArchetype = require('./assignArchetype'); // <- Add this
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Allow deployed Vercel frontend and local dev
 const allowedOrigins = [
   'http://localhost:3000',
   'https://bag-or-broke.vercel.app'
 ];
 
-// CORS setup: allow Vercel & localhost, all methods needed
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -30,29 +28,37 @@ app.use(cors({
 
 app.use(bodyParser.json());
 
-// Health check endpoint for Render/monitoring
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Backend is running!' });
 });
 
-// AI Summary Endpoint (OpenAI)
 app.post('/api/generate-summary', async (req, res) => {
   const playerData = req.body;
+  const archetype = assignArchetype(playerData);
 
-  // --- Prompt can be replaced with your custom formatter if desired
+  const archetypeDescriptions = `
+Archetypes:
+- The Architect: Strategic, analytical, methodical planner; builds value quietly.
+- The Legacy Maker: Impact-first, community-driven, cautious and consistent.
+- The Hot Shot: Flashy, impulsive, starts strong but often struggles late-game.
+- The Hustler: Relentless, street-smart, flips every loss, aggressive investor.
+- The Survivor: Quiet underdog, faces many setbacks but shows resilience.
+- The CEO in Training: Balanced, polished, invests wisely for the long-term.
+- The Flexer: Status-driven, trendsetter, spends on luxury, weak financial discipline.
+- The Flameout: High-risk, ego-driven, impulsive, often crashes out.
+`;
+
   const prompt = `
-You are an AI game commentator for a college NIL simulation board game. Given this data, summarize the player's financial journey in 3–4 sentences, highlighting:
-- What kind of player they were
-- Risks and luxuries they pursued
-- Any major outcomes (high cash, deep debt, curveballs, etc.)
-- Their overall archetype or playing style
+You are an AI NIL game commentator. Based on the player's game data, our system suggests the archetype: **${archetype}**.
+If you agree, use it in your summary. If you believe a different archetype from the list below fits better, select it and explain why in 1 sentence before your summary.
 
-Here’s the data:
+${archetypeDescriptions}
+
+Player data:
 ${JSON.stringify(playerData, null, 2)}
 `;
 
   try {
-    // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -60,33 +66,31 @@ ${JSON.stringify(playerData, null, 2)}
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo', // Or 'gpt-4o' if you want (be sure your key supports it)
+        model: 'gpt-3.5-turbo', // Or 'gpt-4o' if you want
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 180,
+        max_tokens: 220,
         temperature: 0.7,
       }),
     });
 
-    // Read the API response and log it for debugging
     const data = await response.json();
     console.log('🔎 OpenAI API raw response:', data);
 
-    // If OpenAI returns a valid response
     if (data.choices && data.choices.length > 0 && data.choices[0].message && data.choices[0].message.content) {
-      res.json({ summary: data.choices[0].message.content.trim() });
+      res.json({
+        summary: data.choices[0].message.content.trim(),
+        archetype
+      });
     } else {
-      // Log detailed OpenAI error
       console.error('❌ OpenAI API detailed error:', data);
-      res.status(500).json({ summary: 'AI Summary could not be generated.' });
+      res.status(500).json({ summary: 'AI Summary could not be generated.', archetype });
     }
   } catch (err) {
-    // If the fetch itself fails, log and return message
     console.error('❌ OpenAI API error:', err);
-    res.status(500).json({ summary: `Internal error while generating summary: ${err.message}` });
+    res.status(500).json({ summary: `Internal error while generating summary: ${err.message}`, archetype });
   }
 });
 
-// Start the server
 app.listen(PORT, () => {
   console.log(`🧠 AI Summary server running on http://localhost:${PORT}`);
 });

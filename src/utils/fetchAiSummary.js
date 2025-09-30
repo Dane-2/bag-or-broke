@@ -17,9 +17,15 @@ export async function fetchAiSummary(playerData) {
     }
 
     const data = await response.json();
-    return data.summary || 'No summary returned.';
+    // For debugging:
+    console.log("AI summary API returned:", data);
+    // Return the whole object!
+    return {
+      summary: data.summary || '',
+      archetype: data.archetype || '',
+    };
   } catch (error) {
     console.error('❌ Error fetching AI summary:', error);
-    return 'AI Summary could not be generated.';
+    return { summary: '', archetype: '' };
   }
 }
