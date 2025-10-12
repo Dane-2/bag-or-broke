@@ -13,11 +13,20 @@ const archetypeDescriptions = {
   "The Flameout": "High-risk, ego-driven, impulsive, often crashes out."
 };
 
+// Archetype image map (match this to your /public/archetypes folder)
+const archetypeImageMap = {
+  "The Architect": "/archetypes/architect.png",
+  "The Legacy Maker": "/archetypes/legacy.png",
+  "The Hot Shot": "/archetypes/hotshot.png",
+  "The Hustler": "/archetypes/hustler.png",
+  "The Survivor": "/archetypes/survivor.png",
+  "The CEO in Training": "/archetypes/CEO.png",
+  "The Flexer": "/archetypes/flexer.png",
+  "The Flameout": "/archetypes/flameout.png"
+};
+
 function FinalScoreboard({ data }) {
   if (!data) return <p>No final data to show.</p>;
-
-  // Log to debug
-  console.log('FinalScoreboard data:', data);
 
   const {
     playerName,
@@ -29,8 +38,8 @@ function FinalScoreboard({ data }) {
     credit,
     investments = [],
     shadyDebt = 0,
-    summary,   // AI summary
-    archetype, // AI/Rule archetype
+    summary,
+    archetype,
   } = data;
 
   const luxuryResale = luxuries.reduce((acc, item) => acc + item.resale, 0);
@@ -50,6 +59,10 @@ function FinalScoreboard({ data }) {
   ];
 
   const COLORS = ['#34D399', '#3B82F6', '#F59E0B', '#F472B6', '#6366F1', '#10B981'];
+
+  // Fallback for archetype if empty
+  const actualArchetype = archetype && archetype.trim() !== "" ? archetype : "The Hot Shot";
+  const imageUrl = archetypeImageMap[actualArchetype] || null;
 
   return (
     <div
@@ -107,17 +120,26 @@ function FinalScoreboard({ data }) {
           </div>
         )}
 
-        {/* Archetype Section */}
-        {archetype && (
-          <div className="bg-white border-l-4 border-indigo-600 mt-4 p-4 rounded shadow-sm">
+        {/* Archetype Section with image */}
+        <div className="bg-white border-l-4 border-indigo-600 mt-4 p-4 rounded shadow-sm flex items-center gap-4">
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt={actualArchetype}
+              className="w-24 h-24 object-contain rounded"
+              style={{ background: "#f5f7ff" }}
+              onError={e => e.target.style.display = "none"}
+            />
+          )}
+          <div>
             <h4 className="text-base font-bold text-indigo-700 mb-1">
-              🧩 Your Archetype: <span className="underline">{archetype}</span>
+              🧩 Your Archetype: <span className="underline">{actualArchetype}</span>
             </h4>
             <p className="text-gray-700">
-              {archetypeDescriptions[archetype] || "Unique player style!"}
+              {archetypeDescriptions[actualArchetype] || "Unique player style!"}
             </p>
           </div>
-        )}
+        </div>
 
         <button
           onClick={() => window.location.reload()}

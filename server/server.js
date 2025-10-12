@@ -1,10 +1,7 @@
-// server/server.js
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const assignArchetype = require('./assignArchetype'); // <- Add this
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,7 +31,6 @@ app.get('/api/health', (req, res) => {
 
 app.post('/api/generate-summary', async (req, res) => {
   const playerData = req.body;
-  const archetype = assignArchetype(playerData);
 
   const archetypeDescriptions = `
 Archetypes:
@@ -49,8 +45,14 @@ Archetypes:
 `;
 
   const prompt = `
-You are an AI NIL game commentator. Based on the player's game data, our system suggests the archetype: **${archetype}**.
-If you agree, use it in your summary. If you believe a different archetype from the list below fits better, select it and explain why in 1 sentence before your summary.
+You are an expert commentator for a NIL money simulation game. 
+Given the following player data, select **the SINGLE archetype from the list below that best fits this player's playstyle**. 
+Begin your response with "Archetype: [archetype name]" (exactly matching one from the list), then provide a rich, 5-6 sentence summary. 
+- Reference the player by name.
+- Highlight their signature moves, turning points, risks, and what set them apart.
+- Mention their investments, luxury purchases, credit/debt, and how they handled curveballs.
+- Conclude with an insight about their overall NIL journey and what made them unique in this game.
+- Do NOT mention anything about yourself or the AI.
 
 ${archetypeDescriptions}
 
@@ -66,28 +68,50 @@ ${JSON.stringify(playerData, null, 2)}
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo', // Or 'gpt-4o' if you want
+        model: 'gpt-3.5-turbo', // or 'gpt-4o' if you have access
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 220,
+        max_tokens: 350,
         temperature: 0.7,
       }),
     });
 
     const data = await response.json();
-    console.log('🔎 OpenAI API raw response:', data);
-
-    if (data.choices && data.choices.length > 0 && data.choices[0].message && data.choices[0].message.content) {
-      res.json({
-        summary: data.choices[0].message.content.trim(),
-        archetype
-      });
-    } else {
-      console.error('❌ OpenAI API detailed error:', data);
-      res.status(500).json({ summary: 'AI Summary could not be generated.', archetype });
+    if (!data.choices || !data.choices[0]?.message?.content) {
+      throw new Error(JSON.stringify(data));
     }
+    const raw = data.choices[0].message.content.trim();
+
+    // Parse for archetype
+    let archetype = "";
+    let summary = raw;
+    const match = raw.match(/^Archetype:\s*([^\n]+)\n?/i);
+    if (match) {
+      archetype = match[1].trim();
+      summary = raw.replace(match[0], '').trim();
+    }
+
+    // Fallback if AI ever fails
+    const archetypeList = [
+      "The Architect",
+      "The Legacy Maker",
+      "The Hot Shot",
+      "The Hustler",
+      "The Survivor",
+      "The CEO in Training",
+      "The Flexer",
+      "The Flameout"
+    ];
+    if (!archetypeList.includes(archetype)) {
+      archetype = "The Hot Shot";
+    }
+
+    res.json({
+      summary,
+      archetype
+    });
   } catch (err) {
     console.error('❌ OpenAI API error:', err);
-    res.status(500).json({ summary: `Internal error while generating summary: ${err.message}`, archetype });
+    res.status(500).json({ summary: `Internal error while generating summary: ${err.message}`, archetype: "The Hot Shot" });
   }
 });
 
