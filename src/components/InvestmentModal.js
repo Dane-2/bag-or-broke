@@ -28,7 +28,6 @@ function CardModal({ onApply, onCancel, currentCash }) {
 
     const borrowed = paymentMethod === 'finance';
     const interest = borrowed ? Math.floor(cost * 0.25) : 0;
-    const invested = cost + interest;
     const result = Math.floor((percent / 100) * cost);
     const newValue = cost + result;
 

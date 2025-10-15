@@ -25,27 +25,40 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
   const [shadyDebt, setShadyDebt] = useState(0);
   const totalLaps = initialTotalLaps || 5;
 
+  // Unified investment & luxury handler with financing for both
   const handleCardSelection = (cardResult) => {
     if (cardResult.type === 'investment') {
       const { cost, borrowed, interest } = cardResult;
-
       if (borrowed) {
         setDebt(prev => prev + cost + interest);
         setCredit(prev => prev - 20);
       } else {
         setCash(prev => prev - cost);
       }
-
       setInvestments(prev => [...prev, { ...cardResult }]);
-      alert(`Investment purchased for $${cost.toLocaleString()}`);
+      alert(`Investment purchased for $${cost.toLocaleString()}${borrowed ? " (Financed with 25% interest)" : ""}`);
     }
 
     if (cardResult.type === 'luxury') {
-      const { cardTitle, cost, resale, rep: repGain } = cardResult;
-      setCash(prev => prev - cost);
+      const { cardTitle, cost, resale, rep: repGain, borrowed, interest } = cardResult;
+      if (borrowed) {
+        setDebt(prev => prev + cost + interest);
+        setCredit(prev => prev - 20);
+      } else {
+        setCash(prev => prev - cost);
+      }
       setRep(prev => prev + repGain);
-      setLuxuries(prev => [...prev, { name: cardTitle, cost, resale, rep: repGain }]);
-      alert(`Purchased ${cardTitle}! +${repGain} REP`);
+      setLuxuries(prev => [...prev, {
+        name: cardTitle,
+        cost,
+        resale,
+        rep: repGain,
+        borrowed,
+        interest,
+      }]);
+      alert(
+        `Purchased ${cardTitle}! +${repGain} REP${borrowed ? " (Financed with 25% interest)" : ""}`
+      );
     }
   };
 
@@ -64,7 +77,6 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
       investments,
     });
 
-    // Pass the *entire* game state to the parent as one data object
     showFinal({
       playerName,
       avatar,
