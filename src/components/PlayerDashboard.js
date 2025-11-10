@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import CardSelector from './CardSelector';
 
 import LapTracker from './LapTracker';
@@ -24,6 +24,83 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
   const [laps, setLaps] = useState(0);
   const [shadyDebt, setShadyDebt] = useState(0);
   const totalLaps = initialTotalLaps || 5;
+
+  // --- Auto-save / Auto-restore ---
+  const restoringRef = useRef(false);
+  const saveKey = `bagorbroke_save_${playerName || 'Player'}`;
+
+  // Restore once (or when playerName changes)
+  useEffect(() => {
+    const saved = localStorage.getItem(saveKey);
+    if (!saved) return;
+
+    try {
+      const s = JSON.parse(saved);
+      restoringRef.current = true;
+
+      // Only set if present to avoid clobbering defaults
+      if (typeof s.cash === 'number') setCash(s.cash);
+      if (typeof s.rep === 'number') setRep(s.rep);
+      if (typeof s.career === 'number') setCareer(s.career);
+      if (Array.isArray(s.luxuries)) setLuxuries(s.luxuries);
+      if (Array.isArray(s.curveballs)) setCurveballs(s.curveballs);
+      if (typeof s.debt === 'number') setDebt(s.debt);
+      if (typeof s.credit === 'number') setCredit(s.credit);
+      if (Array.isArray(s.investments)) setInvestments(s.investments);
+      if (typeof s.laps === 'number') setLaps(s.laps);
+      if (typeof s.shadyDebt === 'number') setShadyDebt(s.shadyDebt);
+    } catch (e) {
+      console.error('Failed to parse saved game:', e);
+    } finally {
+      // Let state updates flush before allowing saves again
+      setTimeout(() => {
+        restoringRef.current = false;
+      }, 0);
+    }
+  }, [saveKey]);
+
+  // Save on any relevant change
+  useEffect(() => {
+    if (restoringRef.current) return;
+    const snapshot = {
+      playerName,
+      cash,
+      rep,
+      career,
+      luxuries,
+      curveballs,
+      debt,
+      credit,
+      investments,
+      laps,
+      shadyDebt,
+      totalLaps, // not strictly needed, but handy
+    };
+    try {
+      localStorage.setItem(saveKey, JSON.stringify(snapshot));
+    } catch (e) {
+      console.error('Failed to save game:', e);
+    }
+  }, [
+    saveKey,
+    playerName,
+    cash,
+    rep,
+    career,
+    luxuries,
+    curveballs,
+    debt,
+    credit,
+    investments,
+    laps,
+    shadyDebt,
+    totalLaps,
+  ]);
+
+  // Optional helper to clear current save (e.g., before a new game)
+  const clearSave = () => {
+    localStorage.removeItem(saveKey);
+  };
 
   // Unified investment & luxury handler with financing for both
   const handleCardSelection = (cardResult) => {
@@ -76,6 +153,9 @@ function PlayerDashboard({ playerName, avatar, startingCash, showFinal, totalLap
       shadyDebt,
       investments,
     });
+
+    // Clear save so next game starts fresh (optional)
+    clearSave();
 
     showFinal({
       playerName,
