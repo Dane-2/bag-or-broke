@@ -73,10 +73,10 @@ function DebtCreditTracker({
             setDebt(debt - actualPayment);
 
             if (actualPayment === debt) {
-              setCredit(credit + 50);
+              setCredit(credit + 100); // Doubled from 50 to 100
             } else {
               const paymentPercent = actualPayment / debt;
-              const bump = Math.ceil(paymentPercent * 20);
+              const bump = Math.ceil(paymentPercent * 40); // Doubled from 20 to 40
               setCredit(credit + bump);
             }
             e.target.reset();

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import CardPreview from './CardPreview';
 
 import investmentCards from '../data/investments';
@@ -33,11 +33,27 @@ export default function CardSelector({ onSelect }) {
     activeTab === 'All' ? true : String(card.category || '').includes(activeTab)
   );
 
+  // Ref for the payment/dice section to scroll to
+  const paymentSectionRef = useRef(null);
+
   const handleCardClick = (card) => {
     setSelectedCard(card);
     setPaymentMethod('cash');
     setDiceRoll('');
   };
+
+  // Auto-scroll to payment section when a card is selected
+  useEffect(() => {
+    if (selectedCard && paymentSectionRef.current) {
+      // Small delay to ensure the section is rendered
+      setTimeout(() => {
+        paymentSectionRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 100);
+    }
+  }, [selectedCard]);
 
   const cancelApply = () => {
     setSelectedCard(null);
@@ -138,7 +154,12 @@ export default function CardSelector({ onSelect }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {filtered.map((card) => (
-              <CardPreview key={card.id} card={card} onSelect={handleCardClick} />
+              <CardPreview 
+                key={card.id} 
+                card={card} 
+                onSelect={handleCardClick}
+                isSelected={selectedCard?.id === card.id}
+              />
             ))}
           </div>
         </>
@@ -146,7 +167,7 @@ export default function CardSelector({ onSelect }) {
 
       {/* Investment Apply Panel */}
       {cardType === 'investment' && selectedCard && (
-        <div className="mt-2 rounded-xl border shadow-sm bg-white">
+        <div ref={paymentSectionRef} className="mt-2 rounded-xl border shadow-sm bg-white">
           <div className="p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -216,7 +237,7 @@ export default function CardSelector({ onSelect }) {
 
       {/* Luxury Apply Panel (no dice) */}
       {cardType === 'luxury' && selectedCard && (
-        <div className="mt-2 rounded-xl border shadow-sm bg-white">
+        <div ref={paymentSectionRef} className="mt-2 rounded-xl border shadow-sm bg-white">
           <div className="p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>

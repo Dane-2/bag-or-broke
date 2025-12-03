@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
+import tiers from '../data/tiers';
 
-const tiers = {
-  1: { label: 'Walk-On', amount: 10000 },
-  2: { label: 'D1 Reserve', amount: 25000 },
-  3: { label: 'D1 Starter', amount: 50000 },
-  4: { label: '3-Star Recruit', amount: 75000 },
-  5: { label: '4-Star Recruit', amount: 100000 },
-  6: { label: '5-Star Recruit', amount: 150000 }
-};
-
-function StartScreen({ onStart }) {
+function StartScreen({ onStart, onMultiplayer }) {
   const [playerName, setPlayerName] = useState('');
   const [rollValue, setRollValue] = useState('');
   const [gameLength, setGameLength] = useState('');
@@ -23,6 +15,7 @@ function StartScreen({ onStart }) {
       style={{ backgroundImage: 'url(/backgroundFinal.png)' }}
     >
       <div className="w-[90%] max-w-md p-6 space-y-4 bg-white/70 backdrop-blur-md rounded-xl shadow-lg">
+
         <h1 className="text-2xl font-bold text-center text-gray-800">🎓 Start Your NIL Journey</h1>
 
         <input
@@ -77,6 +70,15 @@ function StartScreen({ onStart }) {
             </button>
           </div>
         )}
+
+        {/* 💥 NEW — Multiplayer Mode below the offline section */}
+        <button
+          onClick={onMultiplayer}
+          className="w-full bg-purple-600 text-white font-semibold py-2 rounded hover:bg-purple-700 transition mt-4"
+        >
+          🎮 Multiplayer Mode
+        </button>
+
       </div>
     </div>
   );

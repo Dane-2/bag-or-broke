@@ -1,6 +1,6 @@
 import React from 'react';
 
-function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, playerName, showFinal, shadyDebt, investments }) {
+function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, playerName, showFinal, shadyDebt, investments, isGeneratingSummary }) {
   const luxuryResale = luxuries.reduce((acc, item) => acc + item.resale, 0);
   const repValue = rep * 2500;
   const careerValue = career * 5000;
@@ -44,22 +44,15 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
         <h4 className="text-xl font-bold mt-3">Net Worth: ${netWorth.toLocaleString()}</h4>
         <button
           onClick={() => {
-            showFinal({
-              playerName,
-              cash,
-              luxuries,
-              rep,
-              career,
-              debt,
-              credit,
-              investments,
-              shadyDebt,
-              assignedProfile,
-            });
+            // Call handleEndGame (passed as showFinal prop) which will generate AI summary
+            if (showFinal && typeof showFinal === 'function') {
+              showFinal();
+            }
           }}
-          className="w-full bg-indigo-600 text-white font-semibold py-2 mt-4 rounded hover:bg-indigo-700 transition"
+          className="w-full bg-indigo-600 text-white font-semibold py-2 mt-4 rounded hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!showFinal || isGeneratingSummary}
         >
-          End Game & View Scoreboard
+          {isGeneratingSummary ? 'Generating Summary...' : 'End Game & View Scoreboard'}
         </button>
       </div>
     </section>

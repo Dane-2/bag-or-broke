@@ -1,0 +1,18 @@
+{
+  // Enable Deno only inside supabase/functions
+  "deno.enable": true,
+  "deno.enablePaths": [
+    "supabase/functions"
+  ],
+
+  // Optional: nicer linting
+  "deno.lint": true,
+
+  // Edge functions use standard Deno APIs — no unstable flags needed
+  "deno.unstable": [],
+
+  // Use Deno formatter for TypeScript in functions folder
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  }
+}

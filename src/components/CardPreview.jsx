@@ -1,11 +1,15 @@
 import React from 'react';
 
-export default function CardPreview({ card, onSelect }) {
+export default function CardPreview({ card, onSelect, isSelected = false }) {
   const isInvestment = card.roiTables !== undefined;
 
   return (
     <div
-      className="border rounded-lg p-4 bg-white hover:shadow-md cursor-pointer transition"
+      className={`border-2 rounded-lg p-4 bg-white hover:shadow-md cursor-pointer transition ${
+        isSelected 
+          ? 'border-blue-500 shadow-lg ring-2 ring-blue-300' 
+          : 'border-gray-300'
+      }`}
       onClick={() => onSelect(card)}
     >
       <h3 className="text-md font-semibold text-gray-800">{card.title}</h3>

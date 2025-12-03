@@ -37,6 +37,8 @@ function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShady
             <option value="IRS Audit – Lose $25,000|25000|cash">IRS Audit – Lose $25,000</option>
             <option value="Credit Card Debt Hits – Lose $10,000|10000|cash">Credit Card Debt Hits – Lose $10,000</option>
             <option value="Last-Minute NIL Lawsuit – Pay $35,000|35000|cash">Last-Minute NIL Lawsuit – Pay $35,000</option>
+            <option value="NIL Contract Scam – Lose $15,000|15000|cash">NIL Contract Scam – Lose $15,000</option>
+            <option value="Market Crash – Lose $25,000|25000|cash">Market Crash – Lose $25,000</option>
             <option value="Shady Business Deal – Gain $25K Now, Owe $40K Later|40000|shady">Shady Business Deal – Gain $25K Now, Owe $40K Later</option>
           </select>
 
