@@ -11,7 +11,7 @@ import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
 
 import { fetchAiSummary } from '../utils/fetchAiSummary';
-import { supabase } from '../utils/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 import RoomHUD from "./RoomHUD";
 import ToastContainer from "./ToastContainer";
 import ConnectionStatus from "./ConnectionStatus";
@@ -150,7 +150,7 @@ function PlayerDashboard({
 
   // Load initial players
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !isSupabaseConfigured) return;
 
     async function loadPlayers() {
       const { data, error } = await supabase
@@ -259,7 +259,7 @@ function PlayerDashboard({
 
   // Listen for realtime updates with reconnection
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !isSupabaseConfigured) return;
 
     // Clear any existing reconnection attempts
     if (reconnectTimeoutRef.current) {
@@ -419,7 +419,7 @@ function PlayerDashboard({
 
   // Keep room metadata (i.e., started/completed) in sync
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !isSupabaseConfigured) return;
 
     let isMounted = true;
 
@@ -441,6 +441,8 @@ function PlayerDashboard({
     };
 
     fetchRoom();
+
+    if (!isSupabaseConfigured) return;
 
     const channel = supabase
       .channel(`room_meta_${roomId}`)

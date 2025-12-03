@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { supabase } from "../utils/supabaseClient";
+import { supabase, isSupabaseConfigured } from "../utils/supabaseClient";
 import { startGame as startGameRequest, leaveRoom as leaveRoomRequest } from "../utils/roomApi";
 import ConnectionStatus from "./ConnectionStatus";
 
@@ -21,7 +21,7 @@ export default function LobbyScreen({ roomInfo, onStartGame, onLeaveRoom }) {
   // LOAD PLAYERS INITIALLY
   // ----------------------------------------
   async function loadPlayers() {
-    if (!roomId) return;
+    if (!roomId || !isSupabaseConfigured) return;
 
     const { data, error } = await supabase
       .from("player_state")
@@ -116,7 +116,7 @@ export default function LobbyScreen({ roomInfo, onStartGame, onLeaveRoom }) {
   // REALTIME LISTENERS (players + room status)
   // ----------------------------------------
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !isSupabaseConfigured) return;
 
     // Clear any existing reconnection attempts
     if (reconnectTimeoutRef.current) {

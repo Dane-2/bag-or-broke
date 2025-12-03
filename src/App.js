@@ -26,31 +26,40 @@ function App() {
 
   // AUTO RESUME OFFLINE GAME
   useEffect(() => {
-    const saves = Object.keys(localStorage).filter(k =>
-      k.startsWith("bagorbroke_save_")
-    );
-
-    if (saves.length > 0) {
-      const key = saves[saves.length - 1];
-      const saved = JSON.parse(localStorage.getItem(key));
-
-      if (saved && saved.playerName) {
-        const resume = window.confirm(
-          `Resume your last offline game as ${saved.playerName}?`
+    // Use setTimeout to prevent blocking initial render
+    const timer = setTimeout(() => {
+      try {
+        const saves = Object.keys(localStorage).filter(k =>
+          k.startsWith("bagorbroke_save_")
         );
 
-        if (resume) {
-          setMode("offline");
-          setPlayerName(saved.playerName);
-          setAvatar(saved.avatar || '');
-          setStartingCash(saved.cash || 0);
-          setTotalLaps(saved.totalLaps || 5);
-          setGameStarted(true);
-        } else {
-          saves.forEach(k => localStorage.removeItem(k));
+        if (saves.length > 0) {
+          const key = saves[saves.length - 1];
+          const saved = JSON.parse(localStorage.getItem(key));
+
+          if (saved && saved.playerName) {
+            const resume = window.confirm(
+              `Resume your last offline game as ${saved.playerName}?`
+            );
+
+            if (resume) {
+              setMode("offline");
+              setPlayerName(saved.playerName);
+              setAvatar(saved.avatar || '');
+              setStartingCash(saved.cash || 0);
+              setTotalLaps(saved.totalLaps || 5);
+              setGameStarted(true);
+            } else {
+              saves.forEach(k => localStorage.removeItem(k));
+            }
+          }
         }
+      } catch (error) {
+        console.error("Error loading saved game:", error);
       }
-    }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
 
