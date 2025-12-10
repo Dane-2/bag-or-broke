@@ -1,6 +1,8 @@
 import React from 'react';
 
-function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShadyDebt }) {
+function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShadyDebt, onCurveballLoss, redCurveballLoss = 0, blueCurveballLoss = 0 }) {
+  const totalLoss = redCurveballLoss + blueCurveballLoss;
+
   return (
     <section className="bg-white rounded-xl shadow-md p-4">
       <h3 className="text-lg font-semibold text-red-600 mb-2 flex items-center gap-2">
@@ -17,15 +19,26 @@ function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShady
 
           const [desc, amountStr, effect] = selected.split('|');
           const amount = parseInt(amountStr, 10);
+          const type = redVal ? 'red' : 'blue'; // Track if it's a red (financial) or blue (life) curveball
 
-          if (effect === 'cash' && amount > 0) setCash((c) => c - amount);
+          if (effect === 'cash' && amount > 0) {
+            setCash((c) => c - amount);
+            // Track curveball loss
+            if (onCurveballLoss) {
+              onCurveballLoss(type, amount);
+            }
+          }
           if (effect === 'rep') setRep((r) => Math.max(0, r - amount));
           if (effect === 'shady') {
             setCash((c) => c + 25000);
             setShadyDebt((s) => s + 40000);
+            // Shady deals are financial (red) curveballs
+            if (onCurveballLoss) {
+              onCurveballLoss('red', 40000);
+            }
           }
 
-          setCurveballs((prev) => [...prev, { desc, amount, effect }]);
+          setCurveballs((prev) => [...prev, { desc, amount, effect, type }]);
           e.target.reset();
         }}
         className="space-y-3"
@@ -60,15 +73,24 @@ function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShady
       </form>
 
       {curveballs.length > 0 && (
-        <ul className="mt-4 text-sm text-gray-700 space-y-1">
-          {curveballs.map((c, idx) => (
-            <li key={idx}>
-              <span className="font-semibold text-red-600">{c.desc}</span>
-              {c.effect === 'cash' && <>: -${c.amount.toLocaleString()}</>}
-              {c.effect === 'rep' && <>: -{c.amount} REP</>}
-            </li>
-          ))}
-        </ul>
+        <>
+          {totalLoss > 0 && (
+            <div className="mt-4 mb-2">
+              <p className="text-sm font-semibold text-red-700">
+                Total Lost: ${totalLoss.toLocaleString()}
+              </p>
+            </div>
+          )}
+          <ul className="mt-2 text-sm text-gray-700 space-y-1">
+            {curveballs.map((c, idx) => (
+              <li key={idx}>
+                <span className="font-semibold text-red-600">{c.desc}</span>
+                {c.effect === 'cash' && <>: -${c.amount.toLocaleString()}</>}
+                {c.effect === 'rep' && <>: -{c.amount} REP</>}
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </section>
   );

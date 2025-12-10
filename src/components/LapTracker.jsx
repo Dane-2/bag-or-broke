@@ -1,6 +1,6 @@
 import React from 'react';
 
-function LapTracker({ laps, totalLaps, setLaps, investments, setInvestments }) {
+function LapTracker({ laps, totalLaps, setLaps, investments, setInvestments, setCash, addToast }) {
   const handleCompleteLap = () => {
     if (laps >= totalLaps) return;
 
@@ -20,6 +20,16 @@ function LapTracker({ laps, totalLaps, setLaps, investments, setInvestments }) {
 
     setInvestments(updatedInvestments);
     setLaps((prev) => prev + 1);
+    
+    // Add NIL stipend of $2,500
+    if (setCash) {
+      setCash((prev) => prev + 2500);
+    }
+    
+    // Show toast notification
+    if (addToast) {
+      addToast('NIL stipend received + $2,500', 'success', 3000);
+    }
   };
 
   return (

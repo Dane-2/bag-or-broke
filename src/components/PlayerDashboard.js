@@ -6,6 +6,7 @@ import CashTracker from './CashTracker';
 import InvestmentLog from './InvestmentLog';
 import LuxuryLog from './LuxuryLog';
 import DebtCreditTracker from './DebtCreditTracker';
+import DrawFromAsset from './DrawFromAsset';
 import CurveballSection from './CurveballSection';
 import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
@@ -39,6 +40,8 @@ function PlayerDashboard({
   const [investments, setInvestments] = useState([]);
   const [laps, setLaps] = useState(0);
   const [shadyDebt, setShadyDebt] = useState(0);
+  const [redCurveballLoss, setRedCurveballLoss] = useState(0); // Financial curveball losses
+  const [blueCurveballLoss, setBlueCurveballLoss] = useState(0); // Life curveball losses
   const totalLaps = initialTotalLaps || 5;
 
   // Holds all players in multiplayer room
@@ -58,6 +61,15 @@ function PlayerDashboard({
   
   const removeToast = (id) => {
     setToasts(prev => prev.filter(t => t.id !== id));
+  };
+
+  // Handle curveball loss tracking
+  const handleCurveballLoss = (type, amount) => {
+    if (type === 'red') {
+      setRedCurveballLoss((prev) => prev + amount);
+    } else if (type === 'blue') {
+      setBlueCurveballLoss((prev) => prev + amount);
+    }
   };
 
   // Connection status tracking
@@ -91,6 +103,8 @@ function PlayerDashboard({
       if (Array.isArray(s.investments)) setInvestments(s.investments);
       if (typeof s.laps === 'number') setLaps(s.laps);
       if (typeof s.shadyDebt === 'number') setShadyDebt(s.shadyDebt);
+      if (typeof s.redCurveballLoss === 'number') setRedCurveballLoss(s.redCurveballLoss);
+      if (typeof s.blueCurveballLoss === 'number') setBlueCurveballLoss(s.blueCurveballLoss);
 
     } catch (e) {
       console.error('Failed to parse saved game:', e);
@@ -116,6 +130,8 @@ function PlayerDashboard({
       investments,
       laps,
       shadyDebt,
+      redCurveballLoss,
+      blueCurveballLoss,
       totalLaps,
     };
 
@@ -137,6 +153,8 @@ function PlayerDashboard({
     investments,
     laps,
     shadyDebt,
+    redCurveballLoss,
+    blueCurveballLoss,
     totalLaps,
   ]);
 
@@ -572,6 +590,8 @@ function PlayerDashboard({
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ credit }); }, [credit, roomId, currentPlayerId]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ rep }); }, [rep, roomId, currentPlayerId]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ laps }); }, [laps, roomId, currentPlayerId]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ redCurveballLoss }); }, [redCurveballLoss, roomId, currentPlayerId]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ blueCurveballLoss }); }, [blueCurveballLoss, roomId, currentPlayerId]);
 
   useEffect(() => {
     if (roomId && currentPlayerId) {
@@ -867,6 +887,8 @@ function PlayerDashboard({
           setLaps={setLaps}
           investments={investments}
           setInvestments={setInvestments}
+          setCash={setCash}
+          addToast={addToast}
           showFinal={handleEndGame}
           playerSnapshot={{ playerName, cash, luxuries, rep, career, debt, credit, curveballs, shadyDebt }}
         />
@@ -897,12 +919,22 @@ function PlayerDashboard({
           setCredit={setCredit}
         />
 
+        <DrawFromAsset
+          investments={investments}
+          setInvestments={setInvestments}
+          cash={cash}
+          setCash={setCash}
+        />
+
         <CurveballSection
           curveballs={curveballs}
           setCurveballs={setCurveballs}
           setCash={setCash}
           setRep={setRep}
           setShadyDebt={setShadyDebt}
+          onCurveballLoss={handleCurveballLoss}
+          redCurveballLoss={redCurveballLoss}
+          blueCurveballLoss={blueCurveballLoss}
         />
 
         <RepCareerPoints

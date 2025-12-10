@@ -1,0 +1,105 @@
+/* Cash Increase Animations */
+@keyframes cashIncrease {
+  0% {
+    transform: scale(1);
+    background-color: transparent;
+  }
+  50% {
+    transform: scale(1.1);
+    background-color: rgba(34, 197, 94, 0.2); /* green-500 with opacity */
+  }
+  100% {
+    transform: scale(1);
+    background-color: transparent;
+  }
+}
+
+@keyframes cashIncreaseBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-8px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes cashIncreaseFlash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(34, 197, 94, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+/* Cash Decrease Animations */
+@keyframes cashDecrease {
+  0% {
+    transform: scale(1);
+    background-color: transparent;
+  }
+  50% {
+    transform: scale(0.95);
+    background-color: rgba(239, 68, 68, 0.2); /* red-500 with opacity */
+  }
+  100% {
+    transform: scale(1);
+    background-color: transparent;
+  }
+}
+
+@keyframes cashDecreaseShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-4px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes cashDecreaseFlash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(239, 68, 68, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Animation Classes */
+.cash-increase-animation {
+  animation: cashIncrease 0.6s ease-out, cashIncreaseBounce 0.6s ease-out, cashIncreaseFlash 0.6s ease-out;
+}
+
+.cash-decrease-animation {
+  animation: cashDecrease 0.5s ease-out, cashDecreaseShake 0.5s ease-out, cashDecreaseFlash 0.5s ease-out;
+}
+
+/* Smooth transition for cash value changes */
+.cash-value {
+  transition: color 0.2s ease-in-out;
+}
+
+.cash-value.increasing {
+  color: #22c55e; /* green-500 */
+}
+
+.cash-value.decreasing {
+  color: #ef4444; /* red-500 */
+}
+

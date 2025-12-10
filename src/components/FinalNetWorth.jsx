@@ -2,10 +2,12 @@ import React from 'react';
 
 function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, playerName, showFinal, shadyDebt, investments, isGeneratingSummary }) {
   const luxuryResale = luxuries.reduce((acc, item) => acc + item.resale, 0);
+  // Calculate Total Asset Value: sum of all investment current values (newValue)
+  const totalAssetValue = investments.reduce((acc, inv) => acc + (inv.newValue || 0), 0);
   const repValue = rep * 2500;
   const careerValue = career * 5000;
   const creditBonus = credit >= 700 ? 10000 : credit >= 600 ? 5000 : credit >= 500 ? 2000 : 0;
-  const netWorth = cash + luxuryResale + repValue + careerValue + creditBonus - debt;
+  const netWorth = cash + totalAssetValue + luxuryResale + repValue + careerValue + creditBonus - debt - (shadyDebt || 0);
 
   const curveballLoss = curveballs.reduce((acc, c) => acc + c.amount, 0);
   const totalLuxuries = luxuries.length;
@@ -35,6 +37,7 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
       <div className="space-y-1 text-sm text-gray-800">
         <ul className="space-y-1">
           <li>💵 <strong>Cash:</strong> ${cash.toLocaleString()}</li>
+          <li>📈 <strong>Total Asset Value:</strong> ${totalAssetValue.toLocaleString()}</li>
           <li>💎 <strong>Luxury Resale:</strong> ${luxuryResale.toLocaleString()}</li>
           <li>🌟 <strong>REP Value:</strong> ${repValue.toLocaleString()}</li>
           <li>📚 <strong>Career Value:</strong> ${careerValue.toLocaleString()}</li>
