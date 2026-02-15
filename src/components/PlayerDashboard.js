@@ -589,7 +589,7 @@ function PlayerDashboard({
     }
   };
 
-  async function syncToRoomInternal(partial, isHeartbeat = false, showErrors = true) {
+  const syncToRoomInternal = useCallback(async (partial, isHeartbeat = false, showErrors = true) => {
     const roomId = roomInfo?.roomId;
     const currentPlayerId = roomInfo?.playerId;
 
@@ -637,11 +637,12 @@ function PlayerDashboard({
     }
 
     return true;
-  }
+  }, [roomInfo]);
 
   const syncToRoom = useCallback(async (partial, isHeartbeat = false) => {
     return await syncToRoomInternal(partial, isHeartbeat, true);
-  }, [roomInfo]);
+  }, [syncToRoomInternal]);
+  
 
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ cash }); }, [cash, roomId, currentPlayerId, syncToRoom]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ debt }); }, [debt, roomId, currentPlayerId, syncToRoom]);

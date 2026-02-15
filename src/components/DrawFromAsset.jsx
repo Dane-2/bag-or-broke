@@ -52,7 +52,7 @@ function DrawFromAsset({ investments, setInvestments, cash, setCash }) {
     if (!pendingDraw) return;
 
     const { investmentIdx, amount } = pendingDraw;
-    const investment = investments[investmentIdx];
+    
 
     // Add cash
     setCash((prev) => prev + amount);
