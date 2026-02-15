@@ -48,7 +48,504 @@ const investmentCards = [
   { id: 'I47', title: 'Hire a Web Developer (Repeat)', cost: 15000, availableRisks: ['Low'], roiTables: { Low: [0, 5, 10, 15, 20, 30] }, category: 'Developer Tools' },
   { id: 'I48', title: 'Start a Music Collab Studio (Repeat)', cost: 40000, availableRisks: ['High'], roiTables: { High: [-20, -10, 10, 25, 35, 50] }, category: 'Music/Creative' },
   { id: 'I49', title: 'Buy Billboard Ad (Repeat)', cost: 20000, availableRisks: ['Moderate'], roiTables: { Moderate: [0, 5, 15, 20, 30, 45] }, category: 'Marketing/Ads' },
-  { id: 'I50', title: 'Invest in NIL Fund (Repeat)', cost: 50000, availableRisks: ['Low'], roiTables: { Low: [0, 10, 20, 25, 30, 40] }, category: 'Branding/Growth' }
+  { id: 'I50', title: 'Invest in NIL Fund (Repeat)', cost: 50000, availableRisks: ['Low'], roiTables: { Low: [0, 10, 20, 25, 30, 40] }, category: 'Branding/Growth' },
+  
+  // =====================================================
+  // REAL ESTATE EXPANSION CARDS
+  // =====================================================
+  
+  // RE_SHORT_TERM_RENTAL - Upgrade (requires rental property)
+  { 
+    id: 'RE_SHORT_TERM_RENTAL', 
+    title: 'Convert to Short-Term Rental', 
+    cost: 50000, 
+    availableRisks: ['High'], 
+    roiTables: { High: [-30, -15, 0, 25, 40, 60] }, 
+    category: 'Real Estate',
+    type: 'Upgrade',
+    requirements: { hasRentalProperty: true },
+    portfolioEffects: {
+      real_estate_active: true,
+      high_volatility: true,
+      hospitality_exposure: true
+    },
+    protectionInteraction: {
+      blocks: ['Unexpected Lawsuit', 'Federal Tax Audit']
+    }
+  },
+  
+  // RE_DUPLEX - Multi-Unit
+  { 
+    id: 'RE_DUPLEX', 
+    title: 'Acquire Duplex', 
+    cost: 300000, 
+    availableRisks: ['Moderate'], 
+    roiTables: { Moderate: [-10, 0, 10, 20, 30, 40] }, 
+    category: 'Real Estate',
+    type: 'Multi-Unit',
+    portfolioEffects: {
+      rental_units: 2,
+      qualifies_multi_unit: true
+    }
+  },
+  
+  // RE_TRIPLEX - Multi-Unit (requires rental property)
+  { 
+    id: 'RE_TRIPLEX', 
+    title: 'Acquire Triplex', 
+    cost: 500000, 
+    availableRisks: ['Moderate-High'], 
+    roiTables: { 'Moderate-High': [-15, 0, 15, 25, 35, 50] }, 
+    category: 'Real Estate',
+    type: 'Multi-Unit',
+    requirements: { hasRentalProperty: true },
+    portfolioEffects: {
+      rental_units: 3,
+      debt_sensitive: true
+    }
+  },
+  
+  // RE_FOURPLEX - Institutional Residential
+  { 
+    id: 'RE_FOURPLEX', 
+    title: 'Acquire Fourplex', 
+    cost: 1000000, 
+    availableRisks: ['High'], 
+    roiTables: { High: [-20, -5, 15, 30, 45, 65] }, 
+    category: 'Real Estate',
+    type: 'Institutional Residential',
+    portfolioEffects: {
+      rental_units: 4,
+      institutional_asset: true,
+      unlocks_commercial: true,
+      qualifies_empire: true
+    }
+  },
+  
+  // RE_COMMERCIAL - Commercial Asset (requires multi-unit)
+  { 
+    id: 'RE_COMMERCIAL', 
+    title: 'Acquire Commercial Real Estate', 
+    cost: 2000000, 
+    availableRisks: ['Moderate-High'], 
+    roiTables: { 'Moderate-High': [-25, -10, 20, 35, 50, 75] }, 
+    category: 'Real Estate',
+    type: 'Commercial Asset',
+    requirements: { hasMultiUnit: true },
+    portfolioEffects: {
+      commercial_asset: true,
+      tenant_dependency: true,
+      qualifies_empire: true
+    }
+  },
+  
+  // RE_REIT - Passive Real Estate (repeatable)
+  { 
+    id: 'RE_REIT', 
+    title: 'Invest in REITs', 
+    cost: 50000, 
+    availableRisks: ['Low-Moderate'], 
+    roiTables: { 'Low-Moderate': [-5, 0, 8, 12, 18, 25] }, 
+    category: 'Financial Instruments',
+    type: 'Passive Real Estate',
+    repeatable: true,
+    portfolioEffects: {
+      passive_real_estate: true,
+      high_liquidity: true,
+      lower_exit_tax: true
+    }
+  },
+  
+  // RE_HOLDCO - Protection Card (Holding Company)
+  { 
+    id: 'RE_HOLDCO', 
+    title: 'Form a Holding Company', 
+    cost: 25000, 
+    availableRisks: ['Low'], 
+    roiTables: { Low: [0, 2, 5, 7, 10, 12] }, 
+    category: 'Legal / Structure',
+    type: 'Portfolio Infrastructure',
+    protectionFlags: {
+      blocks_unexpected_lawsuit: true,
+      blocks_federal_tax_audit: true
+    },
+    portfolioEffects: {
+      entity_owned_assets: true,
+      improves_exit_tax: true,
+      empire_bonus_eligible: true
+    }
+  },
+  
+  // RE_INSURANCE - Protection Card (Insurance & Capital Reserves)
+  { 
+    id: 'RE_INSURANCE', 
+    title: 'Insurance & Capital Reserves', 
+    cost: 20000, 
+    availableRisks: ['Low'], 
+    roiTables: { Low: [0, 3, 5, 7, 10, 15] }, 
+    category: 'Risk Management',
+    type: 'Defensive Infrastructure',
+    protectionFlags: {
+      blocks_unexpected_lawsuit: true,
+      blocks_federal_tax_audit: true
+    },
+    portfolioEffects: {
+      loss_mitigation: true,
+      empire_bonus_eligible: true
+    }
+  },
+  
+  // =====================================================
+  // CASH-VALUE LIFE INSURANCE CARDS
+  // =====================================================
+  
+  // INV_LIFE_INSURANCE_TIER_A
+  { 
+    id: 'INV_LIFE_INSURANCE_TIER_A', 
+    title: 'Cash-Value Life Insurance — Tier A', 
+    cost: 25000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Life Insurance',
+    type: 'Life Insurance',
+    cashOnly: true,
+    noDice: true,
+    startingFaceAmount: 100000,
+    startingCashValue: 25000,
+    portfolioEffects: {
+      guaranteed_asset: true,
+      borrowable_liquidity: true,
+      defensive_core: true,
+      impenetrable_wealth_component: true
+    }
+  },
+  
+  // INV_LIFE_INSURANCE_TIER_B
+  { 
+    id: 'INV_LIFE_INSURANCE_TIER_B', 
+    title: 'Cash-Value Life Insurance — Tier B', 
+    cost: 75000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Life Insurance',
+    type: 'Life Insurance',
+    cashOnly: true,
+    noDice: true,
+    startingFaceAmount: 250000,
+    startingCashValue: 75000,
+    portfolioEffects: {
+      guaranteed_asset: true,
+      borrowable_liquidity: true,
+      defensive_core: true,
+      impenetrable_wealth_component: true
+    }
+  },
+  
+  // INV_LIFE_INSURANCE_TIER_C
+  { 
+    id: 'INV_LIFE_INSURANCE_TIER_C', 
+    title: 'Cash-Value Life Insurance — Tier C', 
+    cost: 100000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Life Insurance',
+    type: 'Life Insurance',
+    cashOnly: true,
+    noDice: true,
+    startingFaceAmount: 500000,
+    startingCashValue: 100000,
+    portfolioEffects: {
+      guaranteed_asset: true,
+      borrowable_liquidity: true,
+      defensive_core: true,
+      impenetrable_wealth_component: true
+    }
+  },
+  
+  // INV_LIFE_INSURANCE_TIER_D
+  { 
+    id: 'INV_LIFE_INSURANCE_TIER_D', 
+    title: 'Cash-Value Life Insurance — Tier D', 
+    cost: 250000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Life Insurance',
+    type: 'Life Insurance',
+    cashOnly: true,
+    noDice: true,
+    startingFaceAmount: 1000000,
+    startingCashValue: 250000,
+    portfolioEffects: {
+      guaranteed_asset: true,
+      borrowable_liquidity: true,
+      defensive_core: true,
+      impenetrable_wealth_component: true
+    }
+  },
+  
+  // =====================================================
+  // DEFERRED INCOME ANNUITY CARDS
+  // =====================================================
+  
+  // INV_ANNUITY_TIER_5Y
+  { 
+    id: 'INV_ANNUITY_TIER_5Y', 
+    title: 'Deferred Income Annuity — 5 Year', 
+    cost: 50000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Annuities',
+    type: 'Annuity',
+    cashOnly: true,
+    noDice: true,
+    maturityLaps: 1,
+    perLapPayout: 25000,
+    portfolioEffects: {
+      guaranteed_income: true,
+      patience_tier_1: true,
+      impenetrable_wealth_component: true
+    }
+  },
+  
+  // INV_ANNUITY_TIER_10Y
+  { 
+    id: 'INV_ANNUITY_TIER_10Y', 
+    title: 'Deferred Income Annuity — 10 Year', 
+    cost: 100000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Annuities',
+    type: 'Annuity',
+    cashOnly: true,
+    noDice: true,
+    maturityLaps: 2,
+    perLapPayout: 50000,
+    portfolioEffects: {
+      guaranteed_income: true,
+      patience_tier_2: true,
+      impenetrable_wealth_component: true
+    }
+  },
+  
+  // INV_ANNUITY_TIER_15Y
+  { 
+    id: 'INV_ANNUITY_TIER_15Y', 
+    title: 'Deferred Income Annuity — 15 Year', 
+    cost: 150000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Annuities',
+    type: 'Annuity',
+    cashOnly: true,
+    noDice: true,
+    maturityLaps: 3,
+    perLapPayout: 75000,
+    portfolioEffects: {
+      guaranteed_income: true,
+      patience_tier_3: true,
+      impenetrable_wealth_component: true
+    }
+  },
+  
+  // INV_ANNUITY_TIER_20Y
+  { 
+    id: 'INV_ANNUITY_TIER_20Y', 
+    title: 'Deferred Income Annuity — 20 Year', 
+    cost: 200000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Annuities',
+    type: 'Annuity',
+    cashOnly: true,
+    noDice: true,
+    maturityLaps: 4,
+    perLapPayout: 100000,
+    portfolioEffects: {
+      guaranteed_income: true,
+      patience_tier_4: true,
+      elite_income_engine: true,
+      impenetrable_wealth_component: true
+    }
+  },
+  
+  // =====================================================
+  // OFFENSIVE PLANNING CARDS
+  // =====================================================
+  
+  // OFF_STOCKS
+  { 
+    id: 'OFF_STOCKS', 
+    title: 'Invest in Stocks', 
+    cost: 20000, 
+    availableRisks: ['High'], 
+    roiTables: { High: [-25, -10, 0, 20, 35, 50] }, 
+    category: 'Offensive Planning',
+    type: 'Offensive Planning',
+    investmentType: 'offensivePlanning',
+    portfolioEffects: {
+      high_volatility: true,
+      growth_chaser: true,
+      offensive_asset: true
+    }
+  },
+  
+  // OFF_ETFS
+  { 
+    id: 'OFF_ETFS', 
+    title: 'Invest in ETFs', 
+    cost: 20000, 
+    availableRisks: ['Moderate'], 
+    roiTables: { Moderate: [-10, 0, 10, 18, 25, 35] }, 
+    category: 'Offensive Planning',
+    type: 'Offensive Planning',
+    investmentType: 'offensivePlanning',
+    portfolioEffects: {
+      diversified_growth: true,
+      modern_allocator: true,
+      offensive_asset: true
+    }
+  },
+  
+  // OFF_BONDS
+  { 
+    id: 'OFF_BONDS', 
+    title: 'Invest in Bonds', 
+    cost: 15000, 
+    availableRisks: ['Low'], 
+    roiTables: { Low: [-5, 0, 5, 8, 10, 12] }, 
+    category: 'Offensive Planning',
+    type: 'Offensive Planning',
+    investmentType: 'offensivePlanning',
+    portfolioEffects: {
+      capital_preservation: true,
+      volatility_buffer: true,
+      offensive_asset: true
+    }
+  },
+  
+  // =====================================================
+  // DEFENSIVE PLANNING CARDS (CONSUMABLE PROTECTION)
+  // =====================================================
+  
+  // Health & Disability Protection - Basic
+  { 
+    id: 'DEF_HEALTH_BASIC', 
+    title: 'Health & Disability Protection — Basic', 
+    cost: 5000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Defensive Planning',
+    type: 'Defensive Protection',
+    investmentType: 'healthDisabilityProtection',
+    protectionType: 'health',
+    usesRemaining: 1,
+    cashOnly: true,
+    noDice: true,
+    protectsAgainst: ['Season-Ending Injury', 'Family Emergency', 'Unexpected Pregnancy']
+  },
+  
+  // Health & Disability Protection - Standard
+  { 
+    id: 'DEF_HEALTH_STANDARD', 
+    title: 'Health & Disability Protection — Standard', 
+    cost: 10000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Defensive Planning',
+    type: 'Defensive Protection',
+    investmentType: 'healthDisabilityProtection',
+    protectionType: 'health',
+    usesRemaining: 2,
+    cashOnly: true,
+    noDice: true,
+    protectsAgainst: ['Season-Ending Injury', 'Family Emergency', 'Unexpected Pregnancy']
+  },
+  
+  // Health & Disability Protection - Premium
+  { 
+    id: 'DEF_HEALTH_PREMIUM', 
+    title: 'Health & Disability Protection — Premium', 
+    cost: 15000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Defensive Planning',
+    type: 'Defensive Protection',
+    investmentType: 'healthDisabilityProtection',
+    protectionType: 'health',
+    usesRemaining: 3,
+    cashOnly: true,
+    noDice: true,
+    protectsAgainst: ['Season-Ending Injury', 'Family Emergency', 'Unexpected Pregnancy']
+  },
+  
+  // Legal Protection - Basic
+  { 
+    id: 'DEF_LEGAL_BASIC', 
+    title: 'Legal Protection — Basic', 
+    cost: 5000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Defensive Planning',
+    type: 'Defensive Protection',
+    investmentType: 'legalProtection',
+    protectionType: 'legal',
+    usesRemaining: 1,
+    cashOnly: true,
+    noDice: true,
+    protectsAgainst: ['Unexpected Lawsuit', 'IRS Audit', 'Federal Tax Audit', 'Last-Minute NIL Lawsuit']
+  },
+  
+  // Legal Protection - Standard
+  { 
+    id: 'DEF_LEGAL_STANDARD', 
+    title: 'Legal Protection — Standard', 
+    cost: 10000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Defensive Planning',
+    type: 'Defensive Protection',
+    investmentType: 'legalProtection',
+    protectionType: 'legal',
+    usesRemaining: 2,
+    cashOnly: true,
+    noDice: true,
+    protectsAgainst: ['Unexpected Lawsuit', 'IRS Audit', 'Federal Tax Audit', 'Last-Minute NIL Lawsuit']
+  },
+  
+  // Legal Protection - Premium
+  { 
+    id: 'DEF_LEGAL_PREMIUM', 
+    title: 'Legal Protection — Premium', 
+    cost: 15000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Defensive Planning',
+    type: 'Defensive Protection',
+    investmentType: 'legalProtection',
+    protectionType: 'legal',
+    usesRemaining: 3,
+    cashOnly: true,
+    noDice: true,
+    protectsAgainst: ['Unexpected Lawsuit', 'IRS Audit', 'Federal Tax Audit', 'Last-Minute NIL Lawsuit']
+  },
+  
+  // Umbrella Liability Coverage
+  { 
+    id: 'DEF_UMBRELLA', 
+    title: 'Umbrella Liability Coverage', 
+    cost: 100000, 
+    availableRisks: [], 
+    roiTables: {}, 
+    category: 'Defensive Planning',
+    type: 'Defensive Protection',
+    investmentType: 'umbrellaLiability',
+    protectionType: 'umbrella',
+    usesRemaining: -1, // -1 means unlimited
+    cashOnly: true,
+    noDice: true,
+    repeatable: false, // One per player
+    protectsAgainst: ['ALL'] // Protects against all curveballs
+  }
 ];
 
 export default investmentCards;

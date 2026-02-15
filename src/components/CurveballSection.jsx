@@ -1,7 +1,77 @@
 import React from 'react';
 
-function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShadyDebt, onCurveballLoss, redCurveballLoss = 0, blueCurveballLoss = 0 }) {
+function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShadyDebt, onCurveballLoss, onLossAvoided, investments = [], setInvestments, redCurveballLoss = 0, blueCurveballLoss = 0 }) {
   const totalLoss = redCurveballLoss + blueCurveballLoss;
+
+  // Get defensive protection investments
+  const healthProtections = investments.filter(inv => inv.investmentType === 'healthDisabilityProtection' && (inv.usesRemaining > 0 || inv.usesRemaining === -1));
+  const legalProtections = investments.filter(inv => inv.investmentType === 'legalProtection' && (inv.usesRemaining > 0 || inv.usesRemaining === -1));
+  const hasUmbrella = investments.some(inv => inv.investmentType === 'umbrellaLiability');
+  
+  // Legacy protection (Real Estate expansion)
+  const hasHoldingCompany = investments.some(inv => inv.cardId === 'RE_HOLDCO');
+  const hasInsurance = investments.some(inv => inv.cardId === 'RE_INSURANCE');
+  
+  // Check if a curveball should be blocked and consume protection
+  const checkProtection = (desc, amount) => {
+    // Umbrella protects against ALL curveballs (highest priority)
+    if (hasUmbrella) {
+      return { blocked: true, protectionUsed: null, message: 'Umbrella Liability Coverage' };
+    }
+
+    // Check if it's a physical/life event (Health & Disability Protection)
+    const isPhysicalEvent = desc.includes('Season-Ending Injury') || 
+                           desc.includes('Family Emergency') || 
+                           desc.includes('Unexpected Pregnancy') ||
+                           desc.includes('Transfer Portal Chaos');
+    
+    if (isPhysicalEvent && healthProtections.length > 0) {
+      // Use the first available health protection
+      const protection = healthProtections[0];
+      if (protection.usesRemaining > 0 || protection.usesRemaining === -1) {
+        // Consume use (unless unlimited)
+        if (protection.usesRemaining > 0) {
+          setInvestments(prev => prev.map(inv => 
+            inv.cardId === protection.cardId 
+              ? { ...inv, usesRemaining: inv.usesRemaining - 1 }
+              : inv
+          ));
+        }
+        return { blocked: true, protectionUsed: protection, message: protection.cardTitle };
+      }
+    }
+
+    // Check if it's a legal/financial event (Legal Protection)
+    const isLegalEvent = desc.includes('Lawsuit') || 
+                        desc.includes('lawsuit') || 
+                        desc.includes('Audit') || 
+                        desc.includes('audit') || 
+                        desc.includes('IRS') ||
+                        desc.includes('Tax');
+    
+    if (isLegalEvent && legalProtections.length > 0) {
+      // Use the first available legal protection
+      const protection = legalProtections[0];
+      if (protection.usesRemaining > 0 || protection.usesRemaining === -1) {
+        // Consume use (unless unlimited)
+        if (protection.usesRemaining > 0) {
+          setInvestments(prev => prev.map(inv => 
+            inv.cardId === protection.cardId 
+              ? { ...inv, usesRemaining: inv.usesRemaining - 1 }
+              : inv
+          ));
+        }
+        return { blocked: true, protectionUsed: protection, message: protection.cardTitle };
+      }
+    }
+
+    // Legacy protection check (Real Estate expansion)
+    if (isLegalEvent && (hasHoldingCompany || hasInsurance)) {
+      return { blocked: true, protectionUsed: null, message: 'Holding Company / Insurance' };
+    }
+
+    return { blocked: false, protectionUsed: null, message: '' };
+  };
 
   return (
     <section className="bg-white rounded-xl shadow-md p-4">
@@ -21,6 +91,34 @@ function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShady
           const amount = parseInt(amountStr, 10);
           const type = redVal ? 'red' : 'blue'; // Track if it's a red (financial) or blue (life) curveball
 
+          // Check if this curveball is blocked by protection
+          const protectionResult = checkProtection(desc, amount);
+          
+          if (protectionResult.blocked) {
+            // Loss avoided - track it (for shady deals, track the shady debt amount)
+            const lossAmount = effect === 'shady' ? 40000 : amount;
+            if (onLossAvoided) {
+              onLossAvoided(lossAmount);
+            }
+            
+            // Show protection message
+            const protectionMsg = protectionResult.protectionUsed 
+              ? `${protectionResult.message} (${protectionResult.protectionUsed.usesRemaining === -1 ? 'Unlimited' : protectionResult.protectionUsed.usesRemaining} uses remaining)`
+              : protectionResult.message;
+            
+            // Still add to curveballs list but mark as blocked
+            setCurveballs((prev) => [...prev, { 
+              desc: `${desc} (BLOCKED by ${protectionResult.message})`, 
+              amount: lossAmount, 
+              effect, 
+              type,
+              blocked: true 
+            }]);
+            alert(`🛡️ Protection activated! ${desc} was blocked by ${protectionMsg}. Loss avoided: $${lossAmount.toLocaleString()}`);
+            e.target.reset();
+            return;
+          }
+
           if (effect === 'cash' && amount > 0) {
             setCash((c) => c - amount);
             // Track curveball loss
@@ -38,7 +136,7 @@ function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShady
             }
           }
 
-          setCurveballs((prev) => [...prev, { desc, amount, effect, type }]);
+          setCurveballs((prev) => [...prev, { desc, amount, effect, type, blocked: false }]);
           e.target.reset();
         }}
         className="space-y-3"
@@ -50,6 +148,8 @@ function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShady
             <option value="IRS Audit – Lose $25,000|25000|cash">IRS Audit – Lose $25,000</option>
             <option value="Credit Card Debt Hits – Lose $10,000|10000|cash">Credit Card Debt Hits – Lose $10,000</option>
             <option value="Last-Minute NIL Lawsuit – Pay $35,000|35000|cash">Last-Minute NIL Lawsuit – Pay $35,000</option>
+            <option value="Unexpected Lawsuit – Pay $50,000|50000|cash">Unexpected Lawsuit – Pay $50,000</option>
+            <option value="Federal Tax Audit – Pay $40,000|40000|cash">Federal Tax Audit – Pay $40,000</option>
             <option value="NIL Contract Scam – Lose $15,000|15000|cash">NIL Contract Scam – Lose $15,000</option>
             <option value="Market Crash – Lose $25,000|25000|cash">Market Crash – Lose $25,000</option>
             <option value="Shady Business Deal – Gain $25K Now, Owe $40K Later|40000|shady">Shady Business Deal – Gain $25K Now, Owe $40K Later</option>
@@ -84,9 +184,12 @@ function CurveballSection({ curveballs, setCurveballs, setCash, setRep, setShady
           <ul className="mt-2 text-sm text-gray-700 space-y-1">
             {curveballs.map((c, idx) => (
               <li key={idx}>
-                <span className="font-semibold text-red-600">{c.desc}</span>
-                {c.effect === 'cash' && <>: -${c.amount.toLocaleString()}</>}
-                {c.effect === 'rep' && <>: -{c.amount} REP</>}
+                <span className={`font-semibold ${c.blocked ? 'text-green-600' : 'text-red-600'}`}>
+                  {c.desc}
+                </span>
+                {!c.blocked && c.effect === 'cash' && <>: -${c.amount.toLocaleString()}</>}
+                {!c.blocked && c.effect === 'rep' && <>: -{c.amount} REP</>}
+                {c.blocked && <span className="text-green-600 ml-2">🛡️ Blocked</span>}
               </li>
             ))}
           </ul>

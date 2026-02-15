@@ -10,6 +10,8 @@ import DrawFromAsset from './DrawFromAsset';
 import CurveballSection from './CurveballSection';
 import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
+import LifeInsuranceManager from './LifeInsuranceManager';
+import AnnuityManager from './AnnuityManager';
 
 import { fetchAiSummary } from '../utils/fetchAiSummary';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
@@ -42,6 +44,7 @@ function PlayerDashboard({
   const [shadyDebt, setShadyDebt] = useState(0);
   const [redCurveballLoss, setRedCurveballLoss] = useState(0); // Financial curveball losses
   const [blueCurveballLoss, setBlueCurveballLoss] = useState(0); // Life curveball losses
+  const [lossAvoided, setLossAvoided] = useState(0); // Total losses avoided through protection
   const totalLaps = initialTotalLaps || 5;
 
   // Holds all players in multiplayer room
@@ -70,6 +73,59 @@ function PlayerDashboard({
     } else if (type === 'blue') {
       setBlueCurveballLoss((prev) => prev + amount);
     }
+  };
+
+  // Handle loss avoidance tracking
+  const handleLossAvoided = (amount) => {
+    setLossAvoided((prev) => prev + amount);
+    addToast(`🛡️ Protection activated! Loss avoided: $${amount.toLocaleString()}`, 'success', 4000);
+  };
+
+  // Calculate protection tier
+  const calculateProtectionTier = () => {
+    const hasHoldingCompany = investments.some(inv => inv.cardId === 'RE_HOLDCO');
+    const hasInsurance = investments.some(inv => inv.cardId === 'RE_INSURANCE');
+    
+    if (hasHoldingCompany && hasInsurance) {
+      return { tier: 2, label: 'Tier 2 – Institutionally Protected' };
+    } else if (hasHoldingCompany || hasInsurance) {
+      return { tier: 1, label: 'Tier 1 – Risk Aware' };
+    }
+    return { tier: 0, label: 'No Protection' };
+  };
+
+  // Calculate empire status
+  const calculateEmpireStatus = () => {
+    const hasRealEstateAssets = investments.filter(inv => 
+      inv.cardTitle && (
+        inv.cardTitle.includes('Duplex') ||
+        inv.cardTitle.includes('Triplex') ||
+        inv.cardTitle.includes('Fourplex') ||
+        inv.cardTitle.includes('Commercial') ||
+        inv.cardTitle.includes('Property') ||
+        inv.cardTitle.includes('Rent')
+      )
+    ).length >= 2;
+
+    const hasMultiUnit = investments.some(inv => 
+      inv.cardTitle && (
+        inv.cardTitle.includes('Duplex') ||
+        inv.cardTitle.includes('Triplex') ||
+        inv.cardTitle.includes('Fourplex')
+      )
+    );
+
+    const hasCommercial = investments.some(inv => 
+      inv.cardTitle && inv.cardTitle.includes('Commercial')
+    );
+
+    const hasProtection = investments.some(inv => 
+      inv.cardId === 'RE_HOLDCO' || inv.cardId === 'RE_INSURANCE'
+    );
+
+    const qualifiesEmpire = (hasRealEstateAssets || hasMultiUnit || hasCommercial) && hasProtection;
+    
+    return qualifiesEmpire;
   };
 
   // Connection status tracking
@@ -105,6 +161,7 @@ function PlayerDashboard({
       if (typeof s.shadyDebt === 'number') setShadyDebt(s.shadyDebt);
       if (typeof s.redCurveballLoss === 'number') setRedCurveballLoss(s.redCurveballLoss);
       if (typeof s.blueCurveballLoss === 'number') setBlueCurveballLoss(s.blueCurveballLoss);
+      if (typeof s.lossAvoided === 'number') setLossAvoided(s.lossAvoided);
 
     } catch (e) {
       console.error('Failed to parse saved game:', e);
@@ -132,6 +189,7 @@ function PlayerDashboard({
       shadyDebt,
       redCurveballLoss,
       blueCurveballLoss,
+      lossAvoided,
       totalLaps,
     };
 
@@ -155,6 +213,7 @@ function PlayerDashboard({
     shadyDebt,
     redCurveballLoss,
     blueCurveballLoss,
+    lossAvoided,
     totalLaps,
   ]);
 
@@ -677,6 +736,12 @@ function PlayerDashboard({
         return;
       }
 
+      // Check if player already owns Umbrella (non-repeatable)
+      if (cardResult.cardId === 'DEF_UMBRELLA' && investments.some(inv => inv.cardId === 'DEF_UMBRELLA')) {
+        addToast('You can only own one Umbrella Liability Coverage policy.', 'error', 3000);
+        return;
+      }
+
       const { cost: finalCost, interest } = cardResult;
       if (borrowed) {
         setDebt(prev => prev + finalCost + interest);
@@ -684,7 +749,52 @@ function PlayerDashboard({
       } else {
         setCash(prev => prev - finalCost);
       }
-      setInvestments(prev => [...prev, { ...cardResult }]);
+      
+      // Set purchase lap for annuities
+      const investmentData = { ...cardResult };
+      if (cardResult.investmentType === 'annuity') {
+        investmentData.purchaseLap = laps;
+      }
+      
+      // Check for offensive portfolio completion after adding investment
+      setInvestments(prev => {
+        // Check if portfolio was already complete before this purchase
+        const prevHasStocks = prev.some(inv => inv.cardId === 'OFF_STOCKS');
+        const prevHasETFs = prev.some(inv => inv.cardId === 'OFF_ETFS');
+        const prevHasBonds = prev.some(inv => inv.cardId === 'OFF_BONDS');
+        const wasAlreadyComplete = prevHasStocks && prevHasETFs && prevHasBonds;
+        
+        const updated = [...prev, investmentData];
+        
+        // Check if player now owns all three offensive planning cards
+        const hasStocks = updated.some(inv => inv.cardId === 'OFF_STOCKS');
+        const hasETFs = updated.some(inv => inv.cardId === 'OFF_ETFS');
+        const hasBonds = updated.some(inv => inv.cardId === 'OFF_BONDS');
+        const portfolioComplete = hasStocks && hasETFs && hasBonds;
+        
+        // Apply portfolio completion bonuses
+        if (portfolioComplete) {
+          // Check if this is the first time completing (one-time bonus)
+          if (!wasAlreadyComplete) {
+            // One-time $100,000 cash bonus
+            setCash(prevCash => prevCash + 100000);
+            addToast('🎉 Offensive Portfolio Complete! +$100,000 bonus and +5% ROI to all offensive assets!', 'success', 5000);
+          }
+          
+          // Mark all offensive planning investments with portfolio bonus
+          return updated.map(inv => {
+            if (inv.investmentType === 'offensivePlanning') {
+              return {
+                ...inv,
+                offensivePortfolioComplete: true
+              };
+            }
+            return inv;
+          });
+        }
+        
+        return updated;
+      });
       lastPurchaseTimeRef.current = now;
       
       addToast(
@@ -895,7 +1005,7 @@ function PlayerDashboard({
 
         <CashTracker cash={cash} setCash={setCash} />
 
-        <CardSelector onSelect={handleCardSelection} />
+        <CardSelector onSelect={handleCardSelection} investments={investments} />
 
         <InvestmentLog
           investments={investments}
@@ -926,6 +1036,21 @@ function PlayerDashboard({
           setCash={setCash}
         />
 
+        <LifeInsuranceManager
+          investments={investments}
+          setInvestments={setInvestments}
+          setCash={setCash}
+          addToast={addToast}
+        />
+
+        <AnnuityManager
+          investments={investments}
+          setInvestments={setInvestments}
+          setCash={setCash}
+          laps={laps}
+          addToast={addToast}
+        />
+
         <CurveballSection
           curveballs={curveballs}
           setCurveballs={setCurveballs}
@@ -933,6 +1058,9 @@ function PlayerDashboard({
           setRep={setRep}
           setShadyDebt={setShadyDebt}
           onCurveballLoss={handleCurveballLoss}
+          onLossAvoided={handleLossAvoided}
+          investments={investments}
+          setInvestments={setInvestments}
           redCurveballLoss={redCurveballLoss}
           blueCurveballLoss={blueCurveballLoss}
         />
@@ -955,6 +1083,9 @@ function PlayerDashboard({
           playerName={playerName}
           shadyDebt={shadyDebt}
           investments={investments}
+          lossAvoided={lossAvoided}
+          protectionTier={calculateProtectionTier()}
+          empireStatus={calculateEmpireStatus()}
           showFinal={handleEndGame}
           isGeneratingSummary={isGeneratingSummary}
         />
