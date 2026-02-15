@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import CardSelector from './CardSelector';
 
 import LapTracker from './LapTracker';
@@ -639,30 +639,29 @@ function PlayerDashboard({
     return true;
   }
 
-  async function syncToRoom(partial, isHeartbeat = false) {
+  const syncToRoom = useCallback(async (partial, isHeartbeat = false) => {
     return await syncToRoomInternal(partial, isHeartbeat, true);
-  }
+  }, [roomInfo]);
 
-
-  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ cash }); }, [cash, roomId, currentPlayerId]);
-  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ debt }); }, [debt, roomId, currentPlayerId]);
-  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ credit }); }, [credit, roomId, currentPlayerId]);
-  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ rep }); }, [rep, roomId, currentPlayerId]);
-  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ laps }); }, [laps, roomId, currentPlayerId]);
-  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ redCurveballLoss }); }, [redCurveballLoss, roomId, currentPlayerId]);
-  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ blueCurveballLoss }); }, [blueCurveballLoss, roomId, currentPlayerId]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ cash }); }, [cash, roomId, currentPlayerId, syncToRoom]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ debt }); }, [debt, roomId, currentPlayerId, syncToRoom]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ credit }); }, [credit, roomId, currentPlayerId, syncToRoom]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ rep }); }, [rep, roomId, currentPlayerId, syncToRoom]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ laps }); }, [laps, roomId, currentPlayerId, syncToRoom]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ redCurveballLoss }); }, [redCurveballLoss, roomId, currentPlayerId, syncToRoom]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ blueCurveballLoss }); }, [blueCurveballLoss, roomId, currentPlayerId, syncToRoom]);
 
   useEffect(() => {
     if (roomId && currentPlayerId) {
       syncToRoom({ luxuries });
     }
-  }, [luxuries, roomId, currentPlayerId]);
+  }, [luxuries, roomId, currentPlayerId, syncToRoom]);
 
   useEffect(() => {
     if (roomId && currentPlayerId) {
       syncToRoom({ investments });
     }
-  }, [investments, roomId, currentPlayerId]);
+  }, [investments, roomId, currentPlayerId, syncToRoom]);
 
   // =====================================================
   // HEARTBEAT: Keep player active status updated
@@ -676,7 +675,7 @@ function PlayerDashboard({
     }, 10000); // 10 seconds
 
     return () => clearInterval(heartbeatInterval);
-  }, [roomId, currentPlayerId]);
+  }, [roomId, currentPlayerId, syncToRoom]);
 
   // =====================================================
   // CLEANUP: Remove player when component unmounts (page close/refresh)

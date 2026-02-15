@@ -20,7 +20,7 @@ export default function LobbyScreen({ roomInfo, onStartGame, onLeaveRoom }) {
   // ----------------------------------------
   // LOAD PLAYERS INITIALLY
   // ----------------------------------------
-  async function loadPlayers() {
+  const loadPlayers = useCallback(async () => {
     if (!roomId || !isSupabaseConfigured) return;
 
     const { data, error } = await supabase
@@ -38,7 +38,7 @@ export default function LobbyScreen({ roomInfo, onStartGame, onLeaveRoom }) {
       console.log("✅ Loaded players:", data.length);
       setPlayers(data);
     }
-  }
+  }, [roomId]);
 
   useEffect(() => {
     loadPlayers();
@@ -50,7 +50,7 @@ export default function LobbyScreen({ roomInfo, onStartGame, onLeaveRoom }) {
     }, 2000);
 
     return () => clearInterval(pollInterval);
-  }, [roomId]);
+  }, [roomId, loadPlayers]);
 
   // Reconnection handler (defined before useEffect to avoid scope issues)
   const handleReconnect = useRef(() => {});

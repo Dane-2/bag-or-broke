@@ -11,7 +11,6 @@ export default function RoomHUD({ roomPlayers, currentPlayerId, roomStatus }) {
   // Detect changes and highlight players
   useEffect(() => {
     const currentPlayerIds = Object.keys(roomPlayers);
-    const prevPlayerIds = Object.keys(prevPlayersRef.current);
     
     // Find players with changes
     const changedPlayers = new Set();
