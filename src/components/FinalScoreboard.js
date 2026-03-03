@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import BOBReflectionForm from './BOBReflectionForm';
 
 // Archetype descriptions
 const archetypeDescriptions = {
@@ -26,6 +27,8 @@ const archetypeImageMap = {
 };
 
 function FinalScoreboard({ data }) {
+  const [showBOBForm, setShowBOBForm] = useState(false);
+
   if (!data) return <p>No final data to show.</p>;
 
   const {
@@ -40,14 +43,17 @@ function FinalScoreboard({ data }) {
     shadyDebt = 0,
     summary,
     archetype,
+    coachJBoUnlocked = false,
   } = data;
 
   const luxuryResale = luxuries.reduce((acc, item) => acc + item.resale, 0);
   const investmentReturns = investments.reduce((acc, i) => acc + (i.newValue || 0), 0);
-  const repValue = rep * 2500;
-  const careerValue = career * 5000;
+  // Updated scoring formula per PDF: rep * 5000, career * 10000, balance bonus +250000
+  const repValue = rep * 5000;
+  const careerValue = career * 10000;
   const creditBonus = credit >= 700 ? 10000 : credit >= 600 ? 5000 : credit >= 500 ? 2000 : 0;
-  const netWorth = cash + investmentReturns + luxuryResale + repValue + careerValue + creditBonus - debt - shadyDebt;
+  const balanceBonusValue = (data.balanceBonusAwarded || false) ? 250000 : 0;
+  const netWorth = cash + investmentReturns + luxuryResale + repValue + careerValue + creditBonus + balanceBonusValue - debt - shadyDebt;
 
   const breakdownData = [
     { name: 'Cash', value: cash },
@@ -63,6 +69,20 @@ function FinalScoreboard({ data }) {
   // Fallback for archetype if empty
   const actualArchetype = archetype && archetype.trim() !== "" ? archetype : "The Hot Shot";
   const imageUrl = archetypeImageMap[actualArchetype] || null;
+
+  const gameDataForPDF = {
+    playerName,
+    archetype: actualArchetype,
+    netWorth,
+    cash,
+    debt,
+    rep,
+    career,
+    credit,
+    investments,
+    luxuries,
+    shadyDebt,
+  };
 
   return (
     <div
@@ -112,6 +132,22 @@ function FinalScoreboard({ data }) {
           </PieChart>
         </div>
 
+        {/* Coach JBo Unlock (multiplayer 4+ players, conservative playstyle winner) */}
+        {coachJBoUnlocked && (
+          <div className="bg-amber-50 border-2 border-amber-400 rounded-xl mt-4 p-4 shadow-sm flex items-center gap-4">
+            <img
+              src="/avatars/IMG_4355.png"
+              alt="Coach JBo"
+              className="w-20 h-20 object-cover rounded-full border-2 border-amber-500"
+              onError={(e) => { e.target.onerror = null; e.target.src = "/IMG_4355.png"; }}
+            />
+            <div>
+              <h4 className="text-lg font-bold text-amber-800">Coach JBo</h4>
+              <p className="text-amber-700 text-sm">You played the most conservative, defense-first style — closest match to Coach JBo!</p>
+            </div>
+          </div>
+        )}
+
         {/* AI Summary */}
         {summary && (
           <div className="bg-indigo-50 border border-indigo-200 rounded mt-4 p-4 shadow-sm">
@@ -139,6 +175,26 @@ function FinalScoreboard({ data }) {
               {archetypeDescriptions[actualArchetype] || "Unique player style!"}
             </p>
           </div>
+        </div>
+
+        {/* B.O.B. Decision Blueprint */}
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl mt-4 p-4 shadow-sm">
+          {!showBOBForm ? (
+            <>
+              <h3 className="text-lg font-bold text-indigo-800 mb-2">B.O.B. Decision Blueprint™</h3>
+              <p className="text-sm text-gray-700 mb-4">Reflect on your decisions and download a PDF with your answers and game stats.</p>
+              <button
+                onClick={() => setShowBOBForm(true)}
+                className="w-full bg-indigo-600 text-white font-semibold py-2 rounded hover:bg-indigo-700 transition"
+              >
+                Complete Reflection & Download PDF
+              </button>
+            </>
+          ) : (
+            <div className="max-h-[60vh] overflow-y-auto pr-2">
+              <BOBReflectionForm gameData={gameDataForPDF} />
+            </div>
+          )}
         </div>
 
         <button

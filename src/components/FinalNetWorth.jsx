@@ -1,6 +1,6 @@
 import React from 'react';
 
-function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, playerName, showFinal, shadyDebt, investments, lossAvoided = 0, protectionTier = { tier: 0, label: 'No Protection' }, empireStatus = false, isGeneratingSummary }) {
+function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, playerName, showFinal, shadyDebt, investments, lossAvoided = 0, protectionTier = { tier: 0, label: 'No Protection' }, empireStatus = false, isGeneratingSummary, balanceBonusAwarded = false }) {
   const luxuryResale = luxuries.reduce((acc, item) => acc + item.resale, 0);
   // Calculate Total Asset Value: sum of all investment current values (newValue)
   const totalAssetValue = investments.reduce((acc, inv) => acc + (inv.newValue || 0), 0);
@@ -42,10 +42,12 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
   const eventsBlocked = curveballs.filter(c => c.blocked).length;
   const impenetrableWealthLayers = lifeInsurancePolicies.length + annuities.length;
   
-  const repValue = rep * 2500;
-  const careerValue = career * 5000;
+  // Updated scoring formula per PDF: rep * 5000, career * 10000, balance bonus +250000
+  const repValue = rep * 5000;
+  const careerValue = career * 10000;
   const creditBonus = credit >= 700 ? 10000 : credit >= 600 ? 5000 : credit >= 500 ? 2000 : 0;
-  const netWorth = cash + totalAssetValue + luxuryResale + repValue + careerValue + creditBonus - debt - (shadyDebt || 0);
+  const balanceBonusValue = balanceBonusAwarded ? 250000 : 0;
+  const netWorth = cash + totalAssetValue + luxuryResale + repValue + careerValue + creditBonus + balanceBonusValue - debt - (shadyDebt || 0);
 
   const curveballLoss = curveballs.filter(c => !c.blocked).reduce((acc, c) => acc + (c.amount || 0), 0);
   const totalLuxuries = luxuries.length;

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import tiers from '../data/tiers';
 
 function StartScreen({ onStart, onMultiplayer }) {
+  const [step, setStep] = useState('mode'); // 'mode' | 'offline'
   const [playerName, setPlayerName] = useState('');
   const [rollValue, setRollValue] = useState('');
   const [gameLength, setGameLength] = useState('');
@@ -9,6 +10,36 @@ function StartScreen({ onStart, onMultiplayer }) {
   const selectedTier = rollValue ? tiers[parseInt(rollValue)] : null;
   const totalCash = selectedTier ? selectedTier.amount + 2500 : 0;
 
+  // Step 1: Choose Single Player (Offline) or Multiplayer
+  if (step === 'mode') {
+    return (
+      <div
+        className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
+        style={{ backgroundImage: 'url(/backgroundFinal.png)' }}
+      >
+        <div className="w-[90%] max-w-md p-6 space-y-4 bg-white/70 backdrop-blur-md rounded-xl shadow-lg">
+          <h1 className="text-2xl font-bold text-center text-gray-800">🎓 Start Your NIL Journey</h1>
+          <p className="text-center text-gray-600">Choose how you want to play</p>
+
+          <button
+            onClick={() => setStep('offline')}
+            className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition"
+          >
+            Single Player (Offline)
+          </button>
+
+          <button
+            onClick={onMultiplayer}
+            className="w-full py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition"
+          >
+            Multiplayer
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 2: Offline setup (name, roll, laps, Start Game)
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
@@ -16,7 +47,14 @@ function StartScreen({ onStart, onMultiplayer }) {
     >
       <div className="w-[90%] max-w-md p-6 space-y-4 bg-white/70 backdrop-blur-md rounded-xl shadow-lg">
 
-        <h1 className="text-2xl font-bold text-center text-gray-800">🎓 Start Your NIL Journey</h1>
+        <button
+          onClick={() => setStep('mode')}
+          className="text-sm text-gray-600 hover:text-gray-800"
+        >
+          ← Back
+        </button>
+
+        <h1 className="text-2xl font-bold text-center text-gray-800">Single Player (Offline)</h1>
 
         <input
           value={playerName}
@@ -70,14 +108,6 @@ function StartScreen({ onStart, onMultiplayer }) {
             </button>
           </div>
         )}
-
-        {/* 💥 NEW — Multiplayer Mode below the offline section */}
-        <button
-          onClick={onMultiplayer}
-          className="w-full bg-purple-600 text-white font-semibold py-2 rounded hover:bg-purple-700 transition mt-4"
-        >
-          🎮 Multiplayer Mode
-        </button>
 
       </div>
     </div>

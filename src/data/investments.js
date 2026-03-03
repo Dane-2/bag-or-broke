@@ -2,7 +2,7 @@ const investmentCards = [
   { id: 'I1', title: 'Buy Vacant Property', cost: 30000, availableRisks: ['Moderate'], roiTables: { Moderate: [-10, 0, 10, 15, 20, 25] }, category: 'Real Estate' },
   { id: 'I2', title: 'Renovate the Property', cost: 40000, availableRisks: ['Moderate'], roiTables: { Moderate: [-15, -5, 10, 20, 25, 30] }, category: 'Real Estate' },
   { id: 'I3', title: 'Rent It Out Long-Term', cost: 60000, availableRisks: ['Low'], roiTables: { Low: [0, 10, 15, 20, 25, 30] }, category: 'Real Estate' },
-  { id: 'I4', title: 'Start a YouTube Channel', cost: 10000, availableRisks: ['Moderate'], roiTables: { Moderate: [-10, 0, 10, 15, 25, 40] }, category: 'Content/Media' },
+  { id: 'I4', title: 'Start a Video Creator Channel', cost: 10000, availableRisks: ['Moderate'], roiTables: { Moderate: [-10, 0, 10, 15, 25, 40] }, category: 'Content/Media' },
   { id: 'I5', title: 'Secure Sponsorship Deals', cost: 25000, availableRisks: ['Moderate'], roiTables: { Moderate: [-10, 0, 10, 20, 25, 35] }, category: 'Content/Media' },
   { id: 'I6', title: 'Become a Brand Influencer', cost: 50000, availableRisks: ['Moderate'], roiTables: { Moderate: [0, 10, 20, 30, 40, 60] }, category: 'Content/Media' },
   { id: 'I7', title: 'Launch Online Store', cost: 15000, availableRisks: ['Moderate'], roiTables: { Moderate: [-10, 0, 5, 10, 15, 20] }, category: 'E-Commerce' },

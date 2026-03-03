@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { supabase, isSupabaseConfigured } from "../utils/supabaseClient";
 import { startGame as startGameRequest, leaveRoom as leaveRoomRequest } from "../utils/roomApi";
-import ConnectionStatus from "./ConnectionStatus";
-
 export default function LobbyScreen({ roomInfo, onStartGame, onLeaveRoom }) {
   const { roomId, playerId, hostPlayerId, code } = roomInfo;
 
   const [players, setPlayers] = useState([]);
-  const [connectionStatus, setConnectionStatus] = useState('connecting');
   const [reconnectTrigger, setReconnectTrigger] = useState(0);
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimeoutRef = useRef(null);
@@ -55,18 +52,12 @@ export default function LobbyScreen({ roomInfo, onStartGame, onLeaveRoom }) {
   // Reconnection handler (defined before useEffect to avoid scope issues)
   const handleReconnect = useRef(() => {});
   handleReconnect.current = () => {
-    if (reconnectAttemptsRef.current >= 5) {
-      setConnectionStatus('disconnected');
-      return;
-    }
+    if (reconnectAttemptsRef.current >= 5) return;
 
     reconnectAttemptsRef.current += 1;
     const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current - 1), 30000);
-    
-    setConnectionStatus('reconnecting');
 
     reconnectTimeoutRef.current = setTimeout(() => {
-      setConnectionStatus('connecting');
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
@@ -165,32 +156,12 @@ export default function LobbyScreen({ roomInfo, onStartGame, onLeaveRoom }) {
         channelRef.current = channel;
         
         if (status === "SUBSCRIBED") {
-          console.log("✅ Successfully subscribed to lobby updates");
-          setConnectionStatus('connected');
-          reconnectAttemptsRef.current = 0; // Reset on successful connection
-          // Immediately load players after subscription is confirmed
+          reconnectAttemptsRef.current = 0;
           loadPlayers();
-        } else if (status === "CHANNEL_ERROR") {
-          console.error("❌ Realtime channel error");
-          // Don't immediately reconnect - let polling handle game start detection
-          setConnectionStatus('disconnected');
-          // Only reconnect if we're still in lobby (not transitioning to game)
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
           if (reconnectAttemptsRef.current < 3) {
             handleReconnect.current();
           }
-        } else if (status === "TIMED_OUT") {
-          console.warn("⚠️ Realtime subscription timed out");
-          // Don't immediately reconnect - let polling handle game start detection
-          setConnectionStatus('disconnected');
-          // Only reconnect if we're still in lobby (not transitioning to game)
-          if (reconnectAttemptsRef.current < 3) {
-            handleReconnect.current();
-          }
-        } else if (status === "CLOSED") {
-          console.log("🔌 Realtime channel closed");
-          // Don't reconnect on CLOSED - it might be intentional (game starting)
-          // Polling will handle game start detection
-          setConnectionStatus('disconnected');
         }
       });
 
@@ -254,18 +225,6 @@ export default function LobbyScreen({ roomInfo, onStartGame, onLeaveRoom }) {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="w-[90%] max-w-md p-6 bg-white shadow-lg rounded-xl space-y-4">
-
-        <ConnectionStatus
-          status={connectionStatus}
-          onRetry={() => {
-            reconnectAttemptsRef.current = 0;
-            if (channelRef.current) {
-              supabase.removeChannel(channelRef.current);
-              channelRef.current = null;
-            }
-            setReconnectTrigger(prev => prev + 1);
-          }}
-        />
 
         <h2 className="text-2xl font-bold text-center">Game Lobby</h2>
 

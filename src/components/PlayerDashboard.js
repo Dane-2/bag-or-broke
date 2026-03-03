@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { 
+  FaTrophy, FaUser, FaBolt, FaFlagCheckered, FaDollarSign, FaChartBar, 
+  FaCreditCard, FaGem, FaChartLine, FaShieldAlt, FaMoneyBillWave, 
+  FaStar, FaIdCard, FaTh, FaBullseye, FaGem as FaDiamondIcon
+} from 'react-icons/fa';
 import CardSelector from './CardSelector';
 
 import LapTracker from './LapTracker';
@@ -12,12 +17,13 @@ import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
 import LifeInsuranceManager from './LifeInsuranceManager';
 import AnnuityManager from './AnnuityManager';
+import PurpleTab from './PurpleTab';
 
 import { fetchAiSummary } from '../utils/fetchAiSummary';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
+import { selectCoachJBoWinner } from '../utils/coachJBo';
 import RoomHUD from "./RoomHUD";
 import ToastContainer from "./ToastContainer";
-import ConnectionStatus from "./ConnectionStatus";
 import { leaveRoom as leaveRoomRequest } from '../utils/roomApi';
 
 function PlayerDashboard({
@@ -46,11 +52,160 @@ function PlayerDashboard({
   const [blueCurveballLoss, setBlueCurveballLoss] = useState(0); // Life curveball losses
   const [lossAvoided, setLossAvoided] = useState(0); // Total losses avoided through protection
   const totalLaps = initialTotalLaps || 5;
+  
+  // REP & Career System State
+  const [balanceBonusAwarded, setBalanceBonusAwarded] = useState(false);
+  const [careerThresholdsUnlocked, setCareerThresholdsUnlocked] = useState([]);
+  const [repThresholdsUnlocked, setRepThresholdsUnlocked] = useState([]);
+  const [investmentSetsAwarded, setInvestmentSetsAwarded] = useState([]);
+
+  // =====================================================
+  // REP & CAREER SYSTEM FUNCTIONS
+  // =====================================================
+  
+  // Get REP award from luxury cost (based on cost tier)
+  const getRepFromCost = (cost) => {
+    if (cost >= 250000) return 8;
+    if (cost >= 150000) return 7;
+    if (cost >= 80000) return 6;
+    if (cost >= 50000) return 5;
+    if (cost >= 25000) return 4;
+    if (cost >= 12000) return 3;
+    if (cost >= 6000) return 2;
+    if (cost >= 3500) return 1;
+    return 0;
+  };
+
+  // Check investment set completions for Career points
+  const checkInvestmentSets = () => {
+    const sets = {
+      offensive: {
+        required: ['OFF_STOCKS', 'OFF_ETFS', 'OFF_BONDS'],
+        bonus: 10,
+        id: 'offensive'
+      },
+      realEstate: {
+        required: ['I1'], // Vacant Property
+        bonus: 10,
+        id: 'realEstate',
+        // Also need Renovated Property and any Rental Strategy
+        check: (inv) => {
+          const hasVacant = inv.some(i => i.cardId === 'I1');
+          const hasRenovated = inv.some(i => i.cardId === 'I2');
+          const hasRental = inv.some(i => 
+            i.cardId === 'RE_SHORT_TERM_RENTAL' || 
+            i.cardId === 'RE_DUPLEX' || 
+            i.cardId === 'RE_TRIPLEX' || 
+            i.cardId === 'RE_FOURPLEX' ||
+            (i.cardTitle && i.cardTitle.includes('Rent'))
+          );
+          return hasVacant && hasRenovated && hasRental;
+        }
+      },
+      defensive: {
+        bonus: 15,
+        id: 'defensive',
+        check: (inv) => {
+          const hasLifeInsurance = inv.some(i => i.cardId && i.cardId.startsWith('INV_LIFE_INSURANCE'));
+          const hasAnnuity = inv.some(i => i.cardId && i.cardId.startsWith('INV_ANNUITY'));
+          const hasHealth = inv.some(i => i.cardId && i.cardId.startsWith('DEF_HEALTH'));
+          const hasLegal = inv.some(i => i.cardId && i.cardId.startsWith('DEF_LEGAL'));
+          const hasUmbrella = inv.some(i => i.cardId === 'DEF_UMBRELLA_LIABILITY');
+          return hasLifeInsurance && hasAnnuity && (hasHealth || hasLegal || hasUmbrella);
+        }
+      }
+    };
+
+    Object.values(sets).forEach(set => {
+      if (set.id && !investmentSetsAwarded.includes(set.id)) {
+        let completed = false;
+        
+        if (set.id === 'offensive') {
+          completed = set.required.every(cardId => 
+            investments.some(inv => inv.cardId === cardId)
+          );
+        } else if (set.check) {
+          completed = set.check(investments);
+        }
+        
+        if (completed) {
+          setCareer(prev => prev + set.bonus);
+          setInvestmentSetsAwarded(prev => [...prev, set.id]);
+          addToast(`🎯 Investment Set Complete! +${set.bonus} Career Points`, 'success', 4000);
+        }
+      }
+    });
+  };
+
+  // Check Career thresholds
+  const checkCareerThresholds = () => {
+    const thresholds = [
+      { points: 10, bonus: () => addToast('📈 Career Threshold: +5% NIL payout unlocked!', 'success', 4000) },
+      { points: 25, bonus: () => addToast('🛡️ Career Threshold: Reduce one negative investment roll by 5%!', 'success', 4000) },
+      { points: 40, bonus: () => addToast('📈 Career Threshold: +10% NIL payout unlocked!', 'success', 4000) },
+      { points: 60, bonus: () => addToast('⭐ Career Threshold: Elite Professional status unlocked!', 'success', 4000) }
+    ];
+
+    thresholds.forEach(threshold => {
+      if (career >= threshold.points && !careerThresholdsUnlocked.includes(threshold.points)) {
+        setCareerThresholdsUnlocked(prev => [...prev, threshold.points]);
+        threshold.bonus();
+      }
+    });
+  };
+
+  // Check REP thresholds
+  const checkRepThresholds = () => {
+    const thresholds = [
+      { points: 10, bonus: () => addToast('🌟 REP Threshold: +5% brand-related ROI unlocked!', 'success', 4000) },
+      { points: 25, bonus: () => addToast('🛡️ REP Threshold: Reduce one curveball penalty by 25%!', 'success', 4000) },
+      { points: 40, bonus: () => addToast('🌟 REP Threshold: +10% sponsorship payout unlocked!', 'success', 4000) },
+      { points: 60, bonus: () => addToast('⭐ REP Threshold: Market Icon status unlocked!', 'success', 4000) }
+    ];
+
+    thresholds.forEach(threshold => {
+      if (rep >= threshold.points && !repThresholdsUnlocked.includes(threshold.points)) {
+        setRepThresholdsUnlocked(prev => [...prev, threshold.points]);
+        threshold.bonus();
+      }
+    });
+  };
+
+  // Check Balance Bonus
+  const checkBalanceBonus = () => {
+    if (balanceBonusAwarded) return;
+    
+    const repCareerDiff = Math.abs(rep - career);
+    if (repCareerDiff <= 10 && rep >= 20 && career >= 20) {
+      setBalanceBonusAwarded(true);
+      setCash(prev => prev + 250000);
+      addToast('⚖️ Balance Bonus! +$250,000 + 5% ROI boost to one investment!', 'success', 5000);
+    }
+  };
+
+  // Check all thresholds and bonuses (call after REP/Career changes)
+  // Note: This function reads from state directly, so we don't need it in dependencies
+  const checkAllThresholds = () => {
+    checkCareerThresholds();
+    checkRepThresholds();
+    checkBalanceBonus();
+    checkInvestmentSets();
+  };
+
+  // Handle purple tab event selection
+  const handlePurpleEvent = (event) => {
+    setRep(prev => prev + event.rep);
+    setCareer(prev => prev + event.career);
+    setTimeout(() => checkAllThresholds(), 100);
+  };
 
   // Holds all players in multiplayer room
   const [roomPlayers, setRoomPlayers] = useState({});
   const [roomStatus, setRoomStatus] = useState(roomInfo?.status || "lobby");
   const roomId = roomInfo?.roomId;
+
+  // Tab navigation state
+  const [activeTab, setActiveTab] = useState('home');
   const currentPlayerId =
     roomInfo?.player?.player_id || roomInfo?.playerId || null;
   
@@ -128,8 +283,7 @@ function PlayerDashboard({
     return qualifiesEmpire;
   };
 
-  // Connection status tracking
-  const [connectionStatus, setConnectionStatus] = useState('connecting');
+  // Reconnection tracking (no UI shown to user)
   const [reconnectTrigger, setReconnectTrigger] = useState(0);
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimeoutRef = useRef(null);
@@ -162,6 +316,10 @@ function PlayerDashboard({
       if (typeof s.redCurveballLoss === 'number') setRedCurveballLoss(s.redCurveballLoss);
       if (typeof s.blueCurveballLoss === 'number') setBlueCurveballLoss(s.blueCurveballLoss);
       if (typeof s.lossAvoided === 'number') setLossAvoided(s.lossAvoided);
+      if (typeof s.balanceBonusAwarded === 'boolean') setBalanceBonusAwarded(s.balanceBonusAwarded);
+      if (Array.isArray(s.careerThresholdsUnlocked)) setCareerThresholdsUnlocked(s.careerThresholdsUnlocked);
+      if (Array.isArray(s.repThresholdsUnlocked)) setRepThresholdsUnlocked(s.repThresholdsUnlocked);
+      if (Array.isArray(s.investmentSetsAwarded)) setInvestmentSetsAwarded(s.investmentSetsAwarded);
 
     } catch (e) {
       console.error('Failed to parse saved game:', e);
@@ -190,6 +348,10 @@ function PlayerDashboard({
       redCurveballLoss,
       blueCurveballLoss,
       lossAvoided,
+      balanceBonusAwarded,
+      careerThresholdsUnlocked,
+      repThresholdsUnlocked,
+      investmentSetsAwarded,
       totalLaps,
     };
 
@@ -214,6 +376,10 @@ function PlayerDashboard({
     redCurveballLoss,
     blueCurveballLoss,
     lossAvoided,
+    balanceBonusAwarded,
+    careerThresholdsUnlocked,
+    repThresholdsUnlocked,
+    investmentSetsAwarded,
     totalLaps,
   ]);
 
@@ -309,21 +475,12 @@ function PlayerDashboard({
   // Reconnection logic with exponential backoff
   const attemptReconnect = useRef(() => {});
   attemptReconnect.current = () => {
-    if (reconnectAttemptsRef.current >= 5) {
-      setConnectionStatus('disconnected');
-      addToast('Connection failed. Please refresh the page.', 'error', 5000);
-      return;
-    }
+    if (reconnectAttemptsRef.current >= 5) return;
 
     reconnectAttemptsRef.current += 1;
     const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current - 1), 30000);
-    
-    setConnectionStatus('reconnecting');
-    addToast(`Reconnecting... (Attempt ${reconnectAttemptsRef.current}/5)`, 'warning', 3000);
 
     reconnectTimeoutRef.current = setTimeout(() => {
-      // Re-subscribe by triggering useEffect with reconnectTrigger
-      setConnectionStatus('connecting');
       // Force re-render to re-subscribe by incrementing trigger
       const currentChannel = channelRef.current;
       if (currentChannel) {
@@ -343,9 +500,6 @@ function PlayerDashboard({
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
-
-    console.log("🔴 Subscribing to realtime room:", roomId, reconnectTrigger > 0 ? "(Reconnecting)" : "");
-    setConnectionStatus('connecting');
 
     const channel = supabase
       .channel(`room_${roomId}`)
@@ -464,20 +618,8 @@ function PlayerDashboard({
         channelRef.current = channel;
         
         if (status === "SUBSCRIBED") {
-          console.log("✅ Successfully subscribed to player state");
-          setConnectionStatus('connected');
-          reconnectAttemptsRef.current = 0; // Reset on successful connection
-        } else if (status === "CHANNEL_ERROR") {
-          console.error("❌ Player state channel error");
-          setConnectionStatus('disconnected');
-          attemptReconnect.current();
-        } else if (status === "TIMED_OUT") {
-          console.warn("⚠️ Realtime subscription timed out");
-          setConnectionStatus('disconnected');
-          attemptReconnect.current();
-        } else if (status === "CLOSED") {
-          console.log("🔌 Realtime channel closed");
-          setConnectionStatus('disconnected');
+          reconnectAttemptsRef.current = 0;
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
           attemptReconnect.current();
         }
       });
@@ -706,6 +848,19 @@ function PlayerDashboard({
   // GAME LOGIC
   // =====================================================
 
+  // Switch to Profile tab when lap counter hits 100% so player can end the game
+  useEffect(() => {
+    if (totalLaps > 0 && laps >= totalLaps) {
+      setActiveTab('profile');
+    }
+  }, [laps, totalLaps]);
+
+  // Check thresholds when REP, Career, or investments change
+  useEffect(() => {
+    checkAllThresholds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rep, career, investments]);
+
   // Rate limiting: Track last purchase time
   const lastPurchaseTimeRef = useRef(0);
   const RATE_LIMIT_MS = 2000; // 2 seconds between purchases
@@ -805,7 +960,7 @@ function PlayerDashboard({
     }
 
     if (cardResult.type === 'luxury') {
-      const { cardTitle, cost, resale, rep: repGain, borrowed, interest } = cardResult;
+      const { cardTitle, cost, resale, borrowed, interest } = cardResult;
       
       if (!borrowed && cash < cost) {
         addToast('Insufficient funds for this purchase.', 'error', 3000);
@@ -824,7 +979,11 @@ function PlayerDashboard({
       } else {
         setCash(prev => prev - cost);
       }
+      
+      // Calculate REP from cost tier (automatic award)
+      const repGain = getRepFromCost(cost);
       setRep(prev => prev + repGain);
+      
       setLuxuries(prev => [...prev, {
         name: cardTitle,
         cost,
@@ -840,6 +999,9 @@ function PlayerDashboard({
         'success',
         3000
       );
+      
+      // Check thresholds after REP gain
+      setTimeout(() => checkAllThresholds(), 100);
     }
   };
 
@@ -875,11 +1037,29 @@ function PlayerDashboard({
 
       console.log('✅ AI summary received:', { summary: summary?.substring(0, 50) + '...', archetype });
 
-      // Clear local save
-      clearSave();
+      // Coach JBo: only in multiplayer with 4+ players
+      let coachJBoUnlocked = false;
+      if (roomInfo && currentPlayerId && Object.keys(roomPlayers).length >= 4) {
+        const merged = { ...roomPlayers };
+        merged[currentPlayerId] = {
+          ...merged[currentPlayerId],
+          player_id: currentPlayerId,
+          name: playerName,
+          cash,
+          luxuries,
+          rep,
+          career,
+          debt,
+          shadyDebt,
+          investments,
+        };
+        const result = selectCoachJBoWinner(merged);
+        if (result && result.winnerPlayerId === currentPlayerId) {
+          coachJBoUnlocked = true;
+        }
+      }
 
-      // Show final scoreboard with AI summary
-      showFinal({
+      const finalPayload = {
         playerName,
         avatar,
         cash,
@@ -894,14 +1074,36 @@ function PlayerDashboard({
         summary: summary || 'Summary generation failed. Your game data is still shown below.',
         archetype: archetype || 'The Hot Shot',
         totalLaps,
-      });
+        balanceBonusAwarded,
+        coachJBoUnlocked,
+      };
 
+      clearSave();
+      showFinal(finalPayload);
       addToast('Summary generated successfully!', 'success', 2000);
     } catch (error) {
       console.error('❌ Error generating AI summary:', error);
       addToast('Failed to generate summary. Showing results without AI analysis.', 'warning', 4000);
-      
-      // Still show final scoreboard even if AI summary fails
+
+      let coachJBoUnlocked = false;
+      if (roomInfo && currentPlayerId && Object.keys(roomPlayers).length >= 4) {
+        const merged = { ...roomPlayers };
+        merged[currentPlayerId] = {
+          ...merged[currentPlayerId],
+          player_id: currentPlayerId,
+          name: playerName,
+          cash,
+          luxuries,
+          rep,
+          career,
+          debt,
+          shadyDebt,
+          investments,
+        };
+        const result = selectCoachJBoWinner(merged);
+        if (result && result.winnerPlayerId === currentPlayerId) coachJBoUnlocked = true;
+      }
+
       clearSave();
       showFinal({
         playerName,
@@ -918,6 +1120,8 @@ function PlayerDashboard({
         summary: 'AI summary generation failed. Your game data is shown below.',
         archetype: 'The Hot Shot',
         totalLaps,
+        balanceBonusAwarded,
+        coachJBoUnlocked,
       });
     } finally {
       setIsGeneratingSummary(false);
@@ -928,6 +1132,10 @@ function PlayerDashboard({
   // RENDER
   // =====================================================
 
+  // Calculate quick stats for Home tab
+  const totalAssetValue = investments.reduce((sum, inv) => sum + (inv.newValue || 0), 0);
+  const progressPercentage = totalLaps > 0 ? Math.round((laps / totalLaps) * 100) : 0;
+
   return (
     <div
       className="min-h-screen bg-no-repeat bg-center bg-[length:100%_auto] sm:bg-cover"
@@ -936,159 +1144,364 @@ function PlayerDashboard({
       {/* Toast Notifications */}
       {roomInfo && <ToastContainer toasts={toasts} onRemove={removeToast} />}
       
-      <div className="max-w-md mx-auto px-4 py-6 space-y-6 bg-white/80 rounded-xl shadow-xl">
+      <div className="max-w-md mx-auto bg-white/80 rounded-xl shadow-xl">
         
-        {/* Connection Status Indicator */}
-        {roomInfo && (
-          <ConnectionStatus
-            status={connectionStatus}
-            onRetry={() => {
-              reconnectAttemptsRef.current = 0;
-              if (channelRef.current) {
-                supabase.removeChannel(channelRef.current);
-                channelRef.current = null;
-              }
-              setReconnectTrigger(prev => prev + 1);
-            }}
-          />
-        )}
-
-        {/* 💥 ROOM HUD DISPLAYED ONLY IN MULTIPLAYER */}
-        {roomInfo && (
-          <>
-            <RoomHUD
-              roomPlayers={roomPlayers}
-              currentPlayerId={currentPlayerId}
-              roomStatus={roomStatus}
-            />
-            {/* LEAVE ROOM BUTTON */}
-            <div className="bg-white rounded-xl shadow-md p-4">
+        {/* Tab Navigation */}
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+          <div className="flex">
+            <button
+              onClick={() => setActiveTab('home')}
+              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
+                activeTab === 'home'
+                  ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Home
+            </button>
+            <button
+              onClick={() => setActiveTab('cards')}
+              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
+                activeTab === 'cards'
+                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Investments
+            </button>
+            <button
+              onClick={() => setActiveTab('finance')}
+              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
+                activeTab === 'finance'
+                  ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Debt
+            </button>
+            <button
+              onClick={() => setActiveTab('curveballs')}
+              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
+                activeTab === 'curveballs'
+                  ? 'text-red-600 border-b-2 border-red-600 bg-red-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Events
+            </button>
+            {roomInfo && (
               <button
-                onClick={async () => {
-                  if (window.confirm("Are you sure you want to leave the room? Your progress will be saved.")) {
-                    const res = await leaveRoomRequest(roomId, currentPlayerId);
-                    if (res?.error) {
-                      console.error("❌ Leave room error:", res.error);
-                      alert("Failed to leave room: " + res.error);
-                    } else {
-                      // Clear local save for this room
-                      clearSave();
-                      onLeaveRoom?.();
-                    }
-                  }
-                }}
-                className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+                onClick={() => setActiveTab('leaderboard')}
+                className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
+                  activeTab === 'leaderboard'
+                    ? 'text-amber-600 border-b-2 border-amber-600 bg-amber-50'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
               >
-                Leave Room
+                Leaderboard
               </button>
-            </div>
-          </>
-        )}
-
-        <div className="bg-white rounded-xl shadow-md p-4 text-center space-y-1">
-          <h2 className="text-2xl font-bold text-gray-800">Player Dashboard</h2>
-          <p className="text-gray-600"><strong>Name:</strong> {playerName}</p>
-          <p className="text-gray-600"><strong>NIL Tier:</strong> {avatar}</p>
+            )}
+            <button
+              onClick={() => setActiveTab('profile')}
+              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
+                activeTab === 'profile'
+                  ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Profile
+            </button>
+          </div>
         </div>
 
-        <LapTracker
-          laps={laps}
-          totalLaps={totalLaps}
-          setLaps={setLaps}
-          investments={investments}
-          setInvestments={setInvestments}
-          setCash={setCash}
-          addToast={addToast}
-          showFinal={handleEndGame}
-          playerSnapshot={{ playerName, cash, luxuries, rep, career, debt, credit, curveballs, shadyDebt }}
-        />
+        {/* Tab Content */}
+        <div className="px-4 py-6 space-y-6">
+          {/* HOME TAB */}
+          {activeTab === 'home' && (
+            <>
+              {/* Player Dashboard */}
+              <div className="bg-white rounded-xl shadow-md p-4 text-center space-y-2">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <FaTrophy className="text-2xl text-yellow-500" />
+                  <h2 className="text-2xl font-bold text-gray-800">Player Dashboard</h2>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <FaUser className="text-lg text-gray-600" />
+                  <p className="text-gray-600"><strong>Name:</strong> {playerName}</p>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <FaBolt className="text-lg text-yellow-500" />
+                  <p className="text-gray-600"><strong>NIL Tier:</strong> {avatar}</p>
+                </div>
+              </div>
 
-        <CashTracker cash={cash} setCash={setCash} />
+              {/* Progress Section */}
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaFlagCheckered className="text-xl text-green-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Progress</h3>
+                </div>
+                <LapTracker
+                  laps={laps}
+                  totalLaps={totalLaps}
+                  setLaps={setLaps}
+                  investments={investments}
+                  setInvestments={setInvestments}
+                  setCash={setCash}
+                  addToast={addToast}
+                  showFinal={handleEndGame}
+                  playerSnapshot={{ playerName, cash, luxuries, rep, career, debt, credit, curveballs, shadyDebt }}
+                />
+              </div>
 
-        <CardSelector onSelect={handleCardSelection} investments={investments} />
+              {/* Cash Tracker */}
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaDollarSign className="text-xl text-green-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Cash Tracker</h3>
+                </div>
+                <CashTracker cash={cash} setCash={setCash} />
+              </div>
 
-        <InvestmentLog
-          investments={investments}
-          setInvestments={setInvestments}
-          setCash={setCash}
-        />
+              {/* Quick Stats */}
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <FaChartBar className="text-xl text-blue-600" />
+                  Quick Stats
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 flex items-center gap-2">
+                      <FaDollarSign className="text-green-600" /> Total Cash:
+                    </span>
+                    <span className="font-semibold text-gray-800">${cash.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 flex items-center gap-2">
+                      <FaChartLine className="text-blue-600" /> Progress:
+                    </span>
+                    <span className="font-semibold text-gray-800">{progressPercentage}%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 flex items-center gap-2">
+                      <FaBullseye className="text-green-600" /> Status:
+                    </span>
+                    <span className="font-semibold text-green-600">Active</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 flex items-center gap-2">
+                      <FaDiamondIcon className="text-blue-600" /> Total Asset Value:
+                    </span>
+                    <span className="font-semibold text-green-600">${totalAssetValue.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
-        <LuxuryLog
-          luxuries={luxuries}
-          setLuxuries={setLuxuries}
-          setCash={setCash}
-          setRep={setRep}
-        />
+          {/* CARDS TAB */}
+          {activeTab === 'cards' && (
+            <>
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaTh className="text-xl text-blue-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Card Selector</h3>
+                </div>
+                <CardSelector onSelect={handleCardSelection} investments={investments} />
+              </div>
 
-        <DebtCreditTracker
-          cash={cash}
-          setCash={setCash}
-          debt={debt}
-          setDebt={setDebt}
-          credit={credit}
-          setCredit={setCredit}
-        />
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaChartLine className="text-xl text-blue-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Investments</h3>
+                </div>
+                <InvestmentLog
+                  investments={investments}
+                  setInvestments={setInvestments}
+                  setCash={setCash}
+                />
+              </div>
 
-        <DrawFromAsset
-          investments={investments}
-          setInvestments={setInvestments}
-          cash={cash}
-          setCash={setCash}
-        />
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaGem className="text-xl text-purple-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Luxuries</h3>
+                </div>
+                <LuxuryLog
+                  luxuries={luxuries}
+                  setLuxuries={setLuxuries}
+                  setCash={setCash}
+                  setRep={setRep}
+                />
+              </div>
 
-        <LifeInsuranceManager
-          investments={investments}
-          setInvestments={setInvestments}
-          setCash={setCash}
-          addToast={addToast}
-        />
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaMoneyBillWave className="text-xl text-green-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Draw from Assets</h3>
+                </div>
+                <DrawFromAsset
+                  investments={investments}
+                  setInvestments={setInvestments}
+                  cash={cash}
+                  setCash={setCash}
+                />
+              </div>
 
-        <AnnuityManager
-          investments={investments}
-          setInvestments={setInvestments}
-          setCash={setCash}
-          laps={laps}
-          addToast={addToast}
-        />
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaShieldAlt className="text-xl text-blue-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Life Insurance</h3>
+                </div>
+                <LifeInsuranceManager
+                  investments={investments}
+                  setInvestments={setInvestments}
+                  setCash={setCash}
+                  addToast={addToast}
+                />
+              </div>
 
-        <CurveballSection
-          curveballs={curveballs}
-          setCurveballs={setCurveballs}
-          setCash={setCash}
-          setRep={setRep}
-          setShadyDebt={setShadyDebt}
-          onCurveballLoss={handleCurveballLoss}
-          onLossAvoided={handleLossAvoided}
-          investments={investments}
-          setInvestments={setInvestments}
-          redCurveballLoss={redCurveballLoss}
-          blueCurveballLoss={blueCurveballLoss}
-        />
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaChartBar className="text-xl text-indigo-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Annuities</h3>
+                </div>
+                <AnnuityManager
+                  investments={investments}
+                  setInvestments={setInvestments}
+                  setCash={setCash}
+                  laps={laps}
+                  addToast={addToast}
+                />
+              </div>
+            </>
+          )}
 
-        <RepCareerPoints
-          rep={rep}
-          career={career}
-          setRep={setRep}
-          setCareer={setCareer}
-        />
+          {/* FINANCE TAB */}
+          {activeTab === 'finance' && (
+            <>
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaCreditCard className="text-xl text-purple-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Debt & Credit</h3>
+                </div>
+                <DebtCreditTracker
+                  cash={cash}
+                  setCash={setCash}
+                  debt={debt}
+                  setDebt={setDebt}
+                  credit={credit}
+                  setCredit={setCredit}
+                />
+              </div>
+            </>
+          )}
 
-        <FinalNetWorth
-          cash={cash}
-          luxuries={luxuries}
-          rep={rep}
-          career={career}
-          credit={credit}
-          debt={debt}
-          curveballs={curveballs}
-          playerName={playerName}
-          shadyDebt={shadyDebt}
-          investments={investments}
-          lossAvoided={lossAvoided}
-          protectionTier={calculateProtectionTier()}
-          empireStatus={calculateEmpireStatus()}
-          showFinal={handleEndGame}
-          isGeneratingSummary={isGeneratingSummary}
-        />
+          {/* CURVEBALLS TAB */}
+          {activeTab === 'curveballs' && (
+            <>
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaBolt className="text-xl text-red-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Curveballs</h3>
+                </div>
+                <CurveballSection
+                  curveballs={curveballs}
+                  setCurveballs={setCurveballs}
+                  setCash={setCash}
+                  setRep={setRep}
+                  setShadyDebt={setShadyDebt}
+                  onCurveballLoss={handleCurveballLoss}
+                  onLossAvoided={handleLossAvoided}
+                  investments={investments}
+                  setInvestments={setInvestments}
+                  redCurveballLoss={redCurveballLoss}
+                  blueCurveballLoss={blueCurveballLoss}
+                />
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaStar className="text-xl text-yellow-500" />
+                  <h3 className="text-lg font-semibold text-gray-800">REP & Career Points</h3>
+                </div>
+                <RepCareerPoints
+                  rep={rep}
+                  career={career}
+                />
+              </div>
+
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <PurpleTab
+                  onSelect={handlePurpleEvent}
+                  addToast={addToast}
+                />
+              </div>
+            </>
+          )}
+
+          {/* LEADERBOARD TAB (multiplayer only) */}
+          {roomInfo && activeTab === 'leaderboard' && (
+            <>
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <RoomHUD
+                  roomPlayers={roomPlayers}
+                  currentPlayerId={currentPlayerId}
+                  roomStatus={roomStatus}
+                />
+              </div>
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <button
+                  onClick={async () => {
+                    if (window.confirm("Are you sure you want to leave the room? Your progress will be saved.")) {
+                      const res = await leaveRoomRequest(roomId, currentPlayerId);
+                      if (res?.error) {
+                        console.error("❌ Leave room error:", res.error);
+                        alert("Failed to leave room: " + res.error);
+                      } else {
+                        clearSave();
+                        onLeaveRoom?.();
+                      }
+                    }
+                  }}
+                  className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+                >
+                  Leave Room
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* PROFILE TAB */}
+          {activeTab === 'profile' && (
+            <>
+              <div className="bg-white rounded-xl shadow-md p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <FaIdCard className="text-xl text-indigo-600" />
+                  <h3 className="text-lg font-semibold text-gray-800">Final Net Worth</h3>
+                </div>
+                <FinalNetWorth
+                  cash={cash}
+                  luxuries={luxuries}
+                  rep={rep}
+                  career={career}
+                  credit={credit}
+                  debt={debt}
+                  curveballs={curveballs}
+                  playerName={playerName}
+                  shadyDebt={shadyDebt}
+                  investments={investments}
+                  balanceBonusAwarded={balanceBonusAwarded}
+                  lossAvoided={lossAvoided}
+                  protectionTier={calculateProtectionTier()}
+                  empireStatus={calculateEmpireStatus()}
+                  showFinal={handleEndGame}
+                  isGeneratingSummary={isGeneratingSummary}
+                />
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

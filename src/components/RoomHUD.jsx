@@ -80,11 +80,13 @@ export default function RoomHUD({ roomPlayers, currentPlayerId, roomStatus }) {
     const luxuryResale = Array.isArray(luxuries)
       ? luxuries.reduce((acc, item) => acc + (item.resale || 0), 0)
       : 0;
-    const repValue = rep * 2500;
-    const careerValue = career * 5000;
+    // Updated scoring formula per PDF: rep * 5000, career * 10000, balance bonus +250000
+    const repValue = rep * 5000;
+    const careerValue = career * 10000;
     const creditBonus = credit >= 700 ? 10000 : credit >= 600 ? 5000 : credit >= 500 ? 2000 : 0;
+    const balanceBonusValue = (player.balanceBonusAwarded || false) ? 250000 : 0;
     
-    return cash + investmentReturns + luxuryResale + repValue + careerValue + creditBonus - debt - shadyDebt;
+    return cash + investmentReturns + luxuryResale + repValue + careerValue + creditBonus + balanceBonusValue - debt - shadyDebt;
   };
 
   // Sort players by NET WORTH (top to bottom)

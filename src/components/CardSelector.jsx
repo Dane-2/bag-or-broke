@@ -15,7 +15,9 @@ const tabs = {
     'All', 'Style', 'Vehicle', 'Event', 'Travel', 'Lifestyle',
     'Career/Brand', 'Business/Flex', 'Social Flex', 'Brand/Flex',
     'Flex/Travel', 'Content', 'Style/Flex', 'Brand/Image', 'Flex/Marketing',
-    'Style/Brand'
+    'Style/Brand', 'Brand Image', 'Flex Marketing', 'Access Luxury',
+    'Ownership Flex', 'Security & Privacy', 'Performance Luxury',
+    'Time Luxury', 'Family / Loyalty Flex'
   ]
 };
 
