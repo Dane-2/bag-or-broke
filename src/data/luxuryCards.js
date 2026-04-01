@@ -24,7 +24,7 @@ const luxuryCards = [
   { id: 'L23', title: 'NIL Giveaway Campaign', cost: 40000, resale: 15000, rep: 1, category: 'Social Flex' },
   { id: 'L24', title: 'NIL Promo Van Wrap', cost: 55000, resale: 22000, rep: 2, category: 'Brand/Flex' },
   { id: 'L25', title: 'Hair & Grooming Sponsorship', cost: 10000, resale: 4000, rep: 1, category: 'Style' },
-  { id: 'L26', title: 'Tricked-Out Jeep or Charger', cost: 70000, resale: 30000, rep: 2, category: 'Vehicle' },
+  { id: 'L26', title: 'Tricked-Out Car', cost: 70000, resale: 30000, rep: 2, category: 'Vehicle' },
   { id: 'L27', title: 'NIL Weekend Mansion Rental', cost: 85000, resale: 35000, rep: 2, category: 'Flex/Travel' },
   { id: 'L28', title: 'Home Studio Setup', cost: 45000, resale: 20000, rep: 2, category: 'Content' },
   { id: 'L29', title: 'NIL Room Makeover Collab', cost: 30000, resale: 12000, rep: 1, category: 'Lifestyle' },
