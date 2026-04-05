@@ -21,10 +21,23 @@ const tabs = {
   ]
 };
 
-export default function CardSelector({ onSelect, investments = [] }) {
-  const [cardType, setCardType] = useState('');
+const glassPanel =
+  'rounded-2xl bg-white/20 backdrop-blur-lg border border-white/30 shadow-lg';
+const selectClass =
+  'w-full px-4 py-3 rounded-2xl border border-white/40 bg-white/30 backdrop-blur-md text-slate-900 text-base font-medium focus:outline-none focus:ring-2 focus:ring-cyan-400/80';
+
+export default function CardSelector({ onSelect, investments = [], forcedCardType = null }) {
+  const [cardType, setCardType] = useState(forcedCardType || '');
   const [activeTab, setActiveTab] = useState('All');
   const [selectedCard, setSelectedCard] = useState(null);
+
+  useEffect(() => {
+    if (forcedCardType) {
+      setCardType(forcedCardType);
+      setActiveTab('All');
+      setSelectedCard(null);
+    }
+  }, [forcedCardType]);
 
   // shared purchase state
   const [paymentMethod, setPaymentMethod] = useState('cash');
@@ -279,43 +292,50 @@ export default function CardSelector({ onSelect, investments = [] }) {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Styled Dropdown Selector */}
-      <div className="bg-white rounded-xl shadow-md p-4 text-center space-y-2">
-        <h3 className="text-lg font-semibold text-blue-700">🎴 Card Selector</h3>
-        <select
-          value={cardType}
-          onChange={(e) => {
-            setCardType(e.target.value);
-            setActiveTab('All');
-            setSelectedCard(null);
-          }}
-          className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">-- Select Card Type --</option>
-          <option value="investment">💼 Investment Cards</option>
-          <option value="luxury">💎 Luxury Cards</option>
-        </select>
-      </div>
+    <div className="space-y-4 md:space-y-6">
+      {!forcedCardType && (
+        <div className={`${glassPanel} p-4 md:p-6 text-center space-y-3`}>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">🎴 Card type</h3>
+          <select
+            value={cardType}
+            onChange={(e) => {
+              setCardType(e.target.value);
+              setActiveTab('All');
+              setSelectedCard(null);
+            }}
+            className={`mt-1 ${selectClass}`}
+          >
+            <option value="">-- Select Card Type --</option>
+            <option value="investment">💼 Investment Cards</option>
+            <option value="luxury">💎 Luxury Cards</option>
+          </select>
+        </div>
+      )}
 
-      {/* Tabs and Cards */}
       {cardType && (
         <>
-          <div className="flex flex-wrap gap-2">
-            {tabs[cardType].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1 rounded-full border text-sm ${
-                  activeTab === tab ? 'bg-black text-white' : 'bg-white text-black'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+          <div className={`${glassPanel} p-4 md:p-5`}>
+            <label
+              htmlFor={`card-category-${cardType}`}
+              className="block text-xs font-semibold uppercase tracking-wide text-slate-800 mb-2"
+            >
+              Category
+            </label>
+            <select
+              id={`card-category-${cardType}`}
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className={selectClass}
+            >
+              {tabs[cardType].map((tab) => (
+                <option key={tab} value={tab}>
+                  {tab}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
             {filtered.map((card) => {
               const reqCheck = checkRequirements(card);
               const isDisabled = !reqCheck.valid;
@@ -336,35 +356,35 @@ export default function CardSelector({ onSelect, investments = [] }) {
 
       {/* Investment Apply Panel */}
       {cardType === 'investment' && selectedCard && (
-        <div ref={paymentSectionRef} className="mt-2 rounded-xl border shadow-sm bg-white">
-          <div className="p-4 space-y-3">
+        <div ref={paymentSectionRef} className={`${glassPanel} mt-2 overflow-hidden`}>
+          <div className="p-4 md:p-6 space-y-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-base font-semibold">
-                  Play Investment: <span className="text-blue-700">{selectedCard.title}</span>
-                </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">Play investment</p>
+                <h3 className="text-base font-bold text-slate-900">{selectedCard.title}</h3>
+                <p className="text-sm text-slate-700 mt-1">
                   Cost: ${Number(selectedCard.cost).toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600">
-                  Risk: <span className="font-medium">{selectedCard.availableRisks?.[0] || '—'}</span>
+                <p className="text-sm text-slate-700">
+                  Risk: <span className="font-semibold">{selectedCard.availableRisks?.[0] || '—'}</span>
                 </p>
               </div>
               <button
+                type="button"
                 onClick={cancelApply}
-                className="text-sm px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
+                className="text-sm px-3 py-1.5 rounded-full bg-white/30 border border-white/40 text-slate-800 hover:bg-white/45 shrink-0"
               >
                 Close
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                <label className="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2">Payment method</label>
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2.5 rounded-xl border border-white/40 bg-white/25 text-slate-900"
                   disabled={selectedCard.cashOnly === true}
                 >
                   <option value="cash">Pay with Cash</option>
@@ -373,18 +393,18 @@ export default function CardSelector({ onSelect, investments = [] }) {
                   </option>
                 </select>
                 {selectedCard.cashOnly && (
-                  <p className="text-xs text-gray-500 mt-1">Cash purchase only</p>
+                  <p className="text-xs text-slate-600 mt-1.5">Cash purchase only</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Dice Roll (1–6) {selectedCard.noDice ? '(Not Required)' : ''}
+                <label className="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2">
+                  Dice roll (1–6) {selectedCard.noDice ? '(not required)' : ''}
                 </label>
                 <select
                   value={diceRoll}
                   onChange={(e) => setDiceRoll(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2.5 rounded-xl border border-white/40 bg-white/25 text-slate-900"
                   disabled={selectedCard.noDice === true}
                 >
                   <option value="">--</option>
@@ -393,22 +413,24 @@ export default function CardSelector({ onSelect, investments = [] }) {
                   ))}
                 </select>
                 {selectedCard.noDice && (
-                  <p className="text-xs text-gray-500 mt-1">No dice roll required</p>
+                  <p className="text-xs text-slate-600 mt-1.5">No dice roll required</p>
                 )}
               </div>
             </div>
 
-            <div className="flex gap-3 pt-1">
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <button
+                type="button"
                 onClick={applyInvestment}
-                className="px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-green-700 disabled:opacity-45 disabled:cursor-not-allowed transition"
                 disabled={!selectedCard.noDice && !diceRoll}
               >
-                {selectedCard.noDice ? 'Purchase Investment' : 'Apply Investment Result'}
+                {selectedCard.noDice ? 'Purchase investment' : 'Apply investment result'}
               </button>
               <button
+                type="button"
                 onClick={cancelApply}
-                className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
+                className="px-4 py-3 rounded-2xl bg-white/25 border border-white/40 text-slate-800 font-semibold hover:bg-white/35 transition"
               >
                 Cancel
               </button>
@@ -419,54 +441,55 @@ export default function CardSelector({ onSelect, investments = [] }) {
 
       {/* Luxury Apply Panel (no dice) */}
       {cardType === 'luxury' && selectedCard && (
-        <div ref={paymentSectionRef} className="mt-2 rounded-xl border shadow-sm bg-white">
-          <div className="p-4 space-y-3">
+        <div ref={paymentSectionRef} className={`${glassPanel} mt-2 overflow-hidden`}>
+          <div className="p-4 md:p-6 space-y-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-base font-semibold">
-                  Buy Luxury: <span className="text-rose-700">{selectedCard.title}</span>
-                </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">Buy luxury</p>
+                <h3 className="text-base font-bold text-slate-900">{selectedCard.title}</h3>
+                <p className="text-sm text-slate-700 mt-1">
                   Cost: ${Number(selectedCard.cost).toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-slate-700">
                   Resale: ${Number(selectedCard.resale).toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600">REP: +{Number(selectedCard.rep)}</p>
+                <p className="text-sm font-semibold text-amber-800">REP: +{Number(selectedCard.rep)}</p>
               </div>
               <button
+                type="button"
                 onClick={cancelApply}
-                className="text-sm px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
+                className="text-sm px-3 py-1.5 rounded-full bg-white/30 border border-white/40 text-slate-800 hover:bg-white/45 shrink-0"
               >
                 Close
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                <label className="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2">Payment method</label>
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2.5 rounded-xl border border-white/40 bg-white/25 text-slate-900"
                 >
                   <option value="cash">Pay with Cash</option>
                   <option value="finance">Finance (25% interest)</option>
                 </select>
               </div>
-              {/* no dice for luxury */}
             </div>
 
-            <div className="flex gap-3 pt-1">
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <button
+                type="button"
                 onClick={applyLuxury}
-                className="px-4 py-2 rounded-md bg-rose-600 text-white font-semibold hover:bg-rose-700"
+                className="flex-1 px-4 py-3 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-violet-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:from-fuchsia-600 hover:to-violet-700 transition"
               >
-                Confirm Purchase
+                Confirm purchase
               </button>
               <button
+                type="button"
                 onClick={cancelApply}
-                className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
+                className="px-4 py-3 rounded-2xl bg-white/25 border border-white/40 text-slate-800 font-semibold hover:bg-white/35 transition"
               >
                 Cancel
               </button>

@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
-  FaTrophy, FaUser, FaBolt, FaFlagCheckered, FaDollarSign, FaChartBar, 
+  FaTrophy, FaUser, FaBolt, FaChartBar, 
   FaCreditCard, FaGem, FaChartLine, FaShieldAlt, FaMoneyBillWave, 
-  FaStar, FaIdCard, FaTh, FaBullseye, FaGem as FaDiamondIcon
+  FaStar, FaIdCard, FaTh, FaHome
 } from 'react-icons/fa';
 import CardSelector from './CardSelector';
 
 import LapTracker from './LapTracker';
-import CashTracker from './CashTracker';
+import CashTracker, { promptAddCashAmount, promptSubtractCashAmount } from './CashTracker';
 import InvestmentLog from './InvestmentLog';
 import LuxuryLog from './LuxuryLog';
 import DebtCreditTracker from './DebtCreditTracker';
@@ -1132,115 +1132,120 @@ function PlayerDashboard({
   // RENDER
   // =====================================================
 
-  // Calculate quick stats for Home tab
-  const totalAssetValue = investments.reduce((sum, inv) => sum + (inv.newValue || 0), 0);
-  const progressPercentage = totalLaps > 0 ? Math.round((laps / totalLaps) * 100) : 0;
+  const glassSection = 'rounded-2xl bg-white/20 backdrop-blur-lg border border-white/30 shadow-lg p-4 md:p-6';
+  const displayYear =
+    laps >= totalLaps ? totalLaps : Math.min(laps + 1, totalLaps);
+  const primaryNavIds = ['home', 'invest', 'luxury', 'finance', 'curveballs'];
+  const navItemActive = (id) => primaryNavIds.includes(activeTab) && activeTab === id;
 
   return (
-    <div
-      className="min-h-screen bg-no-repeat bg-center bg-[length:100%_auto] sm:bg-cover"
-      style={{ backgroundImage: "url('/moneyBG.png')" }}
-    >
-      {/* Toast Notifications */}
+    <div className="min-h-[100dvh] bg-gradient-to-br from-sky-400 via-blue-500 to-cyan-400">
       {roomInfo && <ToastContainer toasts={toasts} onRemove={removeToast} />}
-      
-      <div className="max-w-md mx-auto bg-white/80 rounded-xl shadow-xl">
-        
-        {/* Tab Navigation */}
-        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-          <div className="flex">
-            <button
-              onClick={() => setActiveTab('home')}
-              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
-                activeTab === 'home'
-                  ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              Home
-            </button>
-            <button
-              onClick={() => setActiveTab('cards')}
-              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
-                activeTab === 'cards'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              Investments
-            </button>
-            <button
-              onClick={() => setActiveTab('finance')}
-              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
-                activeTab === 'finance'
-                  ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              Debt
-            </button>
-            <button
-              onClick={() => setActiveTab('curveballs')}
-              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
-                activeTab === 'curveballs'
-                  ? 'text-red-600 border-b-2 border-red-600 bg-red-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              Events
-            </button>
+
+      <div className="max-w-md mx-auto min-h-[100dvh] px-4 pt-4 pb-28">
+        {/* Top bar */}
+        <header className="flex items-start justify-between gap-3 mb-6">
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-900/70">NIL Money Moves</p>
+            <h1 className="text-xl font-bold text-slate-950 truncate mt-0.5">{playerName}</h1>
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/35 backdrop-blur-md border border-white/40 px-3 py-1 text-xs font-semibold text-slate-900">
+                <FaBolt className="text-amber-500 shrink-0" aria-hidden />
+                {avatar}
+              </span>
+              <span className="text-xs font-medium text-slate-900/80 tabular-nums">
+                Year {displayYear} of {totalLaps}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
             {roomInfo && (
               <button
+                type="button"
                 onClick={() => setActiveTab('leaderboard')}
-                className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
+                className={`p-2.5 rounded-2xl border transition ${
                   activeTab === 'leaderboard'
-                    ? 'text-amber-600 border-b-2 border-amber-600 bg-amber-50'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'bg-white/40 border-white/50 text-slate-900 shadow-md'
+                    : 'bg-white/20 border-white/30 text-slate-900 hover:bg-white/30'
                 }`}
+                aria-label="Leaderboard"
               >
-                Leaderboard
+                <FaTrophy className="text-lg text-amber-700" />
               </button>
             )}
             <button
+              type="button"
               onClick={() => setActiveTab('profile')}
-              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors ${
+              className={`p-2.5 rounded-2xl border transition ${
                 activeTab === 'profile'
-                  ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'bg-white/40 border-white/50 text-slate-900 shadow-md'
+                  : 'bg-white/20 border-white/30 text-slate-900 hover:bg-white/30'
               }`}
+              aria-label="Profile"
             >
-              Profile
+              <FaUser className="text-lg text-slate-800" />
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* Tab Content */}
-        <div className="px-4 py-6 space-y-6">
-          {/* HOME TAB */}
+        <div className="space-y-4 md:space-y-6">
           {activeTab === 'home' && (
             <>
-              {/* Player Dashboard */}
-              <div className="bg-white rounded-xl shadow-md p-4 text-center space-y-2">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <FaTrophy className="text-2xl text-yellow-500" />
-                  <h2 className="text-2xl font-bold text-gray-800">Player Dashboard</h2>
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <FaUser className="text-lg text-gray-600" />
-                  <p className="text-gray-600"><strong>Name:</strong> {playerName}</p>
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <FaBolt className="text-lg text-yellow-500" />
-                  <p className="text-gray-600"><strong>NIL Tier:</strong> {avatar}</p>
+              {/* Hero — cash */}
+              <div
+                className={`${glassSection} relative overflow-hidden bg-gradient-to-br from-emerald-100/50 via-white/25 to-teal-100/40`}
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-green-400/10 to-transparent pointer-events-none" />
+                <div className="relative">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-700/90 mb-1">Cash balance</p>
+                  <div className="mb-4">
+                    <CashTracker cash={cash} setCash={setCash} variant="amountOnly" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 mb-5 text-sm">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">Credit score</p>
+                      <p className="text-lg font-bold text-slate-900 tabular-nums">{credit}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-red-900/70">Total debt</p>
+                      <p className="text-lg font-bold text-red-900 tabular-nums">${debt.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => promptAddCashAmount(setCash)}
+                      className="flex-1 rounded-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-sm font-semibold shadow-lg shadow-emerald-500/30 hover:from-emerald-600 hover:to-green-700 transition"
+                    >
+                      + Add Cash
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => promptSubtractCashAmount(setCash)}
+                      className="flex-1 rounded-full py-3 px-4 bg-white/35 backdrop-blur-md border border-white/50 text-red-900 text-sm font-semibold shadow-lg hover:bg-white/45 transition"
+                    >
+                      − Spend Cash
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Progress Section */}
-              <div className="bg-white rounded-xl shadow-md p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <FaFlagCheckered className="text-xl text-green-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Progress</h3>
+              {/* REP + Career */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className={`${glassSection} flex flex-col items-center text-center`}>
+                  <FaStar className="text-2xl text-amber-500 mb-2" aria-hidden />
+                  <p className="text-2xl font-black text-slate-950 tabular-nums">{rep}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-700 mt-1">REP</p>
                 </div>
+                <div className={`${glassSection} flex flex-col items-center text-center`}>
+                  <FaChartLine className="text-2xl text-violet-600 mb-2" aria-hidden />
+                  <p className="text-2xl font-black text-slate-950 tabular-nums">{career}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-700 mt-1">Career</p>
+                </div>
+              </div>
+
+              {/* Game progress */}
+              <div className={glassSection}>
                 <LapTracker
                   laps={laps}
                   totalLaps={totalLaps}
@@ -1249,71 +1254,51 @@ function PlayerDashboard({
                   setInvestments={setInvestments}
                   setCash={setCash}
                   addToast={addToast}
-                  showFinal={handleEndGame}
-                  playerSnapshot={{ playerName, cash, luxuries, rep, career, debt, credit, curveballs, shadyDebt }}
+                  embedded
                 />
               </div>
 
-              {/* Cash Tracker */}
-              <div className="bg-white rounded-xl shadow-md p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <FaDollarSign className="text-xl text-green-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Cash Tracker</h3>
-                </div>
-                <CashTracker cash={cash} setCash={setCash} />
+              {/* Quick actions grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { id: 'invest', label: 'Invest', icon: FaChartLine },
+                  { id: 'luxury', label: 'Luxury', icon: FaGem },
+                  { id: 'finance', label: 'Finance', icon: FaCreditCard },
+                  { id: 'curveballs', label: 'Events', icon: FaBolt },
+                ].map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setActiveTab(id)}
+                    className="rounded-2xl bg-white/20 backdrop-blur-lg border border-white/35 shadow-lg p-4 flex flex-col items-center gap-2 hover:bg-white/30 transition active:scale-[0.98]"
+                  >
+                    <Icon className="text-2xl text-slate-900" aria-hidden />
+                    <span className="text-sm font-bold text-slate-900">{label}</span>
+                  </button>
+                ))}
               </div>
 
-              {/* Quick Stats */}
-              <div className="bg-white rounded-xl shadow-md p-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                  <FaChartBar className="text-xl text-blue-600" />
-                  Quick Stats
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 flex items-center gap-2">
-                      <FaDollarSign className="text-green-600" /> Total Cash:
-                    </span>
-                    <span className="font-semibold text-gray-800">${cash.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 flex items-center gap-2">
-                      <FaChartLine className="text-blue-600" /> Progress:
-                    </span>
-                    <span className="font-semibold text-gray-800">{progressPercentage}%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 flex items-center gap-2">
-                      <FaBullseye className="text-green-600" /> Status:
-                    </span>
-                    <span className="font-semibold text-green-600">Active</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 flex items-center gap-2">
-                      <FaDiamondIcon className="text-blue-600" /> Total Asset Value:
-                    </span>
-                    <span className="font-semibold text-green-600">${totalAssetValue.toLocaleString()}</span>
-                  </div>
-                </div>
-              </div>
             </>
           )}
 
-          {/* CARDS TAB */}
-          {activeTab === 'cards' && (
+          {activeTab === 'invest' && (
             <>
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
-                  <FaTh className="text-xl text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Card Selector</h3>
+                  <FaTh className="text-xl text-slate-800" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Investments</h3>
                 </div>
-                <CardSelector onSelect={handleCardSelection} investments={investments} />
+                <CardSelector
+                  onSelect={handleCardSelection}
+                  investments={investments}
+                  forcedCardType="investment"
+                />
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
-                  <FaChartLine className="text-xl text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Investments</h3>
+                  <FaChartLine className="text-xl text-slate-800" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Your portfolio</h3>
                 </div>
                 <InvestmentLog
                   investments={investments}
@@ -1322,23 +1307,10 @@ function PlayerDashboard({
                 />
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
-                  <FaGem className="text-xl text-purple-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Luxuries</h3>
-                </div>
-                <LuxuryLog
-                  luxuries={luxuries}
-                  setLuxuries={setLuxuries}
-                  setCash={setCash}
-                  setRep={setRep}
-                />
-              </div>
-
-              <div className="bg-white rounded-xl shadow-md p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <FaMoneyBillWave className="text-xl text-green-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Draw from Assets</h3>
+                  <FaMoneyBillWave className="text-xl text-emerald-700" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Draw from assets</h3>
                 </div>
                 <DrawFromAsset
                   investments={investments}
@@ -1348,10 +1320,10 @@ function PlayerDashboard({
                 />
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
-                  <FaShieldAlt className="text-xl text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Life Insurance</h3>
+                  <FaShieldAlt className="text-xl text-slate-800" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Life insurance</h3>
                 </div>
                 <LifeInsuranceManager
                   investments={investments}
@@ -1361,10 +1333,10 @@ function PlayerDashboard({
                 />
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
-                  <FaChartBar className="text-xl text-indigo-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Annuities</h3>
+                  <FaChartBar className="text-xl text-violet-700" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Annuities</h3>
                 </div>
                 <AnnuityManager
                   investments={investments}
@@ -1377,33 +1349,58 @@ function PlayerDashboard({
             </>
           )}
 
-          {/* FINANCE TAB */}
-          {activeTab === 'finance' && (
+          {activeTab === 'luxury' && (
             <>
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
-                  <FaCreditCard className="text-xl text-purple-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Debt & Credit</h3>
+                  <FaGem className="text-xl text-fuchsia-700" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Luxury picks</h3>
                 </div>
-                <DebtCreditTracker
-                  cash={cash}
+                <CardSelector
+                  onSelect={handleCardSelection}
+                  investments={investments}
+                  forcedCardType="luxury"
+                />
+              </div>
+
+              <div className={glassSection}>
+                <div className="flex items-center gap-2 mb-4">
+                  <FaGem className="text-xl text-violet-700" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Owned luxuries</h3>
+                </div>
+                <LuxuryLog
+                  luxuries={luxuries}
+                  setLuxuries={setLuxuries}
                   setCash={setCash}
-                  debt={debt}
-                  setDebt={setDebt}
-                  credit={credit}
-                  setCredit={setCredit}
+                  setRep={setRep}
                 />
               </div>
             </>
           )}
 
-          {/* CURVEBALLS TAB */}
+          {activeTab === 'finance' && (
+            <div className={glassSection}>
+              <div className="flex items-center gap-2 mb-4">
+                <FaCreditCard className="text-xl text-violet-700" />
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Debt &amp; credit</h3>
+              </div>
+              <DebtCreditTracker
+                cash={cash}
+                setCash={setCash}
+                debt={debt}
+                setDebt={setDebt}
+                credit={credit}
+                setCredit={setCredit}
+              />
+            </div>
+          )}
+
           {activeTab === 'curveballs' && (
             <>
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
-                  <FaBolt className="text-xl text-red-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Curveballs</h3>
+                  <FaBolt className="text-xl text-red-700" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Events</h3>
                 </div>
                 <CurveballSection
                   curveballs={curveballs}
@@ -1420,89 +1417,116 @@ function PlayerDashboard({
                 />
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
-                  <FaStar className="text-xl text-yellow-500" />
-                  <h3 className="text-lg font-semibold text-gray-800">REP & Career Points</h3>
+                  <FaStar className="text-xl text-amber-600" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">REP &amp; career</h3>
                 </div>
-                <RepCareerPoints
-                  rep={rep}
-                  career={career}
-                />
+                <RepCareerPoints rep={rep} career={career} />
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4">
-                <PurpleTab
-                  onSelect={handlePurpleEvent}
-                  addToast={addToast}
-                />
+              <div className={glassSection}>
+                <PurpleTab onSelect={handlePurpleEvent} addToast={addToast} />
               </div>
             </>
           )}
 
-          {/* LEADERBOARD TAB (multiplayer only) */}
           {roomInfo && activeTab === 'leaderboard' && (
             <>
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <RoomHUD
                   roomPlayers={roomPlayers}
                   currentPlayerId={currentPlayerId}
                   roomStatus={roomStatus}
                 />
               </div>
-              <div className="bg-white rounded-xl shadow-md p-4">
+              <div className={glassSection}>
                 <button
+                  type="button"
                   onClick={async () => {
-                    if (window.confirm("Are you sure you want to leave the room? Your progress will be saved.")) {
+                    if (
+                      window.confirm(
+                        'Are you sure you want to leave the room? Your progress will be saved.'
+                      )
+                    ) {
                       const res = await leaveRoomRequest(roomId, currentPlayerId);
                       if (res?.error) {
-                        console.error("❌ Leave room error:", res.error);
-                        alert("Failed to leave room: " + res.error);
+                        console.error('❌ Leave room error:', res.error);
+                        alert('Failed to leave room: ' + res.error);
                       } else {
                         clearSave();
                         onLeaveRoom?.();
                       }
                     }
                   }}
-                  className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+                  className="w-full rounded-2xl bg-gradient-to-r from-red-500 to-rose-600 text-white py-3 font-semibold shadow-lg shadow-red-500/25 hover:from-red-600 hover:to-rose-700 transition"
                 >
-                  Leave Room
+                  Leave room
                 </button>
               </div>
             </>
           )}
 
-          {/* PROFILE TAB */}
           {activeTab === 'profile' && (
-            <>
-              <div className="bg-white rounded-xl shadow-md p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <FaIdCard className="text-xl text-indigo-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Final Net Worth</h3>
-                </div>
-                <FinalNetWorth
-                  cash={cash}
-                  luxuries={luxuries}
-                  rep={rep}
-                  career={career}
-                  credit={credit}
-                  debt={debt}
-                  curveballs={curveballs}
-                  playerName={playerName}
-                  shadyDebt={shadyDebt}
-                  investments={investments}
-                  balanceBonusAwarded={balanceBonusAwarded}
-                  lossAvoided={lossAvoided}
-                  protectionTier={calculateProtectionTier()}
-                  empireStatus={calculateEmpireStatus()}
-                  showFinal={handleEndGame}
-                  isGeneratingSummary={isGeneratingSummary}
-                />
+            <div className={glassSection}>
+              <div className="flex items-center gap-2 mb-4">
+                <FaIdCard className="text-xl text-indigo-800" />
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Final net worth</h3>
               </div>
-            </>
+              <FinalNetWorth
+                cash={cash}
+                luxuries={luxuries}
+                rep={rep}
+                career={career}
+                credit={credit}
+                debt={debt}
+                curveballs={curveballs}
+                playerName={playerName}
+                shadyDebt={shadyDebt}
+                investments={investments}
+                balanceBonusAwarded={balanceBonusAwarded}
+                lossAvoided={lossAvoided}
+                protectionTier={calculateProtectionTier()}
+                empireStatus={calculateEmpireStatus()}
+                showFinal={handleEndGame}
+                isGeneratingSummary={isGeneratingSummary}
+              />
+            </div>
           )}
         </div>
       </div>
+
+      {/* Sticky bottom navigation */}
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-20 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 px-4 bg-gradient-to-t from-sky-900/25 to-transparent pointer-events-none"
+        aria-label="Main navigation"
+      >
+        <div className="max-w-md mx-auto pointer-events-auto rounded-2xl bg-white/25 backdrop-blur-xl border border-white/40 shadow-xl shadow-slate-900/10 px-1 py-2">
+          <div className="flex justify-between items-stretch">
+            {[
+              { id: 'home', label: 'Home', Icon: FaHome },
+              { id: 'invest', label: 'Invest', Icon: FaChartLine },
+              { id: 'luxury', label: 'Luxury', Icon: FaGem },
+              { id: 'finance', label: 'Finance', Icon: FaCreditCard },
+              { id: 'curveballs', label: 'Events', Icon: FaBolt },
+            ].map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setActiveTab(id)}
+                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl transition ${
+                  navItemActive(id)
+                    ? 'text-slate-950 bg-white/45 shadow-md'
+                    : 'text-slate-800/85 hover:bg-white/25'
+                }`}
+              >
+                <Icon className={`text-lg ${navItemActive(id) ? 'text-emerald-700' : ''}`} aria-hidden />
+                <span className="text-[10px] font-bold leading-tight">{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
     </div>
   );
 }

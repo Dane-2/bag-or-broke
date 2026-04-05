@@ -1,7 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/cashAnimations.css';
 
-function CashTracker({ cash, setCash }) {
+/** Shared prompts so dashboard hero and tracker stay in sync without duplicating logic */
+export function promptAddCashAmount(setCash) {
+  const input = prompt('Enter amount to add:');
+  if (!input) return;
+  const amount = parseInt(input.replace(/,/g, ''), 10);
+  if (!isNaN(amount)) setCash((prev) => prev + amount);
+}
+
+export function promptSubtractCashAmount(setCash) {
+  const input = prompt('Enter amount to subtract:');
+  if (!input) return;
+  const amount = parseInt(input.replace(/,/g, ''), 10);
+  if (!isNaN(amount)) setCash((prev) => prev - amount);
+}
+
+function CashTracker({ cash, setCash, variant = 'card' }) {
   const [animationClass, setAnimationClass] = useState('');
   const [valueClass, setValueClass] = useState('');
   const prevCashRef = useRef(cash);
@@ -59,39 +74,44 @@ function CashTracker({ cash, setCash }) {
     };
   }, [cash]);
 
-  const handleAddCash = () => {
-    const input = prompt('Enter amount to add:');
-    if (!input) return;
-    const amount = parseInt(input.replace(/,/g, ''), 10);
-    if (!isNaN(amount)) setCash(prev => prev + amount);
-  };
+  const handleAddCash = () => promptAddCashAmount(setCash);
+  const handleSubtractCash = () => promptSubtractCashAmount(setCash);
 
-  const handleSubtractCash = () => {
-    const input = prompt('Enter amount to subtract:');
-    if (!input) return;
-    const amount = parseInt(input.replace(/,/g, ''), 10);
-    if (!isNaN(amount)) setCash(prev => prev - amount);
-  };
+  const amountEl = (
+    <p
+      className={`cash-value font-black tracking-tight text-slate-900 ${animationClass} ${valueClass} ${
+        variant === 'amountOnly' ? 'text-4xl sm:text-5xl mb-0' : 'text-xl font-bold mb-4'
+      }`}
+    >
+      ${cash.toLocaleString()}
+    </p>
+  );
+
+  if (variant === 'amountOnly') {
+    return amountEl;
+  }
 
   return (
-    <section className="bg-white rounded-xl shadow-md p-4">
-      <h3 className="text-lg font-semibold text-green-700 mb-2 flex items-center gap-2">💵 Cash Tracker</h3>
-      <p className={`text-xl font-bold mb-4 cash-value ${animationClass} ${valueClass}`}>
-        ${cash.toLocaleString()}
-      </p>
-      
-      <div className="flex gap-2">
+    <section className="rounded-2xl bg-white/20 backdrop-blur-lg border border-white/30 shadow-lg p-4 md:p-6">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-700/80 mb-2 flex items-center gap-2">
+        💵 Cash Tracker
+      </h3>
+      {amountEl}
+
+      <div className="flex gap-3">
         <button
-          className="w-1/2 bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700"
+          type="button"
+          className="flex-1 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold py-2.5 shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-green-600 transition"
           onClick={handleAddCash}
         >
           + Add Cash
         </button>
         <button
-          className="w-1/2 bg-red-600 text-white font-semibold py-2 rounded hover:bg-red-700"
+          type="button"
+          className="flex-1 rounded-full bg-white/30 backdrop-blur-md border border-white/40 text-red-800 font-semibold py-2.5 shadow-lg hover:bg-white/40 transition"
           onClick={handleSubtractCash}
         >
-          - Subtract Cash
+          − Spend Cash
         </button>
       </div>
     </section>

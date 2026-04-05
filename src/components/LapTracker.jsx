@@ -1,6 +1,15 @@
 import React from 'react';
 
-function LapTracker({ laps, totalLaps, setLaps, investments, setInvestments, setCash, addToast }) {
+function LapTracker({
+  laps,
+  totalLaps,
+  setLaps,
+  investments,
+  setInvestments,
+  setCash,
+  addToast,
+  embedded = false,
+}) {
   const handleCompleteLap = () => {
     if (laps >= totalLaps) return;
 
@@ -108,22 +117,46 @@ function LapTracker({ laps, totalLaps, setLaps, investments, setInvestments, set
     }
   };
 
-  return (
-    <section className="bg-white rounded-xl shadow-md p-4">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold text-green-700">🏁 Progress</h3>
-        <span className="text-sm text-gray-600">Lap {laps} of {totalLaps}</span>
+  const pct = totalLaps > 0 ? Math.min(100, Math.round((laps / totalLaps) * 100)) : 0;
+
+  const inner = (
+    <>
+      <div className="flex justify-between items-center mb-3 gap-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-700/80 flex items-center gap-2">
+          <span aria-hidden>🏁</span> Game progress
+        </h3>
+        <span className="text-sm font-semibold text-slate-800 tabular-nums">
+          Lap {laps} / {totalLaps}
+        </span>
       </div>
 
-      <div className="flex gap-2">
+      <div className="h-3 rounded-full bg-white/30 overflow-hidden border border-white/25 mb-4">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 transition-all duration-500 ease-out shadow-sm"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      <div className="flex flex-wrap gap-3">
         <button
+          type="button"
           onClick={handleCompleteLap}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+          className="rounded-full px-5 py-2.5 bg-gradient-to-r from-sky-600 to-blue-600 text-white text-sm font-semibold shadow-lg shadow-blue-600/30 hover:from-sky-700 hover:to-blue-700 disabled:opacity-45 disabled:pointer-events-none transition"
           disabled={laps >= totalLaps}
         >
           Complete Lap
         </button>
       </div>
+    </>
+  );
+
+  if (embedded) {
+    return <div className="space-y-0">{inner}</div>;
+  }
+
+  return (
+    <section className="rounded-2xl bg-white/20 backdrop-blur-lg border border-white/30 shadow-lg p-4 md:p-6">
+      {inner}
     </section>
   );
 }
