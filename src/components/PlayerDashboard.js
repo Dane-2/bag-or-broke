@@ -7,6 +7,7 @@ import {
 import CatalogMenu from './CatalogMenu';
 import HoldingsPanel from './HoldingsPanel';
 import LuxuryHoldings from './LuxuryHoldings';
+import NilPanel from './NilPanel';
 
 import TurnTracker from './TurnTracker';
 import CashTracker from './CashTracker';
@@ -23,7 +24,7 @@ import { selectCoachJBoWinner } from '../utils/coachJBo';
 import RoomHUD from "./RoomHUD";
 import ToastContainer from "./ToastContainer";
 import { leaveRoom as leaveRoomRequest } from '../utils/roomApi';
-import { rollDice } from '../utils/dice';
+import { rollDice, randomPick } from '../utils/dice';
 import useLedger from '../hooks/useLedger';
 import {
   createLedger, completedLaps, totalBorrowing, taxesOwed, inFinalWindow, newOpId,
@@ -31,6 +32,7 @@ import {
 import { scoreBreakdown } from '../rules/portfolio';
 import { holdingsValue, unusedPlanUses } from '../rules/holdings';
 import { investmentsView, luxuriesView } from '../rules/views';
+import { YELLOW_COPY, unusedTokens, TOKEN_EXCLUDED } from '../rules/nil';
 import { formatCents, fromCents, toCents } from '../rules/money';
 import { RULESET_ID, SAVE_PREFIX } from '../rules';
 
@@ -805,7 +807,7 @@ function PlayerDashboard({
     let r;
     try {
       // Market positions get one fair roll per full owned lap; the app rolls and stores them.
-      r = run('roll', { steps, diceCount, draws: rollDice(60) });
+      r = run('roll', { steps, diceCount, draws: rollDice(60), pick: randomPick() });
     } catch (e) {
       addToast(e.message, 'error', 4000);
       return;
@@ -838,6 +840,12 @@ function PlayerDashboard({
       if (closed.careDue > 0) parts.push('companion care due');
       addToast(`Lap ${closed.lap} complete: ${parts.join(' · ')}`, 'success', 5000);
     });
+    r.missedTasks.forEach(t => addToast(`Task missed: ${t.label}. The extra payment is forgone; nothing else changes.`, 'info', 4000));
+    if (r.yellow) {
+      const y = r.yellow;
+      if (y.status === 'clear') addToast('Yellow space: all clear this turn.', 'info', 3000);
+      else addToast(`⭐ ${YELLOW_COPY[y.cardId]?.benefit}: ${ledgerRef.current.yellowHistory.find(h => h.turn === y.turn)?.title || 'NIL opportunity'} — see Home`, 'success', 4000);
+    }
     if (r.final) addToast('Final lap reached. Settle up in Finance, then Finish & Reveal.', 'info', 5000);
   };
 
@@ -859,8 +867,14 @@ function PlayerDashboard({
     };
     const useLegal = offer('legal', legalFee, 8000, 2500000);
     const useHealth = !useLegal && offer('health', healthFee, 8000, 2000000);
+    // The Emergency Fund pays last, on the remaining mandatory expense (never taxes, debt or market losses).
+    const helped = useLegal ? Math.min(2500000, Math.round(Math.min(legalFee, amount) * 0.8))
+      : useHealth ? Math.min(2000000, Math.round(Math.min(healthFee, amount) * 0.8)) : 0;
+    const remaining = amount - helped;
+    const useToken = unusedTokens(s) > 0 && remaining > 0 && !TOKEN_EXCLUDED.some(x => desc.startsWith(x)) &&
+      window.confirm(`Use your Emergency Fund on "${desc}"? It pays ${formatCents(Math.min(2500000, remaining))} of the remaining ${formatCents(remaining)}. It can be used once.`);
     try {
-      return run('legacy_expense', { amount, label: desc, legalFee, healthFee, useLegal, useHealth });
+      return run('legacy_expense', { amount, label: desc, legalFee, healthFee, useLegal, useHealth, useToken });
     } catch (e) {
       addToast(e.message, 'error', 4000);
       return null;
@@ -1119,6 +1133,12 @@ function PlayerDashboard({
               <div className={glassSection}>
                 <TurnTracker ledger={ledger} onRoll={handleRoll} onOpenTab={setActiveTab} />
               </div>
+
+              {(ledger.yellow || ledger.tasks.length > 0 || unusedTokens(ledger) > 0) && (
+                <div className={glassSection}>
+                  <NilPanel ledger={ledger} act={act} />
+                </div>
+              )}
 
               {/* Quick actions grid */}
               <div className="grid grid-cols-2 gap-3">

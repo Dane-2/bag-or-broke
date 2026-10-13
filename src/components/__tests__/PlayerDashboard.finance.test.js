@@ -73,6 +73,13 @@ test('a luxury bought on credit from a diamond landing shows as debt', () => {
   expect(screen.getByText('Available credit').nextSibling.textContent).toBe('$10,000');
 });
 
+test('landing on yellow draws an NIL card and posts its base benefit', () => {
+  render(<PlayerDashboard playerName="Star" avatar="Walk On" startingCash={12500} totalLaps={5} showFinal={jest.fn()} />);
+  roll(2); // space 2 is yellow
+  expect(screen.getByText('⭐ NIL opportunities')).toBeInTheDocument();
+  expect(screen.getByText(/added to your cash|Emergency Fund added|Optional service offered/)).toBeInTheDocument();
+});
+
 test('finish freezes the result and reports the game value', async () => {
   const showFinal = jest.fn();
   render(<PlayerDashboard playerName="Finisher" avatar="Walk On" startingCash={12500} totalLaps={5} showFinal={showFinal} />);

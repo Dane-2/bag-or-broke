@@ -250,7 +250,9 @@ describe('lap clock and finish', () => {
     s = exec(s, 'roll', { steps: 6 });
     expect(s.progress).toBe(200);
     expect(s.closedLaps).toEqual([1, 2, 3, 4, 5]);
-    expect(s.cash).toBe($(12500));
+    // Five $2,500 lap awards; anything else is yellow-space income drawn on the way.
+    const yellowCash = s.yellowHistory.reduce((t, y) => t + y.cash + y.recovered, 0);
+    expect(s.cash - yellowCash).toBe($(12500));
     expect(inFinalWindow(s)).toBe(true);
     expect(() => run(s, 'roll', { steps: 1 })).toThrow('final lap');
     expect(quoteBuy(s, { kind: 'luxury', price: 100, cashPart: 100 }).ok).toBe(false);

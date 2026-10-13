@@ -17,3 +17,14 @@ export function rollDie() {
 export function rollDice(count) {
   return Array.from({ length: count }, rollDie);
 }
+
+/** Uniform non-negative integer used to pick among eligible cards. */
+export function randomPick() {
+  const cryptoObj = typeof window !== 'undefined' ? window.crypto : null;
+  if (cryptoObj && cryptoObj.getRandomValues) {
+    const buf = new Uint32Array(1);
+    cryptoObj.getRandomValues(buf);
+    return buf[0];
+  }
+  return Math.floor(Math.random() * 2 ** 32);
+}

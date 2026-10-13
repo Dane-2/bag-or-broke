@@ -12,6 +12,7 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
   const annuityRemaining = annuities.filter(isActive).reduce((t, a) => t + assetValue(ledger, a), 0);
   const legalUses = plans.filter(a => a.plan === 'legal').reduce((t, a) => t + a.uses, 0);
   const healthUses = plans.filter(a => a.plan === 'health').reduce((t, a) => t + a.uses, 0);
+  const tokens = active.filter(a => a.holding === 'token' && a.uses > 0).length;
 
   const curveballLoss = curveballs.reduce((acc, c) => acc + (c.amount || 0), 0);
   const totalLuxuries = luxuries.length;
@@ -63,7 +64,7 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
           </div>
         )}
 
-        {(policies.length > 0 || annuities.length > 0 || plans.length > 0) && (
+        {(policies.length > 0 || annuities.length > 0 || plans.length > 0 || tokens > 0) && (
           <div className="mt-3 p-3 bg-indigo-50 rounded border border-indigo-200">
             <p className="text-sm font-semibold text-indigo-700 mb-2">🛡️ Protection &amp; contracts (not counted again in wealth)</p>
             <ul className="text-xs text-gray-700 space-y-1">
@@ -73,7 +74,9 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
                   <strong>Annuities:</strong> {formatCents(annuityCash)} received, {formatCents(annuityRemaining)} still in contracts
                 </li>
               )}
-              {plans.length > 0 && <li><strong>Support uses left:</strong> {legalUses} legal, {healthUses} health (no cash value)</li>}
+              {(plans.length > 0 || tokens > 0) && (
+                <li><strong>Support uses left:</strong> {legalUses} legal, {healthUses} health, {tokens} Emergency Fund (no cash value)</li>
+              )}
             </ul>
           </div>
         )}

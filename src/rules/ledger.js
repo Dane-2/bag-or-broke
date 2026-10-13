@@ -20,6 +20,10 @@ import {
   assetValue, policyBalance, policyLoanQuote, annuityCancelQuote, holdingsValue, eligibility,
   productionDiscount, currentLapNumber, isActive, HEALTH_ASSIST_LIMITS,
 } from './holdings';
+import {
+  yellowCard, eligibleYellow, yellowChoices, defaultChoice, createsSponsorRelationship,
+  licensableContent, unrecoveredLoss, SPONSOR_RELATIONSHIP_TURNS, TOKEN_EXCLUDED, RECOVERABLE_LOSSES,
+} from './nil';
 
 const JOURNAL_LIMIT = 300;
 const RECEIPT_LIMIT = 500;
@@ -70,6 +74,15 @@ export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZ
     repFamilies: {},
     experienceTurns: {},
     purchases: [],
+    // Own turns and yellow NIL opportunities
+    turn: 0,
+    yellow: null,
+    yellowHistory: [],
+    yellowStats: {},
+    tasks: [],
+    sponsorRelations: [],
+    losses: [],
+    y12Laps: [],
   };
 }
 
@@ -646,6 +659,125 @@ function settleSale(d, { assetId, label, value, basis, residualExit }) {
 }
 
 // ---------------------------------------------------------------------------
+// Yellow NIL opportunities
+// ---------------------------------------------------------------------------
+
+function postCashIncome(d, amount, taxClass) {
+  d.cash += amount;
+  recordIncome(d, taxClass === 'business' ? 'business' : 'nil', amount);
+}
+
+/** Draw one eligible yellow card uniformly and post its base benefit immediately. */
+function drawYellow(d, pick) {
+  const pool = eligibleYellow(d);
+  if (!pool.length) {
+    d.yellow = { id: `Y-${d.turn}`, cardId: null, turn: d.turn, status: 'clear' };
+    log(d, { type: 'yellow', label: 'Yellow space: all clear this turn', cashDelta: 0 });
+    return d.yellow;
+  }
+  const card = pool[Math.floor(Math.abs(pick || 0)) % pool.length];
+  const stats = d.yellowStats[card.id] || { count: 0, lastTurn: -Infinity };
+  d.yellowStats[card.id] = { count: stats.count + 1, lastTurn: d.turn };
+
+  const base = { cash: 0, income: 0, noncash: 0, recovered: 0, token: false, target: null };
+  card.immediate.forEach(effect => {
+    if (effect.op === 'cash_income') {
+      postCashIncome(d, effect.amount.fixed_cents, effect.tax_class);
+      base.cash += effect.amount.fixed_cents;
+      base.income += effect.amount.fixed_cents;
+    } else if (effect.op === 'protection_token') {
+      d.assets.push({
+        id: `token-${d.turn}`,
+        cardId: card.id,
+        kind: 'nil',
+        title: 'Emergency Fund',
+        holding: 'token',
+        status: 'active',
+        acquiredAt: d.progress,
+        basis: 0,
+        exposure: [],
+        stages: [],
+        limit: effect.limit_cents,
+        uses: effect.uses,
+      });
+      base.token = true;
+    } else if (effect.op === 'refund_loss') {
+      let amount = Math.min(effect.amount.cap_cents, unrecoveredLoss(d));
+      base.recovered = amount;
+      d.cash += amount; // restores a loss; not new income
+      d.losses.forEach(l => {
+        const x = Math.min(amount, l.amount - l.recovered);
+        l.recovered += x;
+        amount -= x;
+      });
+    }
+  });
+  if (card.id === 'Y08') base.target = licensableContent(d)?.title || null;
+  if (createsSponsorRelationship(card.id)) {
+    d.sponsorRelations.push({ cardId: card.id, createdTurn: d.turn, expiresTurn: d.turn + SPONSOR_RELATIONSHIP_TURNS });
+  }
+  d.yellow = { id: `Y-${d.turn}`, cardId: card.id, turn: d.turn, status: 'pending', base, choiceId: null };
+  log(d, { type: 'yellow', label: `${card.title}`, cashDelta: base.cash + base.recovered });
+  if (card.choices.length === 1) resolveYellow(d, card.choices[0].id);
+  return d.yellow;
+}
+
+/** Commit the player's choice for the drawn card (follow-up task, service delivery or decline). */
+function resolveYellow(d, choiceId) {
+  const y = d.yellow;
+  if (!y || y.status !== 'pending') throw new LedgerError('There is no yellow card waiting for a choice.');
+  const card = yellowCard(y.cardId);
+  const choice = yellowChoices(d, card).find(c => c.id === choiceId);
+  if (!choice) throw new LedgerError('Choose one of the options.');
+  if (!choice.available) throw new LedgerError(choice.reason);
+  const raw = card.choices.find(c => c.id === choiceId);
+  let task = null;
+  raw.effects.forEach(effect => {
+    if (effect.op === 'task') {
+      task = {
+        id: `T${d.nextId++}`,
+        cardId: card.id,
+        title: card.title,
+        label: choice.label,
+        kind: effect.kind,
+        slots: effect.slots,
+        createdTurn: d.turn,
+        dueTurn: d.turn + effect.due_own_turns,
+        reward: choice.reward,
+        taxClass: choice.rewardTaxClass,
+        status: 'open',
+      };
+      d.tasks.push(task);
+    } else if (effect.op === 'complete_sponsored_service_once') {
+      const offer = card.immediate.find(e => e.op === 'sponsored_service_offer');
+      recordIncome(d, 'nil', offer.tax_on_delivery_cents); // noncash NIL income on delivery
+      d.y12Laps.push(currentLapNumber(d));
+      y.base.noncash = offer.face_value_cents;
+    }
+  });
+  y.status = 'resolved';
+  y.choiceId = choiceId;
+  d.yellowHistory.push({ cardId: card.id, title: card.title, turn: y.turn, choice: choice.label, ...y.base, taskId: task?.id || null });
+  return { choice: choiceId, task };
+}
+
+/** Start of an own turn: unanswered cards take their cost-free branch; overdue optional tasks lapse. */
+function startOwnTurn(d) {
+  if (d.yellow && d.yellow.status === 'pending') resolveYellow(d, defaultChoice(yellowCard(d.yellow.cardId)));
+  const next = d.turn + 1;
+  const missed = [];
+  d.tasks.forEach(t => {
+    if (t.status === 'open' && t.dueTurn < next) {
+      t.status = 'missed';
+      missed.push(t);
+    }
+  });
+  d.turn = next;
+  d.yellow = null;
+  return missed;
+}
+
+// ---------------------------------------------------------------------------
 // Operations
 // ---------------------------------------------------------------------------
 
@@ -692,7 +824,7 @@ const handlers = {
   },
 
   /** The player's own movement roll: deadline check, then board progress and lap closes. */
-  roll(d, { steps, diceCount = 1, draws = [] }) {
+  roll(d, { steps, diceCount = 1, draws = [], pick = 0 }) {
     assertActive(d);
     if (inFinalWindow(d)) throw new LedgerError('You have reached the final lap. Finish & Reveal when ready.');
     if (d.diceCount === null) d.diceCount = diceCount;
@@ -700,6 +832,7 @@ const handlers = {
     if (!Number.isInteger(steps) || steps < d.diceCount || steps > max) {
       throw new LedgerError(`Enter a roll between ${d.diceCount} and ${max}.`);
     }
+    const missedTasks = startOwnTurn(d);
     const checkpoint = evaluateDeadline(d);
 
     const target = Math.min(d.progress + steps, finalProgress(d));
@@ -721,12 +854,13 @@ const handlers = {
     const index = position(d);
     const landed = final || index === 0 ? null : boardSpace(index);
     d.opportunity = landed ? { category: landed.category, index, progress: d.progress, used: false } : null;
+    const yellow = landed && landed.category === 'yellow' ? clone(drawYellow(d, pick)) : null;
     log(d, {
       type: 'roll',
       label: final ? `Rolled ${steps} — reached the finish` : `Rolled ${steps} — space ${index}`,
       cashDelta: 0,
     });
-    return { steps, checkpoint, closedLaps: laps, events, landed, final, progress: d.progress };
+    return { steps, checkpoint, closedLaps: laps, events, landed, final, progress: d.progress, yellow, missedTasks };
   },
 
   pay_debt(d, { amount, loanId = null }) {
@@ -1096,7 +1230,7 @@ const handlers = {
    * Legal Support pays 80% of eligible legal fees (cap $25,000); Health Support pays 80% of
    * health expense (cap $20,000). Settlements and other components are never covered.
    */
-  legacy_expense(d, { amount, label, legalFee = 0, healthFee = 0, useLegal = false, useHealth = false }) {
+  legacy_expense(d, { amount, label, legalFee = 0, healthFee = 0, useLegal = false, useHealth = false, useToken = false }) {
     assertActive(d);
     if (!(amount > 0)) throw new LedgerError('Enter a positive amount.');
     const consume = plan => {
@@ -1114,9 +1248,54 @@ const handlers = {
       assistance += Math.min(HEALTH_ASSIST_LIMITS.cap, divHalfUp(Math.min(healthFee, amount) * HEALTH_ASSIST_LIMITS.bps, BPS));
     }
     assistance = Math.min(assistance, amount);
-    d.cash -= amount - assistance;
-    log(d, { type: 'expense', label, cashDelta: -(amount - assistance), detail: { assistance } });
-    return { assistance, paid: amount - assistance };
+    // An emergency token (Y03) pays the remaining mandatory expense last, up to its limit.
+    let tokenPaid = 0;
+    if (useToken) {
+      if (TOKEN_EXCLUDED.some(x => label.startsWith(x))) throw new LedgerError('The Emergency Fund cannot pay taxes, debt or market losses.');
+      const token = d.assets.find(a => isActive(a) && a.holding === 'token' && a.uses > 0);
+      if (!token) throw new LedgerError('No Emergency Fund available.');
+      tokenPaid = Math.min(token.limit, amount - assistance);
+      token.uses -= 1;
+      token.status = 'used';
+    }
+    const paid = amount - assistance - tokenPaid;
+    d.cash -= paid;
+    if (RECOVERABLE_LOSSES.some(x => label.startsWith(x)) && paid > 0) {
+      d.losses.push({ id: `loss-${d.seq + 1}`, label, amount: paid, recovered: 0 });
+    }
+    log(d, { type: 'expense', label, cashDelta: -paid, detail: { assistance, tokenPaid } });
+    return { assistance: assistance + tokenPaid, paid, tokenPaid };
+  },
+
+  /** Answer the drawn yellow card. Its base benefit has already posted. */
+  yellow_choose(d, { choiceId }) {
+    assertActive(d);
+    const r = resolveYellow(d, choiceId);
+    log(d, { type: 'yellow_choice', label: `Chose: ${r.choice}`, cashDelta: 0 });
+    return r;
+  },
+
+  /** Complete an optional follow-up during its due turn; the reward posts once. */
+  task_complete(d, { taskId }) {
+    assertActive(d);
+    const t = d.tasks.find(x => x.id === taskId);
+    if (!t || t.status !== 'open') throw new LedgerError('That task is not open.');
+    if (d.turn < t.dueTurn) throw new LedgerError('This task is due on your next turn. Roll first.');
+    t.status = 'completed';
+    t.completedTurn = d.turn;
+    if (t.reward > 0) postCashIncome(d, t.reward, t.taxClass);
+    log(d, { type: 'task_complete', label: `Completed: ${t.title}`, cashDelta: t.reward });
+    return { reward: t.reward };
+  },
+
+  /** Release an optional task to free a slot; its unearned reward is forgone. */
+  task_release(d, { taskId }) {
+    assertActive(d);
+    const t = d.tasks.find(x => x.id === taskId);
+    if (!t || t.status !== 'open') throw new LedgerError('That task is not open.');
+    t.status = 'released';
+    log(d, { type: 'task_release', label: `Released: ${t.title}`, cashDelta: 0 });
+    return { released: true };
   },
 
   /**
@@ -1126,6 +1305,11 @@ const handlers = {
    */
   finish(d, { external = {} }) {
     if (d.snapshot) return d.snapshot;
+    // No new offers at Finish: a waiting card takes its cost-free branch; open tasks lapse unearned.
+    if (d.yellow && d.yellow.status === 'pending') resolveYellow(d, defaultChoice(yellowCard(d.yellow.cardId)));
+    d.tasks.forEach(t => {
+      if (t.status === 'open') t.status = 'expired';
+    });
     // Income in an unfinished lap still gets one provisional bill.
     const lap = incomeLap(d);
     if (!d.closedLaps.includes(lap) && d.taxIncome[lap]) rebill(d, lap);
