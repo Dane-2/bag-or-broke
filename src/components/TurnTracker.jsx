@@ -19,7 +19,6 @@ export const SPACE_TABS = {
   diamond: 'luxury',
   red: 'curveballs',
   blue: 'curveballs',
-  purple: 'curveballs',
 };
 
 /**

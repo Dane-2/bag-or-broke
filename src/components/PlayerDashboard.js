@@ -8,6 +8,7 @@ import CatalogMenu from './CatalogMenu';
 import HoldingsPanel from './HoldingsPanel';
 import LuxuryHoldings from './LuxuryHoldings';
 import NilPanel from './NilPanel';
+import CareerPanel, { CareerRecord } from './CareerPanel';
 
 import TurnTracker from './TurnTracker';
 import CashTracker from './CashTracker';
@@ -16,7 +17,6 @@ import FinancePanel from './FinancePanel';
 import CurveballSection from './CurveballSection';
 import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
-import PurpleTab from './PurpleTab';
 
 import { fetchAiSummary } from '../utils/fetchAiSummary';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
@@ -70,76 +70,6 @@ function PlayerDashboard({
   const [blueCurveballLoss, setBlueCurveballLoss] = useState(0); // Life curveball losses
   const [lossAvoided, setLossAvoided] = useState(0); // Total losses avoided through protection
   
-  // REP & Career System State
-  const [balanceBonusAwarded, setBalanceBonusAwarded] = useState(false);
-  const [careerThresholdsUnlocked, setCareerThresholdsUnlocked] = useState([]);
-  const [repThresholdsUnlocked, setRepThresholdsUnlocked] = useState([]);
-
-  // =====================================================
-  // REP & CAREER SYSTEM FUNCTIONS
-  // =====================================================
-  
-  // Check Career thresholds
-  const checkCareerThresholds = () => {
-    const thresholds = [
-      { points: 10, bonus: () => addToast('📈 Career Threshold: +5% NIL payout unlocked!', 'success', 4000) },
-      { points: 25, bonus: () => addToast('🛡️ Career Threshold: Reduce one negative investment roll by 5%!', 'success', 4000) },
-      { points: 40, bonus: () => addToast('📈 Career Threshold: +10% NIL payout unlocked!', 'success', 4000) },
-      { points: 60, bonus: () => addToast('⭐ Career Threshold: Elite Professional status unlocked!', 'success', 4000) }
-    ];
-
-    thresholds.forEach(threshold => {
-      if (career >= threshold.points && !careerThresholdsUnlocked.includes(threshold.points)) {
-        setCareerThresholdsUnlocked(prev => [...prev, threshold.points]);
-        threshold.bonus();
-      }
-    });
-  };
-
-  // Check REP thresholds
-  const checkRepThresholds = () => {
-    const thresholds = [
-      { points: 10, bonus: () => addToast('🌟 REP Threshold: +5% brand-related ROI unlocked!', 'success', 4000) },
-      { points: 25, bonus: () => addToast('🛡️ REP Threshold: Reduce one curveball penalty by 25%!', 'success', 4000) },
-      { points: 40, bonus: () => addToast('🌟 REP Threshold: +10% sponsorship payout unlocked!', 'success', 4000) },
-      { points: 60, bonus: () => addToast('⭐ REP Threshold: Market Icon status unlocked!', 'success', 4000) }
-    ];
-
-    thresholds.forEach(threshold => {
-      if (rep >= threshold.points && !repThresholdsUnlocked.includes(threshold.points)) {
-        setRepThresholdsUnlocked(prev => [...prev, threshold.points]);
-        threshold.bonus();
-      }
-    });
-  };
-
-  // Check Balance Bonus
-  const checkBalanceBonus = () => {
-    if (balanceBonusAwarded) return;
-    
-    const repCareerDiff = Math.abs(rep - career);
-    if (repCareerDiff <= 10 && rep >= 20 && career >= 20) {
-      setBalanceBonusAwarded(true);
-      setCash(prev => prev + 250000, 'Balance Bonus');
-      addToast('⚖️ Balance Bonus! +$250,000 + 5% ROI boost to one investment!', 'success', 5000);
-    }
-  };
-
-  // Check all thresholds and bonuses (call after REP/Career changes)
-  // Note: This function reads from state directly, so we don't need it in dependencies
-  const checkAllThresholds = () => {
-    checkCareerThresholds();
-    checkRepThresholds();
-    checkBalanceBonus();
-  };
-
-  // Handle purple tab event selection
-  const handlePurpleEvent = (event) => {
-    setRep(prev => prev + event.rep);
-    setCareer(prev => prev + event.career);
-    setTimeout(() => checkAllThresholds(), 100);
-  };
-
   // Holds all players in multiplayer room
   const [roomPlayers, setRoomPlayers] = useState({});
   const [roomStatus, setRoomStatus] = useState(roomInfo?.status || "lobby");
@@ -205,9 +135,6 @@ function PlayerDashboard({
       if (typeof s.redCurveballLoss === 'number') setRedCurveballLoss(s.redCurveballLoss);
       if (typeof s.blueCurveballLoss === 'number') setBlueCurveballLoss(s.blueCurveballLoss);
       if (typeof s.lossAvoided === 'number') setLossAvoided(s.lossAvoided);
-      if (typeof s.balanceBonusAwarded === 'boolean') setBalanceBonusAwarded(s.balanceBonusAwarded);
-      if (Array.isArray(s.careerThresholdsUnlocked)) setCareerThresholdsUnlocked(s.careerThresholdsUnlocked);
-      if (Array.isArray(s.repThresholdsUnlocked)) setRepThresholdsUnlocked(s.repThresholdsUnlocked);
 
     } catch (e) {
       console.error('Failed to parse saved game:', e);
@@ -234,9 +161,6 @@ function PlayerDashboard({
       redCurveballLoss,
       blueCurveballLoss,
       lossAvoided,
-      balanceBonusAwarded,
-      careerThresholdsUnlocked,
-      repThresholdsUnlocked,
       totalLaps,
     };
 
@@ -258,9 +182,6 @@ function PlayerDashboard({
     redCurveballLoss,
     blueCurveballLoss,
     lossAvoided,
-    balanceBonusAwarded,
-    careerThresholdsUnlocked,
-    repThresholdsUnlocked,
     totalLaps,
   ]);
 
@@ -742,12 +663,6 @@ function PlayerDashboard({
     }
   }, [laps, totalLaps]);
 
-  // Check thresholds when REP or Career change
-  useEffect(() => {
-    checkAllThresholds();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rep, career]);
-
   // Rate limiting: Track last purchase time
   const lastPurchaseTimeRef = useRef(0);
   const RATE_LIMIT_MS = 2000; // 2 seconds between purchases
@@ -795,6 +710,7 @@ function PlayerDashboard({
     const parts = [];
     if (r.receipts !== undefined) parts.push(`receipts ${formatCents(r.receipts)} (${r.profit >= 0 ? 'profit' : 'loss'} ${formatCents(Math.abs(r.profit))})`);
     if (r.value !== undefined) parts.push(r.failed ? 'launch failed: value $0' : `value ${formatCents(r.value)}`);
+    if (r.prepared) parts.push('Prepared launch');
     if (r.borrowed > 0) parts.push(`${formatCents(r.borrowed)} financed`);
     if (r.rep > 0) parts.push(`+${r.rep} REP`);
     if (r.career > 0) parts.push(`+${r.career} Career`);
@@ -845,6 +761,9 @@ function PlayerDashboard({
       const y = r.yellow;
       if (y.status === 'clear') addToast('Yellow space: all clear this turn.', 'info', 3000);
       else addToast(`⭐ ${YELLOW_COPY[y.cardId]?.benefit}: ${ledgerRef.current.yellowHistory.find(h => h.turn === y.turn)?.title || 'NIL opportunity'} — see Home`, 'success', 4000);
+    }
+    if (r.purple) {
+      addToast(r.purple.status === 'clear' ? 'Purple space: plan review (no points this turn).' : '💼 Career opportunity — see Home', 'info', 3500);
     }
     if (r.final) addToast('Final lap reached. Settle up in Finance, then Finish & Reveal.', 'info', 5000);
   };
@@ -976,7 +895,6 @@ function PlayerDashboard({
       investments,
       score: snapshot.score,
       totalLaps,
-      balanceBonusAwarded,
     };
 
     try {
@@ -1134,6 +1052,12 @@ function PlayerDashboard({
                 <TurnTracker ledger={ledger} onRoll={handleRoll} onOpenTab={setActiveTab} />
               </div>
 
+              {(ledger.career.offer || ledger.career.internship || (ledger.career.referral && !ledger.career.referral.used)) && (
+                <div className={glassSection}>
+                  <CareerPanel ledger={ledger} act={act} />
+                </div>
+              )}
+
               {(ledger.yellow || ledger.tasks.length > 0 || unusedTokens(ledger) > 0) && (
                 <div className={glassSection}>
                   <NilPanel ledger={ledger} act={act} />
@@ -1243,7 +1167,11 @@ function PlayerDashboard({
               </div>
 
               <div className={glassSection}>
-                <PurpleTab onSelect={handlePurpleEvent} addToast={addToast} />
+                <div className="flex items-center gap-2 mb-4">
+                  <FaStar className="text-xl text-violet-700" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Career record</h3>
+                </div>
+                <CareerRecord ledger={ledger} />
               </div>
             </>
           )}

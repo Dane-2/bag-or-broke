@@ -24,6 +24,10 @@ import {
   yellowCard, eligibleYellow, yellowChoices, defaultChoice, createsSponsorRelationship,
   licensableContent, unrecoveredLoss, SPONSOR_RELATIONSHIP_TURNS, TOKEN_EXCLUDED, RECOVERABLE_LOSSES,
 } from './nil';
+import {
+  createCareer, family as careerFamily, path as careerPath, familyChoices, eligibleFamilies, pathAllowed,
+  familyRewardedThisLap, preparedFor, pathForGroup, referralSaving, REFERRAL,
+} from './career';
 
 const JOURNAL_LIMIT = 300;
 const RECEIPT_LIMIT = 500;
@@ -83,6 +87,7 @@ export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZ
     sponsorRelations: [],
     losses: [],
     y12Laps: [],
+    career: createCareer(),
   };
 }
 
@@ -254,7 +259,11 @@ export function landingStatus(s, entry) {
 function priceFor(s, entry, optionBps = BPS) {
   if (!entry) return { price: 0, discount: 0 };
   const scaled = entry.entryOptionsBps ? divHalfUp(entry.price * optionBps, BPS) : entry.price;
-  const discount = entry.kind === 'luxury' ? Math.min(scaled, productionDiscount(s, entry)) : 0;
+  let discount = entry.kind === 'luxury' ? Math.min(scaled, productionDiscount(s, entry)) : 0;
+  // Sports mentoring referral: 5% off the Youth Sports clinic delivery (capped), used once.
+  if (entry.id === 'YSH_CLINIC' && s.career && s.career.referral && !s.career.referral.used) {
+    discount = referralSaving(scaled);
+  }
   return { price: scaled - discount, discount };
 }
 
@@ -772,9 +781,65 @@ function startOwnTurn(d) {
       missed.push(t);
     }
   });
+  const internship = careerStartTurn(d, next);
   d.turn = next;
   d.yellow = null;
+  if (internship === 'missed') missed.push({ label: 'Internship follow-up (one repair chance next)', reward: 0 });
   return missed;
+}
+
+// ---------------------------------------------------------------------------
+// Career (purple)
+// ---------------------------------------------------------------------------
+
+function drawPurple(d, pick) {
+  const pool = eligibleFamilies(d);
+  if (!pool.length) {
+    d.career.offer = { id: `P-${d.turn}`, turn: d.turn, family: null, status: 'clear' };
+    return d.career.offer;
+  }
+  const f = pool[Math.floor(Math.abs(pick || 0)) % pool.length];
+  d.career.offer = { id: `P-${d.turn}`, turn: d.turn, family: f.id, status: 'offered' };
+  log(d, { type: 'career_offer', label: `Purple space: ${f.name}`, cashDelta: 0 });
+  return d.career.offer;
+}
+
+/** Award a completed family once per completion lap. */
+function awardCareer(d, familyId, pathId) {
+  const f = careerFamily(familyId);
+  if (familyRewardedThisLap(d, familyId)) return { rep: 0, career: 0, rewarded: false };
+  const lap = currentLapNumber(d);
+  d.career.rewardedLaps[familyId] = [...(d.career.rewardedLaps[familyId] || []), lap];
+  d.career.lastRewardedTurn[`${familyId}:${pathId}`] = d.turn;
+  return { rep: f.rep, career: f.career, rewarded: true };
+}
+
+function careerRecord(d, entry) {
+  d.career.history.push({ turn: d.turn, lap: currentLapNumber(d), ...entry });
+  if (entry.path && entry.status === 'completed') {
+    d.career.experience.push({ path: entry.path, turn: d.turn, source: entry.family });
+  }
+}
+
+/** Start of an own turn: an unanswered offer closes; internships move through their follow-up. */
+function careerStartTurn(d, nextTurn) {
+  const c = d.career;
+  if (c.offer && c.offer.status === 'offered') {
+    c.offer.status = 'declined';
+    careerRecord(d, { family: c.offer.family, path: null, status: 'declined', rep: 0, career: 0 });
+  }
+  c.offer = null;
+  const i = c.internship;
+  if (!i || i.dueTurn >= nextTurn) return null;
+  if (i.state === 'active' || i.state === 'extended') {
+    i.state = 'repair';
+    i.dueTurn = nextTurn;
+    careerRecord(d, { family: 'internship', path: i.path, status: 'missed', rep: 0, career: 0 });
+    return 'missed';
+  }
+  careerRecord(d, { family: 'internship', path: i.path, status: 'closed_unfinished', rep: 0, career: 0 });
+  c.internship = null;
+  return 'closed';
 }
 
 // ---------------------------------------------------------------------------
@@ -855,12 +920,13 @@ const handlers = {
     const landed = final || index === 0 ? null : boardSpace(index);
     d.opportunity = landed ? { category: landed.category, index, progress: d.progress, used: false } : null;
     const yellow = landed && landed.category === 'yellow' ? clone(drawYellow(d, pick)) : null;
+    const purple = landed && landed.category === 'purple' ? clone(drawPurple(d, pick)) : null;
     log(d, {
       type: 'roll',
       label: final ? `Rolled ${steps} — reached the finish` : `Rolled ${steps} — space ${index}`,
       cashDelta: 0,
     });
-    return { steps, checkpoint, closedLaps: laps, events, landed, final, progress: d.progress, yellow, missedTasks };
+    return { steps, checkpoint, closedLaps: laps, events, landed, final, progress: d.progress, yellow, purple, missedTasks };
   },
 
   pay_debt(d, { amount, loanId = null }) {
@@ -985,7 +1051,8 @@ const handlers = {
         amount: borrowed,
       });
     }
-    if (q.discount > 0) d.discountLaps.push(lap);
+    if (q.discount > 0 && entry.kind === 'luxury') d.discountLaps.push(lap);
+    if (q.discount > 0 && entry.id === 'YSH_CLINIC') d.career.referral.used = true;
 
     const result = { entryId: entry.id, assetId: null, price, discount: q.discount, borrowed, face, rep: 0, career: 0 };
     const base = {
@@ -1006,7 +1073,10 @@ const handlers = {
 
     if (activation) {
       const target = d.assets.find(a => a.id === targetId);
-      const r = activationResult(price, face);
+      const targetEntry = catalogEntry(target.cardId);
+      const prepared = preparedFor(d, targetEntry ? pathForGroup(targetEntry.group) : null);
+      const r = activationResult(price, face, prepared);
+      result.prepared = prepared;
       d.cash += r.receipts;
       recordIncome(d, 'business', r.profit);
       d.activationLaps.push(lap);
@@ -1049,7 +1119,9 @@ const handlers = {
           break;
         }
         case 'event': {
-          const r = eventResult(price, entry.launchTable, face);
+          // Receipts follow the event's listed delivery; a referral only lowers what was paid.
+          const r = eventResult(entry.price, entry.launchTable, face);
+          r.profit = r.receipts - price;
           d.cash += r.receipts;
           recordIncome(d, 'business', r.profit);
           d.milestones.push(entry.id);
@@ -1092,6 +1164,8 @@ const handlers = {
       }
     }
 
+    const experiencePath = entry.kind === 'investment' ? pathForGroup(entry.group) : null;
+    if (experiencePath) d.career.experience.push({ path: experiencePath, turn: d.turn, source: entry.id });
     d.purchases.push({
       entryId: entry.id,
       title: entry.title,
@@ -1267,6 +1341,93 @@ const handlers = {
     return { assistance: assistance + tokenPaid, paid, tokenPaid };
   },
 
+  /** Complete the purple offer on a chosen path (internships are accepted here, not awarded). */
+  career_complete(d, { pathId, choiceId }) {
+    assertActive(d);
+    const c = d.career;
+    const offer = c.offer;
+    if (!offer || offer.status !== 'offered') throw new LedgerError('There is no career opportunity waiting.');
+    const p = careerPath(pathId);
+    if (!p) throw new LedgerError('Choose a career path.');
+    const choice = familyChoices(offer.family, pathId).find(x => x.id === choiceId);
+    if (!choice) throw new LedgerError('Choose one of the options.');
+    const allowed = pathAllowed(d, offer.family, pathId);
+    if (!allowed.ok) throw new LedgerError(allowed.reason);
+    if (offer.family === 'resume_workshop' && choiceId === 'experience' && !c.experience.length) {
+      throw new LedgerError('You have no experience cards yet. Use the beginner template.');
+    }
+    offer.status = 'done';
+
+    if (offer.family === 'internship') {
+      if (c.internship) throw new LedgerError('You already have an internship in progress.');
+      c.internship = { path: pathId, assignment: choiceId, label: choice.label, competency: choice.competency, state: 'active', dueTurn: d.turn + 1, extended: false };
+      careerRecord(d, { family: 'internship', path: pathId, status: 'accepted', choice: choice.label, rep: 0, career: 0 });
+      log(d, { type: 'career', label: `Internship accepted: ${p.name}`, cashDelta: 0 });
+      return { accepted: true, rep: 0, career: 0 };
+    }
+
+    const award = awardCareer(d, offer.family, pathId);
+    if (choice.competency) c.competencies.push(choice.competency);
+    if (choice.contact) c.contacts.push(`${choice.contact}:${pathId}`);
+    if (offer.family === 'graduation') c.graduated = true;
+    let referral = false;
+    if (offer.family === 'mentoring' && award.rewarded) {
+      c.mentorVisits[pathId] = [...(c.mentorVisits[pathId] || []), d.turn];
+      if (pathId === REFERRAL.source_path && !(c.referral && !c.referral.used)) {
+        c.referral = { used: false, issuedTurn: d.turn };
+        referral = true;
+      }
+    }
+    careerRecord(d, { family: offer.family, path: pathId, status: 'completed', choice: choice.label, rep: award.rep, career: award.career });
+    log(d, { type: 'career', label: `${careerFamily(offer.family).name}: ${p.name}`, cashDelta: 0 });
+    return { ...award, referral };
+  },
+
+  career_decline(d) {
+    assertActive(d);
+    const offer = d.career.offer;
+    if (!offer || offer.status !== 'offered') throw new LedgerError('There is no career opportunity waiting.');
+    offer.status = 'declined';
+    careerRecord(d, { family: offer.family, path: null, status: 'declined', rep: 0, career: 0 });
+    return { rep: 0, career: 0 };
+  },
+
+  /** Internship follow-up on the due turn: complete, extend once, withdraw, or the single repair. */
+  internship_action(d, { action }) {
+    assertActive(d);
+    const c = d.career;
+    const i = c.internship;
+    if (!i) throw new LedgerError('There is no internship in progress.');
+    const due = d.turn >= i.dueTurn;
+    const finish = status => {
+      careerRecord(d, { family: 'internship', path: i.path, status, choice: i.label, rep: 0, career: 0 });
+      c.internship = null;
+    };
+    if (action === 'withdraw' || action === 'decline_repair') {
+      finish(action === 'withdraw' ? 'withdrawn' : 'closed_unfinished');
+      return { rep: 0, career: 0 };
+    }
+    if (!due) throw new LedgerError('The follow-up is on your next turn. Roll first.');
+    if (action === 'extend') {
+      if (i.state !== 'active' || i.extended) throw new LedgerError('The one extension has already been used.');
+      i.state = 'extended';
+      i.extended = true;
+      i.dueTurn = d.turn + 1;
+      return { rep: 0, career: 0 };
+    }
+    if (action === 'complete' || action === 'repair') {
+      if (action === 'repair' && i.state !== 'repair') throw new LedgerError('No repair is open.');
+      if (action === 'complete' && i.state === 'repair') throw new LedgerError('Use the repair option.');
+      const award = awardCareer(d, 'internship', i.path);
+      c.competencies.push(`internship:${i.path}:${i.competency}`);
+      careerRecord(d, { family: 'internship', path: i.path, status: 'completed', choice: i.label, rep: award.rep, career: award.career });
+      c.internship = null;
+      log(d, { type: 'career', label: 'Internship completed', cashDelta: 0 });
+      return award;
+    }
+    throw new LedgerError('Unknown action.');
+  },
+
   /** Answer the drawn yellow card. Its base benefit has already posted. */
   yellow_choose(d, { choiceId }) {
     assertActive(d);
@@ -1310,6 +1471,11 @@ const handlers = {
     d.tasks.forEach(t => {
       if (t.status === 'open') t.status = 'expired';
     });
+    if (d.career.internship) {
+      careerRecord(d, { family: 'internship', path: d.career.internship.path, status: 'closed_unfinished', rep: 0, career: 0 });
+      d.career.internship = null;
+    }
+    if (d.career.offer && d.career.offer.status === 'offered') d.career.offer.status = 'declined';
     // Income in an unfinished lap still gets one provisional bill.
     const lap = incomeLap(d);
     if (!d.closedLaps.includes(lap) && d.taxIncome[lap]) rebill(d, lap);

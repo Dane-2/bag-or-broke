@@ -80,6 +80,17 @@ test('landing on yellow draws an NIL card and posts its base benefit', () => {
   expect(screen.getByText(/added to your cash|Emergency Fund added|Optional service offered/)).toBeInTheDocument();
 });
 
+test('landing on purple offers a career activity that awards points on completion', () => {
+  render(<PlayerDashboard playerName="Pro" avatar="Walk On" startingCash={12500} totalLaps={5} showFinal={jest.fn()} />);
+  roll(6);
+  roll(1); // space 7 is purple
+  expect(screen.getByText('Career opportunity')).toBeInTheDocument();
+  fireEvent.change(screen.getByDisplayValue('Choose a career path…'), { target: { value: 'energy' } });
+  const choices = screen.getAllByRole('button').filter(b => b.className.includes('text-left') && !b.disabled);
+  fireEvent.click(choices[choices.length - 1]);
+  expect(screen.queryByText('Career opportunity')).not.toBeInTheDocument();
+});
+
 test('finish freezes the result and reports the game value', async () => {
   const showFinal = jest.fn();
   render(<PlayerDashboard playerName="Finisher" avatar="Walk On" startingCash={12500} totalLaps={5} showFinal={showFinal} />);
