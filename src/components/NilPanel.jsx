@@ -57,7 +57,7 @@ export default function NilPanel({ ledger, act }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-700/80">⭐ NIL opportunities</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-700/80">⭐ NIL opportunities &amp; tasks</h3>
         <span className="text-xs font-semibold text-slate-800">
           Tasks {used}/{TASK_SLOTS}
         </span>
@@ -95,18 +95,30 @@ export default function NilPanel({ ledger, act }) {
 
       {tasks.map(t => {
         const due = ledger.turn >= t.dueTurn;
+        if (t.mandatory) {
+          return (
+            <div key={t.id} className={card}>
+              <p className="text-sm font-bold text-slate-900">{t.label}</p>
+              <p className="text-xs text-slate-700">{t.title} · uses {t.slots} slot{t.slots > 1 ? 's' : ''} · ends on its own after turn {t.dueTurn}</p>
+            </div>
+          );
+        }
+        const earns = t.reward > 0 ? `earns ${formatCents(t.reward)}` : t.onComplete && t.onComplete.length ? 'completes its follow-up' : 'no extra payment';
         return (
           <div key={t.id} className={card}>
             <p className="text-sm font-bold text-slate-900">{t.label}</p>
             <p className="text-xs text-slate-700">
-              {t.title} · earns {formatCents(t.reward)} · {due ? 'due this turn' : 'due next turn'}
+              {t.title} · {earns} · {due ? 'due this turn' : 'due next turn'}
             </p>
             <div className="flex gap-2">
               <button
                 type="button"
                 className={primary}
                 disabled={!due}
-                onClick={() => act('task_complete', { taskId: t.id }, `Task done: +${formatCents(t.reward)}`)}
+                onClick={() => act('task_complete', { taskId: t.id }, null, r => {
+                  const pts = r.points && (r.points.rep || r.points.career) ? ` · +${r.points.rep || 0} REP, +${r.points.career || 0} Career` : '';
+                  return `Task done${r.reward > 0 ? `: +${formatCents(r.reward)}` : ''}${pts}`;
+                })}
               >
                 {due ? 'Complete task' : 'Complete next turn'}
               </button>
@@ -130,7 +142,7 @@ export default function NilPanel({ ledger, act }) {
         <ul className="text-xs text-slate-800 space-y-0.5">
           {recent.map(t => (
             <li key={t.id}>
-              {t.label}: {t.status === 'completed' ? `completed (+${formatCents(t.reward)})` : t.status}
+              {t.label}: {t.status === 'completed' ? `completed${t.reward > 0 ? ` (+${formatCents(t.reward)})` : ''}` : t.status}
             </li>
           ))}
         </ul>

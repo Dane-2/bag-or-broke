@@ -23,7 +23,7 @@ const wealth = s => s.cash + s.taxBucket - totalBorrowing(s) - taxesOwed(s);
 
 describe('operation receipts and atomicity', () => {
   test('purchase retry returns the original result without a second charge', () => {
-    let s = createLedger({ openingCash: $(40000) });
+    let s = createLedger({ openingCash: $(40000) , landingEvents: false });
     s.creditScore = 750;
     s = exec(s, 'buy', { kind: 'luxury', assetId: 'old', label: 'Old', price: $(20000), cashPart: 0 });
     s.cash = $(40000);
@@ -36,12 +36,12 @@ describe('operation receipts and atomicity', () => {
   });
 
   test('changed payload under the same id is rejected', () => {
-    const s = exec(createLedger({ openingCash: $(10000) }), 'reserve', { amount: $(1000) }, 'r');
+    const s = exec(createLedger({ openingCash: $(10000) , landingEvents: false }), 'reserve', { amount: $(1000) }, 'r');
     expect(() => run(s, 'reserve', { amount: $(2000) }, 'r')).toThrow('reused');
   });
 
   test('credit failure leaves the state untouched', () => {
-    let s = createLedger({ openingCash: $(40000) });
+    let s = createLedger({ openingCash: $(40000) , landingEvents: false });
     s = exec(s, 'buy', { kind: 'luxury', assetId: 'old', label: 'Old', price: $(20000), cashPart: 0 });
     const before = JSON.stringify(s);
     expect(() => run(s, 'buy', { kind: 'luxury', assetId: 'car', label: 'Car', price: $(75000), cashPart: $(15000) }))
@@ -50,7 +50,7 @@ describe('operation receipts and atomicity', () => {
   });
 
   test('failed tax payment rolls back', () => {
-    const s = createLedger({ openingCash: $(1000) });
+    const s = createLedger({ openingCash: $(1000) , landingEvents: false });
     s.taxBills.push(createTaxBill({ id: 'b1', lap: 1, assessed: $(5000) }));
     expect(() => run(s, 'pay_taxes', { amount: $(2000) })).toThrow();
     expect(s.cash).toBe($(1000));
@@ -61,7 +61,7 @@ describe('operation receipts and atomicity', () => {
 
 describe('tax bucket', () => {
   test('reserving is not paying tax and leaves wealth unchanged', () => {
-    let s = createLedger({ openingCash: $(10000) });
+    let s = createLedger({ openingCash: $(10000) , landingEvents: false });
     s.taxBills.push(createTaxBill({ id: 'b1', lap: 1, assessed: $(10000) }));
     const before = wealth(s);
     s = exec(s, 'reserve', { amount: $(10000) });
@@ -70,7 +70,7 @@ describe('tax bucket', () => {
   });
 
   test('tax payment leaves wealth unchanged', () => {
-    let s = createLedger({ openingCash: $(10000) });
+    let s = createLedger({ openingCash: $(10000) , landingEvents: false });
     s.taxBills.push(createTaxBill({ id: 'b1', lap: 1, assessed: $(5000) }));
     const before = wealth(s);
     s = exec(s, 'pay_taxes', { amount: $(3000) });
@@ -78,7 +78,7 @@ describe('tax bucket', () => {
   });
 
   test('NIL receipt with set-aside, lap bill, and payment from the bucket', () => {
-    let s = createLedger({ openingCash: $(10000) });
+    let s = createLedger({ openingCash: $(10000) , landingEvents: false });
     s = exec(s, 'income', { amount: $(50000), taxClass: 'nil', setAside: $(10000) });
     expect([s.cash, s.taxBucket]).toEqual([$(50000), $(10000)]);
     s = advanceTo(s, 40);
@@ -92,7 +92,7 @@ describe('tax bucket', () => {
   });
 
   test('missed tax deadline adds 5% and a borrowing hold', () => {
-    let s = createLedger({ openingCash: $(10000) });
+    let s = createLedger({ openingCash: $(10000) , landingEvents: false });
     s = exec(s, 'income', { amount: $(47500), taxClass: 'nil' });
     s = advanceTo(s, 40);
     expect(taxesOwed(s)).toBe($(10000));
@@ -107,7 +107,7 @@ describe('tax bucket', () => {
 
 describe('ordinary interest and the required payment (worked examples)', () => {
   const borrowAt = units => {
-    let s = createLedger({ openingCash: $(100000) });
+    let s = createLedger({ openingCash: $(100000) , landingEvents: false });
     s = advanceTo(s, units);
     return exec(s, 'buy', { kind: 'investment', assetId: 'biz', label: 'Biz', price: $(200000), cashPart: $(100000) });
   };
@@ -171,13 +171,13 @@ describe('ordinary interest and the required payment (worked examples)', () => {
   });
 
   test('a debt-free player earns +50 per checkpoint', () => {
-    let s = advanceTo(createLedger({ openingCash: $(1000) }), 40);
+    let s = advanceTo(createLedger({ openingCash: $(1000) , landingEvents: false }), 40);
     s = exec(s, 'roll', { steps: 1 });
     expect(s.creditScore).toBe(550);
   });
 
   test('a better score lowers the rate prospectively', () => {
-    let s = createLedger({ openingCash: $(1000) });
+    let s = createLedger({ openingCash: $(1000) , landingEvents: false });
     s.creditScore = 650;
     expect(quoteBuy(s, { kind: 'luxury', price: $(10000), cashPart: 0 }).rateBps).toBe(1500);
   });
@@ -185,24 +185,24 @@ describe('ordinary interest and the required payment (worked examples)', () => {
 
 describe('borrowing permissions', () => {
   test('investments require at least 50% cash', () => {
-    const s = createLedger({ openingCash: $(100000) });
+    const s = createLedger({ openingCash: $(100000) , landingEvents: false });
     expect(quoteBuy(s, { kind: 'investment', price: $(100000), cashPart: $(40000) }).ok).toBe(false);
     expect(quoteBuy(s, { kind: 'investment', price: $(100000), cashPart: $(50000) }).ok).toBe(true);
   });
 
   test('cash-only cards cannot be financed', () => {
-    const s = createLedger({ openingCash: $(100000) });
+    const s = createLedger({ openingCash: $(100000) , landingEvents: false });
     expect(quoteBuy(s, { kind: 'investment', price: $(25000), cashPart: $(10000), cashOnly: true }).ok).toBe(false);
   });
 
   test('luxury credit is limited by the score band', () => {
-    const s = createLedger({ openingCash: $(1000) });
+    const s = createLedger({ openingCash: $(1000) , landingEvents: false });
     expect(availableUnsecured(s)).toBe($(20000));
     expect(quoteBuy(s, { kind: 'luxury', price: $(21000), cashPart: 0 }).ok).toBe(false);
   });
 
   test('asset advance up to 50% of value less linked debt', () => {
-    let s = createLedger({ openingCash: $(100000) });
+    let s = createLedger({ openingCash: $(100000) , landingEvents: false });
     s = exec(s, 'buy', { kind: 'investment', assetId: 'biz', label: 'Biz', price: $(100000), cashPart: $(80000) });
     expect(() => run(s, 'advance', { assetId: 'biz', label: 'Biz', value: $(120000), amount: $(41000) })).toThrow();
     s = exec(s, 'advance', { assetId: 'biz', label: 'Biz', value: $(120000), amount: $(40000) });
@@ -213,7 +213,7 @@ describe('borrowing permissions', () => {
 
 describe('sales', () => {
   test('gain tax, linked payoff, then cash', () => {
-    let s = createLedger({ openingCash: $(500000) });
+    let s = createLedger({ openingCash: $(500000) , landingEvents: false });
     s = exec(s, 'buy', { kind: 'investment', assetId: 'cx', label: 'Complex', price: $(1000000), cashPart: $(500000) });
     s = exec(s, 'sell', { assetId: 'cx', label: 'Complex', value: $(1200000), basis: $(1000000) });
     expect(s.cash).toBe($(660000));
@@ -221,7 +221,7 @@ describe('sales', () => {
   });
 
   test('luxury resale keeps unsecured debt', () => {
-    let s = createLedger({ openingCash: $(5000) });
+    let s = createLedger({ openingCash: $(5000) , landingEvents: false });
     s.creditScore = 750;
     s = exec(s, 'buy', { kind: 'luxury', assetId: 'car', label: 'Car', price: $(65000), cashPart: 0 });
     const before = s.cash + $(45000) - totalBorrowing(s);
@@ -232,7 +232,7 @@ describe('sales', () => {
   });
 
   test('underwater sale needs a residual exit and then holds borrowing', () => {
-    let s = createLedger({ openingCash: $(500000) });
+    let s = createLedger({ openingCash: $(500000) , landingEvents: false });
     s = exec(s, 'buy', { kind: 'investment', assetId: 'cx', label: 'Complex', price: $(1000000), cashPart: $(500000) });
     s.cash = 0;
     expect(() => run(s, 'sell', { assetId: 'cx', label: 'Complex', value: $(400000), basis: $(1000000) })).toThrow();
@@ -244,7 +244,7 @@ describe('sales', () => {
 
 describe('lap clock and finish', () => {
   test('one lap award per boundary and overshoot clamps at the final cutoff', () => {
-    let s = createLedger({ openingCash: 0, totalLaps: 5 });
+    let s = createLedger({ openingCash: 0, totalLaps: 5 , landingEvents: false });
     s = advanceTo(s, 198);
     expect(completedLaps(s)).toBe(4);
     s = exec(s, 'roll', { steps: 6 });
@@ -259,7 +259,7 @@ describe('lap clock and finish', () => {
   });
 
   test('finish returns the same snapshot for any later request and blocks mutations', () => {
-    let s = createLedger({ openingCash: $(10000) });
+    let s = createLedger({ openingCash: $(10000) , landingEvents: false });
     const one = run(s, 'finish', { external: { rep: 4 } }, 'f1');
     const two = run(one.state, 'finish', { external: { rep: 99 } }, 'f2');
     expect(two.result).toEqual(one.result);
@@ -267,7 +267,7 @@ describe('lap clock and finish', () => {
   });
 
   test('finish applies the initial late charge to an unpaid final bill', () => {
-    let s = createLedger({ openingCash: $(1000) });
+    let s = createLedger({ openingCash: $(1000) , landingEvents: false });
     s.taxBills.push(createTaxBill({ id: 'last', lap: 5, assessed: $(1000), provisional: true }));
     const snap = run(s, 'finish', { external: {} }).result;
     expect(snap.taxesOwed).toBe($(1050));
@@ -275,7 +275,7 @@ describe('lap clock and finish', () => {
   });
 
   test('final-window income updates the provisional final bill', () => {
-    let s = advanceTo(createLedger({ openingCash: 0, totalLaps: 5 }), 200);
+    let s = advanceTo(createLedger({ openingCash: 0, totalLaps: 5 , landingEvents: false }), 200);
     const before = taxesOwed(s);
     s = exec(s, 'income', { amount: $(10000), taxClass: 'nil' });
     expect(taxesOwed(s) - before).toBe($(2000));

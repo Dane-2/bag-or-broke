@@ -14,7 +14,7 @@ import TurnTracker from './TurnTracker';
 import CashTracker from './CashTracker';
 import CashEntry from './CashEntry';
 import FinancePanel from './FinancePanel';
-import CurveballSection from './CurveballSection';
+import ScenarioPanel, { ScenarioHistory } from './ScenarioPanel';
 import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
 
@@ -27,12 +27,12 @@ import { leaveRoom as leaveRoomRequest } from '../utils/roomApi';
 import { rollDice, randomPick } from '../utils/dice';
 import useLedger from '../hooks/useLedger';
 import {
-  createLedger, completedLaps, totalBorrowing, taxesOwed, inFinalWindow, newOpId,
+  createLedger, completedLaps, totalBorrowing, taxesOwed, inFinalWindow, newOpId, eventLiabilities, displayRep,
 } from '../rules/ledger';
 import { scoreBreakdown } from '../rules/portfolio';
-import { holdingsValue, unusedPlanUses } from '../rules/holdings';
+import { holdingsValue } from '../rules/holdings';
 import { investmentsView, luxuriesView } from '../rules/views';
-import { YELLOW_COPY, unusedTokens, TOKEN_EXCLUDED } from '../rules/nil';
+import { YELLOW_COPY, unusedTokens } from '../rules/nil';
 import { formatCents, fromCents, toCents } from '../rules/money';
 import { RULESET_ID, SAVE_PREFIX } from '../rules';
 
@@ -59,16 +59,26 @@ function PlayerDashboard({
   const credit = ledger.creditScore;
   const laps = completedLaps(ledger);
   const debt = fromCents(totalBorrowing(ledger));
-  const [rep, setRep] = useState(0);
-  const [career, setCareer] = useState(0);
-  const [curveballs, setCurveballs] = useState([]);
+  // REP / Career live in the ledger (display REP is floored at zero).
+  const rep = displayRep(ledger);
+  const career = ledger.points.career;
+  // Curveball history in the shape the summary, reveal and room rows already use.
+  const curveballs = useMemo(
+    () => ledger.scenarioHistory.map(h => ({
+      desc: h.title,
+      type: h.color,
+      amount: Math.max(0, -h.cashDelta) / 100,
+      assisted: h.assistance / 100,
+      blocked: false,
+    })),
+    [ledger]
+  );
+  const redCurveballLoss = curveballs.filter(c => c.type === 'red').reduce((t, c) => t + c.amount, 0);
+  const blueCurveballLoss = curveballs.filter(c => c.type === 'blue').reduce((t, c) => t + c.amount, 0);
+  const lossAvoided = curveballs.reduce((t, c) => t + c.assisted, 0);
   // Read-only views of ledger holdings for room sync, Coach J-Bo and the AI summary.
   const investments = useMemo(() => investmentsView(ledger), [ledger]);
   const luxuries = useMemo(() => luxuriesView(ledger), [ledger]);
-  const [shadyDebt, setShadyDebt] = useState(0);
-  const [redCurveballLoss, setRedCurveballLoss] = useState(0); // Financial curveball losses
-  const [blueCurveballLoss, setBlueCurveballLoss] = useState(0); // Life curveball losses
-  const [lossAvoided, setLossAvoided] = useState(0); // Total losses avoided through protection
   
   // Holds all players in multiplayer room
   const [roomPlayers, setRoomPlayers] = useState({});
@@ -92,21 +102,6 @@ function PlayerDashboard({
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  // Handle curveball loss tracking
-  const handleCurveballLoss = (type, amount) => {
-    if (type === 'red') {
-      setRedCurveballLoss((prev) => prev + amount);
-    } else if (type === 'blue') {
-      setBlueCurveballLoss((prev) => prev + amount);
-    }
-  };
-
-  // Handle loss avoidance tracking
-  const handleLossAvoided = (amount) => {
-    setLossAvoided((prev) => prev + amount);
-    addToast(`🛡️ Protection activated! Loss avoided: $${amount.toLocaleString()}`, 'success', 4000);
-  };
-
   // Reconnection tracking (no UI shown to user)
   const [reconnectTrigger, setReconnectTrigger] = useState(0);
   const reconnectAttemptsRef = useRef(0);
@@ -128,13 +123,6 @@ function PlayerDashboard({
       restoringRef.current = true;
 
       if (s.finance && s.finance.rulesetId === RULESET_ID) replaceLedger(s.finance);
-      if (typeof s.rep === 'number') setRep(s.rep);
-      if (typeof s.career === 'number') setCareer(s.career);
-      if (Array.isArray(s.curveballs)) setCurveballs(s.curveballs);
-      if (typeof s.shadyDebt === 'number') setShadyDebt(s.shadyDebt);
-      if (typeof s.redCurveballLoss === 'number') setRedCurveballLoss(s.redCurveballLoss);
-      if (typeof s.blueCurveballLoss === 'number') setBlueCurveballLoss(s.blueCurveballLoss);
-      if (typeof s.lossAvoided === 'number') setLossAvoided(s.lossAvoided);
 
     } catch (e) {
       console.error('Failed to parse saved game:', e);
@@ -154,13 +142,6 @@ function PlayerDashboard({
       avatar,
       cash,
       finance: ledger,
-      rep,
-      career,
-      curveballs,
-      shadyDebt,
-      redCurveballLoss,
-      blueCurveballLoss,
-      lossAvoided,
       totalLaps,
     };
 
@@ -175,13 +156,6 @@ function PlayerDashboard({
     avatar,
     cash,
     ledger,
-    rep,
-    career,
-    curveballs,
-    shadyDebt,
-    redCurveballLoss,
-    blueCurveballLoss,
-    lossAvoided,
     totalLaps,
   ]);
 
@@ -588,9 +562,9 @@ function PlayerDashboard({
   }, [syncToRoomInternal]);
   
 
-  // Room rows carry whole dollars: cash = Available Cash + Tax Bucket, debt = borrowing + unpaid taxes.
+  // Room rows carry whole dollars: cash = Available Cash + Tax Bucket, debt = borrowing + unpaid taxes + event bills.
   const syncedCash = Math.round(fromCents(ledger.cash + ledger.taxBucket));
-  const syncedDebt = Math.round(fromCents(totalBorrowing(ledger) + taxesOwed(ledger)));
+  const syncedDebt = Math.round(fromCents(totalBorrowing(ledger) + taxesOwed(ledger) + eventLiabilities(ledger)));
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ cash: syncedCash }); }, [syncedCash, roomId, currentPlayerId, syncToRoom]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ debt: syncedDebt }); }, [syncedDebt, roomId, currentPlayerId, syncToRoom]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ credit }); }, [credit, roomId, currentPlayerId, syncToRoom]);
@@ -667,12 +641,6 @@ function PlayerDashboard({
   const lastPurchaseTimeRef = useRef(0);
   const RATE_LIMIT_MS = 2000; // 2 seconds between purchases
 
-  /** Apply REP / Career that a ledger result awarded (luxury families, Youth Sports, events). */
-  const applyPoints = (result) => {
-    if (result && result.rep > 0) setRep(prev => prev + result.rep);
-    if (result && result.career > 0) setCareer(prev => prev + result.career);
-  };
-
   /**
    * Run a ledger operation from a button; toast the outcome. Returns true on success.
    * `format` builds the success message from the result when it depends on it.
@@ -680,7 +648,6 @@ function PlayerDashboard({
   const act = (type, payload, successMessage, format) => {
     try {
       const result = run(type, payload);
-      applyPoints(result);
       const message = format ? format(result) : successMessage;
       if (message) addToast(message, 'success', 3500);
       return true;
@@ -705,7 +672,6 @@ function PlayerDashboard({
       return false;
     }
     lastPurchaseTimeRef.current = now;
-    applyPoints(r);
     const title = ledgerRef.current.purchases[ledgerRef.current.purchases.length - 1]?.title || 'Purchase';
     const parts = [];
     if (r.receipts !== undefined) parts.push(`receipts ${formatCents(r.receipts)} (${r.profit >= 0 ? 'profit' : 'loss'} ${formatCents(Math.abs(r.profit))})`);
@@ -762,42 +728,14 @@ function PlayerDashboard({
       if (y.status === 'clear') addToast('Yellow space: all clear this turn.', 'info', 3000);
       else addToast(`⭐ ${YELLOW_COPY[y.cardId]?.benefit}: ${ledgerRef.current.yellowHistory.find(h => h.turn === y.turn)?.title || 'NIL opportunity'} — see Home`, 'success', 4000);
     }
+    if (r.scenario) {
+      addToast(r.scenario.status === 'clear' ? `${r.scenario.color === 'red' ? 'Red' : 'Blue'} space: all clear this turn.` : '⚡ Curveball — choose your response on Home', r.scenario.status === 'clear' ? 'info' : 'warning', 4000);
+    }
+    r.events.filter(ev => ['scenario_default', 'scenario_followup', 'portal'].includes(ev.type)).forEach(ev => addToast(ev.label, 'info', 4500));
     if (r.purple) {
       addToast(r.purple.status === 'clear' ? 'Purple space: plan review (no points this turn).' : '💼 Career opportunity — see Home', 'info', 3500);
     }
     if (r.final) addToast('Final lap reached. Settle up in Finance, then Finish & Reveal.', 'info', 5000);
-  };
-
-  /**
-   * A legacy curveball cash expense. If the player holds an eligible Legal or Health Support
-   * use, offer it on the eligible component only (80%, capped); the rest is still paid.
-   */
-  const handleCurveballExpense = ({ amount, desc, legalFee = 0, healthFee = 0 }) => {
-    const s = ledgerRef.current;
-    const offer = (plan, fee, bps, cap) => {
-      const uses = unusedPlanUses(s, plan);
-      if (!(fee > 0) || uses === 0) return false;
-      const help = Math.min(cap, Math.round((Math.min(fee, amount) * bps) / 10000));
-      return window.confirm(
-        `Use ${plan === 'legal' ? 'Legal' : 'Health'} Support on "${desc}"?\n\n` +
-        `It pays ${formatCents(help)} of the ${formatCents(Math.min(fee, amount))} ${plan === 'legal' ? 'legal fees' : 'health expense'}. ` +
-        `You pay ${formatCents(amount - help)}. Uses left after: ${uses - 1}.\n\nCancel to pay it all and keep the use.`
-      );
-    };
-    const useLegal = offer('legal', legalFee, 8000, 2500000);
-    const useHealth = !useLegal && offer('health', healthFee, 8000, 2000000);
-    // The Emergency Fund pays last, on the remaining mandatory expense (never taxes, debt or market losses).
-    const helped = useLegal ? Math.min(2500000, Math.round(Math.min(legalFee, amount) * 0.8))
-      : useHealth ? Math.min(2000000, Math.round(Math.min(healthFee, amount) * 0.8)) : 0;
-    const remaining = amount - helped;
-    const useToken = unusedTokens(s) > 0 && remaining > 0 && !TOKEN_EXCLUDED.some(x => desc.startsWith(x)) &&
-      window.confirm(`Use your Emergency Fund on "${desc}"? It pays ${formatCents(Math.min(2500000, remaining))} of the remaining ${formatCents(remaining)}. It can be used once.`);
-    try {
-      return run('legacy_expense', { amount, label: desc, legalFee, healthFee, useLegal, useHealth, useToken });
-    } catch (e) {
-      addToast(e.message, 'error', 4000);
-      return null;
-    }
   };
 
   // Manual money entry (home screen)
@@ -821,7 +759,7 @@ function PlayerDashboard({
     ...holdingsValue(ledger),
     ordinaryDebt: totalBorrowing(ledger),
     taxesOwed: taxesOwed(ledger),
-    otherLiabilities: toCents(shadyDebt || 0),
+    otherLiabilities: eventLiabilities(ledger),
     rep,
     career,
     creditScore: ledger.creditScore,
@@ -845,11 +783,7 @@ function PlayerDashboard({
 
     // Freeze the financial result once; later calls return the same snapshot.
     const snapshot = run('finish', {
-      external: {
-        otherLiabilities: toCents(shadyDebt || 0),
-        rep,
-        career,
-      },
+      external: {},
     });
     const finalCash = fromCents(snapshot.cash);
     const finalDebt = fromCents(snapshot.ordinaryDebt);
@@ -872,7 +806,7 @@ function PlayerDashboard({
         career,
         credit: finalCredit,
         debt: fromCents(snapshot.ordinaryDebt + snapshot.taxesOwed),
-        shadyDebt,
+        shadyDebt: 0,
         investments,
       };
       const result = selectCoachJBoWinner(merged);
@@ -891,7 +825,7 @@ function PlayerDashboard({
       credit: finalCredit,
       debt: finalDebt,
       curveballs,
-      shadyDebt,
+      shadyDebt: 0,
       investments,
       score: snapshot.score,
       totalLaps,
@@ -910,7 +844,7 @@ function PlayerDashboard({
         credit: finalCredit,
         debt: finalDebt,
         curveballs,
-        shadyDebt,
+        shadyDebt: 0,
         investments,
       });
 
@@ -1052,6 +986,12 @@ function PlayerDashboard({
                 <TurnTracker ledger={ledger} onRoll={handleRoll} onOpenTab={setActiveTab} />
               </div>
 
+              {((ledger.scenario && ledger.scenario.turn === ledger.turn) || ledger.portal) && (
+                <div className={glassSection}>
+                  <ScenarioPanel ledger={ledger} act={act} />
+                </div>
+              )}
+
               {(ledger.career.offer || ledger.career.internship || (ledger.career.referral && !ledger.career.referral.used)) && (
                 <div className={glassSection}>
                   <CareerPanel ledger={ledger} act={act} />
@@ -1144,18 +1084,18 @@ function PlayerDashboard({
                   <FaBolt className="text-xl text-red-700" />
                   <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Events</h3>
                 </div>
-                <CurveballSection
-                  curveballs={curveballs}
-                  setCurveballs={setCurveballs}
-                  setCash={setCash}
-                  setRep={setRep}
-                  setShadyDebt={setShadyDebt}
-                  onCurveballLoss={handleCurveballLoss}
-                  onLossAvoided={handleLossAvoided}
-                  onExpense={handleCurveballExpense}
-                  redCurveballLoss={redCurveballLoss}
-                  blueCurveballLoss={blueCurveballLoss}
-                />
+                <ScenarioPanel ledger={ledger} act={act} />
+                {ledger.turn === 0 && (
+                  <label className="mt-3 flex items-start gap-2 text-xs text-slate-900">
+                    <input
+                      type="checkbox"
+                      checked={ledger.settings.familyExpansionContent !== false}
+                      onChange={e => act('set_setting', { key: 'familyExpansionContent', value: e.target.checked })}
+                      className="mt-0.5"
+                    />
+                    <span>Include the family-planning blue card (host setting; locks after the first roll)</span>
+                  </label>
+                )}
               </div>
 
               <div className={glassSection}>
@@ -1172,6 +1112,14 @@ function PlayerDashboard({
                   <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Career record</h3>
                 </div>
                 <CareerRecord ledger={ledger} />
+              </div>
+
+              <div className={glassSection}>
+                <div className="flex items-center gap-2 mb-4">
+                  <FaBolt className="text-xl text-red-700" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Curveball history</h3>
+                </div>
+                <ScenarioHistory ledger={ledger} />
               </div>
             </>
           )}
@@ -1227,7 +1175,6 @@ function PlayerDashboard({
                 debt={debt}
                 curveballs={curveballs}
                 playerName={playerName}
-                shadyDebt={shadyDebt}
                 ledger={ledger}
                 score={liveScore}
                 finalWindow={inFinalWindow(ledger)}

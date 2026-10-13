@@ -5,7 +5,9 @@ import { eligibleFamilies, familyChoices, PATHS, preparedFor } from '../career';
 
 const $ = d => Math.round(d * 100);
 let n = 0;
-const run = (state, type, payload = {}, id = `c${++n}`) => applyOp(state, { id, type, ...payload });
+// Rolls carry stored dice for any market moves or curveball tables they trigger.
+const withDice = (type, payload) => (type === 'roll' && !payload.draws ? { draws: Array(60).fill(3), ...payload } : payload);
+const run = (state, type, payload = {}, id = `c${++n}`) => applyOp(state, { id, type, ...withDice(type, payload) });
 const exec = (state, type, payload, id) => run(state, type, payload, id).state;
 
 const PURPLE = [7, 14, 19, 23, 33, 37];

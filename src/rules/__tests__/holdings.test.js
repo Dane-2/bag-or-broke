@@ -18,7 +18,7 @@ function advanceTo(state, units, draws = threes) {
 }
 
 /** A ledger that skips the landing requirement, for testing card mechanics directly. */
-const open = (cash, opts = {}) => ({ ...createLedger({ openingCash: $(cash), ...opts }), requireLanding: false });
+const open = (cash, opts = {}) => ({ ...createLedger({ openingCash: $(cash), ...opts , landingEvents: false }), requireLanding: false });
 const buy = (s, entryId, extra = {}) => {
   const entry = investmentEntry(entryId) || LUXURY_CATALOG.find(e => e.id === entryId);
   return run(s, 'acquire', { entryId, assetId: `a-${entryId}-${++n}`, cashPart: entry ? entry.price : 0, ...extra });
@@ -286,7 +286,7 @@ describe('Packet 2 acceptance', () => {
 
 describe('landing opportunities', () => {
   test('one purchase per matching landing', () => {
-    let s = createLedger({ openingCash: $(50000) });
+    let s = createLedger({ openingCash: $(50000) , landingEvents: false });
     expect(landingStatus(s, investmentEntry('I4')).ok).toBe(false);
     s.opportunity = { category: 'green', used: false };
     s = exec(s, 'acquire', { entryId: 'I4', assetId: 'c1', cashPart: $(10000), face: 3 });

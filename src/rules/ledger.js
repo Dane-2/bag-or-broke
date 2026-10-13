@@ -28,6 +28,10 @@ import {
   createCareer, family as careerFamily, path as careerPath, familyChoices, eligibleFamilies, pathAllowed,
   familyRewardedThisLap, preparedFor, pathForGroup, referralSaving, REFERRAL,
 } from './career';
+import {
+  curveball, eligibleCurveballs, requirementMet, defaultResponse, scenarioTarget, optionalTasks,
+  COMPONENT_LABELS, BUSINESS_COMPONENTS, LOSS_COMPONENTS, PORTAL, athleteActive,
+} from './scenarios';
 
 const JOURNAL_LIMIT = 300;
 const RECEIPT_LIMIT = 500;
@@ -45,7 +49,7 @@ export class LedgerError extends Error {
 // Construction and read-only views
 // ---------------------------------------------------------------------------
 
-export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZE }) {
+export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZE, landingEvents = true }) {
   return {
     rulesetId: RULESET_ID,
     boardSize,
@@ -88,6 +92,22 @@ export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZ
     losses: [],
     y12Laps: [],
     career: createCareer(),
+    // REP / Career points (noncash game value) and curveball state
+    points: { rep: 0, career: 0, log: [] },
+    rewardKeys: [],
+    scenario: null,
+    scenarioHistory: [],
+    scenarioStats: {},
+    scheduled: [],
+    payables: [],
+    restrictions: [],
+    behaviors: [],
+    incomeShare: null,
+    portal: null,
+    healthIncidentUntil: -1,
+    creditChangedTurn: null,
+    // landingEvents=false skips yellow/purple/red/blue draws (finance-only tests).
+    settings: { familyExpansionContent: true, landingEvents },
   };
 }
 
@@ -124,6 +144,34 @@ export function totalBorrowing(s) {
   return s.loans.reduce((t, l) => t + loanBalance(s, l), 0);
 }
 
+/** Event bills plus the minimum still owed on an income-share claim (counted once at Finish). */
+export function eventLiabilities(s) {
+  const bills = (s.payables || []).reduce((t, p) => t + p.amount, 0);
+  const share = s.incomeShare ? Math.max(0, s.incomeShare.minTotal - s.incomeShare.paid) : 0;
+  return bills + share;
+}
+
+export const displayRep = s => Math.max(0, s.points.rep);
+
+/**
+ * Pressure display (no fee): obligations due before the next roll vs Available Cash, and
+ * optional task slots in use. Steady below 50%, Tight 50-100%, Strained above.
+ */
+export function pressure(s) {
+  const debtDue = requiredPayment(s).total;
+  const taxDue = s.taxBills.filter(b => !b.provisional).reduce((t, b) => t + taxBillOwed(b), 0);
+  const billsDue = (s.payables || []).filter(p => p.amount > 0 && p.dueTurn <= s.turn + 1).reduce((t, p) => t + p.amount, 0);
+  const due = debtDue + taxDue + billsDue;
+  let financial = 'steady';
+  if (due > 0 && s.cash <= 0) financial = 'strained';
+  else if (due > 0) financial = due / s.cash > 1 ? 'strained' : due / s.cash >= 0.5 ? 'tight' : 'steady';
+  const overdue = requiredPayment(s).overdue > 0 || (s.payables || []).some(p => p.amount > 0 && p.overdue) ||
+    s.taxBills.some(b => b.originalOverdue !== null && taxBillOwed(b) > 0);
+  const slots = (s.tasks || []).filter(t => t.status === 'open').reduce((t, x) => t + x.slots, 0);
+  const commitment = slots <= 1 ? 'light' : slots === 2 ? 'busy' : slots === 3 ? 'full' : 'overloaded';
+  return { due, financial, overdue, slots, commitment };
+}
+
 export function taxesOwed(s) {
   return s.taxBills.reduce((t, b) => t + taxBillOwed(b), 0);
 }
@@ -156,6 +204,9 @@ export function holds(s) {
   }
   if (s.loans.some(l => l.residualExit && loanBalance(s, l) > 0)) {
     out.push({ code: 'residual', message: 'Debt left over from selling an asset below its loan must be repaid first.' });
+  }
+  if ((s.payables || []).some(p => p.amount > 0 && p.overdue)) {
+    out.push({ code: 'payable', message: 'An overdue event bill is unpaid. Pay it in Finance to borrow again.' });
   }
   if (s.creditScore < 500) out.push({ code: 'score', message: 'A credit score below 500 blocks ordinary borrowing.' });
   return out;
@@ -473,6 +524,7 @@ function evaluateDeadline(d) {
   const netReduction = nonneg(p.principalRepaid - p.newDraws);
   const before = d.creditScore;
   d.creditScore = creditCheckpoint(before, current, debtFree, netReduction, p.basis);
+  if (band(before).unsecuredLimit !== band(d.creditScore).unsecuredLimit) d.creditChangedTurn = d.turn;
 
   let taxLate = 0;
   d.taxBills.forEach((b, i) => {
@@ -674,6 +726,32 @@ function settleSale(d, { assetId, label, value, basis, residualExit }) {
 function postCashIncome(d, amount, taxClass) {
   d.cash += amount;
   recordIncome(d, taxClass === 'business' ? 'business' : 'nil', amount);
+  if (taxClass !== 'business') applyIncomeShare(d, amount);
+}
+
+/** R19: a qualifying NIL cash receipt is taxed gross, then the claim takes its share. */
+function applyIncomeShare(d, amount) {
+  const c = d.incomeShare;
+  if (!c || !(amount > 0)) return 0;
+  const claim = Math.min(divHalfUp(amount * c.shareBps, BPS), Math.max(0, c.cap - c.paid));
+  d.cash -= claim;
+  c.paid += claim;
+  c.receipts += 1;
+  if (claim > 0) log(d, { type: 'income_share', label: 'Income-share claim payment', cashDelta: -claim });
+  if (c.receipts >= c.receiptLimit || c.paid >= c.cap) {
+    if (c.paid < c.minTotal) {
+      d.payables.push({ id: `PAY${d.nextId++}`, cardId: 'R19', label: 'Advance minimum repayment', component: 'income_share', amount: c.minTotal - c.paid, dueTurn: d.turn + 1, overdue: false });
+    }
+    d.incomeShare = null;
+  }
+  return claim;
+}
+
+function addPoints(d, rep = 0, career = 0, source = '') {
+  if (!rep && !career) return;
+  d.points.rep += rep;
+  d.points.career += career;
+  d.points.log.push({ turn: d.turn, rep, career, source });
 }
 
 /** Draw one eligible yellow card uniformly and post its base benefit immediately. */
@@ -771,16 +849,37 @@ function resolveYellow(d, choiceId) {
 }
 
 /** Start of an own turn: unanswered cards take their cost-free branch; overdue optional tasks lapse. */
-function startOwnTurn(d) {
+function startOwnTurn(d, dice, events) {
   if (d.yellow && d.yellow.status === 'pending') resolveYellow(d, defaultChoice(yellowCard(d.yellow.cardId)));
+  if (d.scenario && d.scenario.status === 'pending') {
+    const card = curveball(d.scenario.cardId);
+    respondScenario(d, defaultResponse(card), {}, false, true);
+    events.push({ type: 'scenario_default', label: `${card.title}: no response chosen, so the cost-free option applied` });
+  }
   const next = d.turn + 1;
+  // Due scenario checkpoints first.
+  const due = d.scheduled.filter(x => x.dueTurn <= next);
+  d.scheduled = d.scheduled.filter(x => x.dueTurn > next);
+  due.forEach(item => {
+    const ctx = scenarioContext(d, { cardId: item.cardId, id: item.scenarioId, targetId: item.targetId, saved: item.saved }, { lossId: item.lossId });
+    applyEffects(d, item.effects, ctx, true);
+    if (ctx.lines.length) events.push({ type: 'scenario_followup', label: `${ctx.card.title}: follow-up`, lines: ctx.lines });
+  });
   const missed = [];
   d.tasks.forEach(t => {
     if (t.status === 'open' && t.dueTurn < next) {
+      if (t.autoClose) {
+        t.status = 'completed';
+        return;
+      }
       t.status = 'missed';
       missed.push(t);
     }
   });
+  d.payables.forEach(p => {
+    if (p.amount > 0 && p.dueTurn <= next) p.overdue = true;
+  });
+  portalStep(d, next, dice, events);
   const internship = careerStartTurn(d, next);
   d.turn = next;
   d.yellow = null;
@@ -843,6 +942,457 @@ function careerStartTurn(d, nextTurn) {
 }
 
 // ---------------------------------------------------------------------------
+// Curveballs (red / blue scenarios)
+// ---------------------------------------------------------------------------
+
+const TOKEN_COMPONENT_EXCLUDED = ['settlement_tax', 'tax', 'advance_contract', 'contract_exit', 'income_share'];
+
+function targetAsset(d, ctx) {
+  return ctx.targetId ? d.assets.find(a => a.id === ctx.targetId) : null;
+}
+
+function setAssetValue(d, a, value) {
+  const v = Math.max(0, value);
+  if (a.holding === 'market') a.value = v;
+  else {
+    a.anchorValue = v;
+    a.anchorProgress = d.progress;
+  }
+}
+
+function amountOf(d, amount, ctx) {
+  if (!amount) return 0;
+  if (amount.fixed_cents !== undefined) return amount.fixed_cents;
+  const fields = {
+    available_cash_before_event: ctx.cashBefore,
+    company_value: targetAsset(d, ctx) ? assetValue(d, targetAsset(d, ctx)) : 0,
+    company_value_before_event: ctx.targetValueBefore,
+  };
+  const base = fields[amount.field] !== undefined ? fields[amount.field] : ctx.saved[amount.field] || 0;
+  const value = divHalfUp(Math.max(0, base) * (amount.basis_points ?? BPS), BPS);
+  return amount.cap_cents !== undefined ? Math.min(value, amount.cap_cents) : value;
+}
+
+/** Consume one plan use for this event's matter (once) and return the help for `fee`. */
+function planHelp(d, ctx, plan, fee) {
+  const m = ctx.matter[plan];
+  if (!m.used) {
+    const p = d.assets.find(a => isActive(a) && a.holding === 'plan' && a.plan === plan && a.uses > 0);
+    if (!p) return 0;
+    p.uses -= 1;
+    m.used = true;
+  }
+  const limits = plan === 'legal' ? { bps: 8000, cap: 2500000 } : HEALTH_ASSIST_LIMITS;
+  const help = Math.min(Math.max(0, limits.cap - m.applied), divHalfUp(fee * limits.bps, BPS));
+  m.applied += help;
+  return help;
+}
+
+function newPayable(d, ctx, { component, amount, due, saveAs }) {
+  const p = {
+    id: `PAY${d.nextId++}`,
+    cardId: ctx.card.id,
+    eventId: ctx.eventId,
+    label: `${ctx.card.title}: ${COMPONENT_LABELS[component] || component}`,
+    component,
+    amount,
+    dueTurn: d.turn + due,
+    overdue: false,
+  };
+  d.payables.push(p);
+  if (saveAs) ctx.saved[saveAs] = p.id;
+  ctx.lines.push({ kind: 'payable', label: p.label, amount, dueTurn: p.dueTurn });
+  return p;
+}
+
+function payableBySaved(d, ctx, key) {
+  return d.payables.find(p => p.id === ctx.saved[key]);
+}
+
+/** One expense: plan help, service discount and emergency token, then cash; a mandatory shortfall becomes an event bill. */
+function postExpense(d, e, ctx, mandatory) {
+  const gross = amountOf(d, e.amount, ctx);
+  if (!(gross > 0)) return;
+  let help = 0;
+  if (e.component === 'eligible_legal_fee' && ctx.elect.legal) help += planHelp(d, ctx, 'legal', gross);
+  if (e.component === 'health_expense' && ctx.elect.health) help += planHelp(d, ctx, 'health', gross);
+  let discount = 0;
+  if (ctx.elect.service) {
+    const credit = d.assets.find(a => isActive(a) && a.holding === 'service_credit' && a.uses > 0 &&
+      a.components.includes(e.component) && a.targetId === ctx.targetId);
+    if (credit) {
+      discount = Math.min(credit.cap, divHalfUp((gross - help) * credit.bps, BPS));
+      credit.uses -= 1;
+      if (discount > 0) credit.status = 'used';
+    }
+  }
+  let token = 0;
+  if (mandatory && ctx.elect.token && !TOKEN_COMPONENT_EXCLUDED.includes(e.component)) {
+    const t = d.assets.find(a => isActive(a) && a.holding === 'token' && a.uses > 0);
+    if (t) {
+      token = Math.min(t.limit, gross - help - discount);
+      t.uses -= 1;
+      t.status = 'used';
+    }
+  }
+  const net = gross - help - discount - token;
+  let paidNow = net;
+  if (mandatory) {
+    paidNow = Math.max(0, Math.min(d.cash, net));
+    if (net - paidNow > 0) newPayable(d, ctx, { component: e.component, amount: net - paidNow, due: 1 });
+  } else if (net > d.cash && !ctx.preview) {
+    throw new LedgerError('Not enough Available Cash for this response.');
+  }
+  d.cash -= paidNow;
+  if (BUSINESS_COMPONENTS.includes(e.component)) recordIncome(d, 'business', -net);
+  if (LOSS_COMPONENTS.includes(e.component)) {
+    const loss = { id: `loss-${d.nextId++}`, label: ctx.card.title, amount: gross, recovered: 0 };
+    d.losses.push(loss);
+    if (e.save_as) ctx.saved[e.save_as] = gross;
+    ctx.lossId = loss.id;
+  } else if (e.save_as) ctx.saved[e.save_as] = gross;
+  ctx.assistance += help + discount + token;
+  ctx.lines.push({ kind: 'expense', label: COMPONENT_LABELS[e.component] || e.component, gross, help: help + discount + token, paidNow });
+}
+
+function applyEffects(d, effects, ctx, mandatory) {
+  effects.forEach(e => {
+    if (e.requires === 'task_completed' && !ctx.taskCompleted) return;
+    switch (e.op) {
+      case 'expense':
+        postExpense(d, e, ctx, mandatory);
+        break;
+      case 'event_payable': {
+        const amount = amountOf(d, e.amount, ctx);
+        if (amount > 0) newPayable(d, ctx, { component: e.component, amount, due: e.due_own_turns || 1, saveAs: e.save_as });
+        break;
+      }
+      case 'restriction':
+        d.restrictions.push({ kind: e.kind, untilTurn: d.turn + e.own_turns, eventId: ctx.eventId, cardId: ctx.card.id });
+        if (e.kind === 'sport_appearance' && ['B02', 'B13'].includes(ctx.card.id)) {
+          d.healthIncidentUntil = Math.max(d.healthIncidentUntil, d.turn + e.own_turns);
+        }
+        ctx.lines.push({ kind: 'restriction', kind2: e.kind, turns: e.own_turns });
+        break;
+      case 'clear_event_restriction':
+        d.restrictions = d.restrictions.filter(r => r.eventId !== ctx.eventId);
+        ctx.lines.push({ kind: 'note', label: 'Restriction lifted' });
+        break;
+      case 'refund_loss': {
+        const loss = d.losses.find(l => l.id === ctx.lossId);
+        const want = amountOf(d, e.amount, ctx);
+        const x = loss ? Math.min(want, loss.amount - loss.recovered) : 0;
+        if (x > 0) {
+          loss.recovered += x;
+          d.cash += x;
+          ctx.lines.push({ kind: 'refund', label: 'Recovered', amount: x });
+        }
+        break;
+      }
+      case 'resolve_table':
+        if (ctx.preview) {
+          ctx.unknown = true;
+          break;
+        }
+        ctx.faces[e.table] = ctx.faces[e.table] || ctx.dice();
+        ctx.lines.push({ kind: 'roll', table: e.table, face: ctx.faces[e.table] });
+        applyEffects(d, ctx.card.chance[e.table].die_faces[String(ctx.faces[e.table])], ctx, true);
+        break;
+      case 'task':
+        ctx.newTask = {
+          id: `T${d.nextId++}`,
+          cardId: ctx.card.id,
+          eventId: ctx.eventId,
+          title: ctx.card.title,
+          label: ctx.choiceLabel,
+          kind: e.kind,
+          slots: e.slots,
+          createdTurn: d.turn,
+          dueTurn: d.turn + e.due_own_turns,
+          reward: 0,
+          onComplete: [],
+          targetId: ctx.targetId,
+          saved: ctx.saved,
+          status: 'open',
+        };
+        d.tasks.push(ctx.newTask);
+        break;
+      case 'mandatory_commitment':
+        d.tasks.push({
+          id: `T${d.nextId++}`, cardId: ctx.card.id, title: ctx.card.title, label: 'Planning commitment', kind: 'commitment',
+          slots: e.slots, createdTurn: d.turn, dueTurn: d.turn + e.own_turns, reward: 0, mandatory: true, autoClose: true, status: 'open',
+        });
+        break;
+      case 'delay_one_eligible_task':
+      case 'delay_task': {
+        const t = optionalTasks(d).sort((a, b) => a.dueTurn - b.dueTurn)[0];
+        if (t) t.dueTurn += e.own_turns;
+        break;
+      }
+      case 'cancel_one_optional_task':
+      case 'cancel_task_without_reward': {
+        const t = optionalTasks(d).sort((a, b) => a.dueTurn - b.dueTurn)[0];
+        if (t) t.status = 'released';
+        break;
+      }
+      case 'record_behavior':
+      case 'record_outcome':
+        d.behaviors.push({ turn: d.turn, cardId: ctx.card.id, tag: e.tag || e.band });
+        break;
+      case 'schedule_care_checkpoint':
+        d.healthIncidentUntil = Math.max(d.healthIncidentUntil, d.turn + e.own_turns);
+        break;
+      case 'rep_delta':
+      case 'career_delta': {
+        if (e.reward_key && d.rewardKeys.includes(e.reward_key)) break;
+        if (e.reward_key) d.rewardKeys.push(e.reward_key);
+        if (e.op === 'rep_delta') addPoints(d, e.points, 0, ctx.card.id);
+        else addPoints(d, 0, e.points, ctx.card.id);
+        ctx.points[e.op === 'rep_delta' ? 'rep' : 'career'] += e.points;
+        break;
+      }
+      case 'asset_write_down': {
+        const a = targetAsset(d, ctx);
+        if (!a) break;
+        const loss = amountOf(d, e.amount, ctx);
+        setAssetValue(d, a, assetValue(d, a) - loss);
+        if (e.save_as) ctx.saved[e.save_as] = loss;
+        ctx.lines.push({ kind: 'value', label: a.title, amount: -loss });
+        break;
+      }
+      case 'restore_prior_value_loss': {
+        const a = targetAsset(d, ctx);
+        if (!a || !isActive(a)) break;
+        const x = amountOf(d, e.amount, ctx);
+        setAssetValue(d, a, assetValue(d, a) + x);
+        ctx.lines.push({ kind: 'value', label: a.title, amount: x });
+        break;
+      }
+      case 'asset_write_down_tagged':
+        d.assets.forEach(a => {
+          if (!isActive(a) || a.holding !== 'market' || !(a.value > 0)) return;
+          const tag = e.precedence.find(t => (a.exposure || []).includes(t));
+          if (!tag) return;
+          const loss = divHalfUp(a.value * e.rates_basis_points[tag], BPS);
+          a.value -= loss;
+          ctx.lines.push({ kind: 'value', label: a.title, amount: -loss });
+        });
+        break;
+      case 'cash_advance': {
+        const x = amountOf(d, e.amount, ctx);
+        d.cash += x; // borrowed money, not income
+        ctx.lines.push({ kind: 'advance', label: 'Advance received (not income)', amount: x });
+        break;
+      }
+      case 'replace_existing_payable': {
+        const p = payableBySaved(d, ctx, e.target);
+        if (p) {
+          p.amount = amountOf(d, e.amount, ctx);
+          p.dueTurn = d.turn + e.due_own_turns;
+          ctx.lines.push({ kind: 'payable', label: p.label, amount: p.amount, dueTurn: p.dueTurn });
+        }
+        break;
+      }
+      case 'pay_existing_payable': {
+        const p = payableBySaved(d, ctx, e.target);
+        const x = Math.min(amountOf(d, e.amount, ctx), p ? p.amount : 0);
+        if (x > d.cash && !ctx.preview) throw new LedgerError('Not enough Available Cash for this response.');
+        d.cash -= x;
+        if (p) p.amount -= x;
+        ctx.lines.push({ kind: 'paid', label: 'Paid toward the claim', amount: x });
+        break;
+      }
+      case 'reduce_existing_payable': {
+        const p = d.payables.find(x => x.id === ctx.saved[e.target]);
+        if (p) p.amount = Math.max(0, p.amount - amountOf(d, e.amount, ctx));
+        break;
+      }
+      case 'income_share_contract':
+        d.incomeShare = {
+          eventId: ctx.eventId, shareBps: e.share_basis_points, receiptLimit: e.receipt_limit, cap: e.total_cap_cents,
+          minTotal: e.final_minimum_total_cents, paid: 0, receipts: 0,
+        };
+        break;
+      case 'amend_income_share':
+        if (d.incomeShare) {
+          Object.assign(d.incomeShare, { shareBps: e.share_basis_points, receiptLimit: e.receipt_limit, cap: e.total_cap_cents, minTotal: e.final_minimum_total_cents });
+        }
+        break;
+      case 'settle_income_share': {
+        const x = amountOf(d, e.amount, ctx);
+        if (x > d.cash && !ctx.preview) throw new LedgerError('Not enough Available Cash for this response.');
+        d.cash -= x;
+        d.incomeShare = null;
+        ctx.lines.push({ kind: 'paid', label: 'Fixed exit price', amount: x });
+        break;
+      }
+      case 'start_transfer_process':
+        d.portal = { mode: e.mode, stage: 'searching', searchTurn: d.turn + 1, searches: 0, offers: [], eventId: ctx.eventId, academicTaskId: null };
+        break;
+      case 'close_contract_at_recorded_expiry': {
+        const r = d.sponsorRelations.find(x => x.expiresTurn >= d.turn && x.expiresTurn <= d.turn + 1 && !x.closed);
+        if (r) r.closed = true;
+        break;
+      }
+      case 'navigate':
+        ctx.navigate = e.target;
+        break;
+      case 'link_existing_bill':
+      case 'remove_unearned_projection':
+        break;
+      case 'cash_income': {
+        const x = amountOf(d, e.amount, ctx);
+        postCashIncome(d, x, e.tax_class);
+        ctx.lines.push({ kind: 'income', label: 'NIL income', amount: x });
+        break;
+      }
+      default:
+        throw new LedgerError(`Unsupported scenario effect ${e.op}`);
+    }
+  });
+}
+
+function scenarioContext(d, sc, extra = {}) {
+  const card = curveball(sc.cardId);
+  return {
+    card,
+    eventId: sc.id,
+    targetId: sc.targetId,
+    cashBefore: sc.cashBefore,
+    targetValueBefore: sc.targetValueBefore,
+    saved: sc.saved || {},
+    faces: sc.faces || {},
+    dice: () => {
+      throw new LedgerError('Missing stored roll.');
+    },
+    elect: { legal: false, health: false, token: false, service: false },
+    matter: { legal: { used: false, applied: 0 }, health: { used: false, applied: 0 } },
+    lines: [],
+    points: { rep: 0, career: 0 },
+    assistance: 0,
+    preview: false,
+    ...extra,
+  };
+}
+
+/** Draw a red or blue scenario for this landing; tables get their stored rolls now. */
+function drawCurveball(d, color, pick, dice) {
+  const pool = eligibleCurveballs(d, color);
+  if (!pool.length) {
+    d.scenario = { id: `S-${d.turn}`, cardId: null, color, turn: d.turn, status: 'clear' };
+    log(d, { type: 'scenario', label: `${color === 'red' ? 'Red' : 'Blue'} space: all clear this turn`, cashDelta: 0 });
+    return d.scenario;
+  }
+  const card = pool[Math.floor(Math.abs(pick || 0)) % pool.length];
+  const target = scenarioTarget(d, card);
+  const faces = {};
+  Object.keys(card.chance || {}).forEach(t => {
+    faces[t] = nextDie(dice);
+  });
+  const stats = d.scenarioStats[card.id] || { count: 0, lastTurn: -Infinity };
+  d.scenarioStats[card.id] = { count: stats.count + 1, lastTurn: d.turn };
+  d.scenario = {
+    id: `S-${d.turn}`,
+    cardId: card.id,
+    color,
+    turn: d.turn,
+    status: 'pending',
+    targetId: target ? target.id : null,
+    targetTitle: target ? target.title : null,
+    cashBefore: d.cash,
+    targetValueBefore: target ? assetValue(d, target) : 0,
+    faces,
+    saved: {},
+  };
+  log(d, { type: 'scenario', label: card.title, cashDelta: 0 });
+  return d.scenario;
+}
+
+/** Apply the immediate effects and the chosen response together, once. */
+function respondScenario(d, choiceId, elect, preview = false, forced = false) {
+  const sc = d.scenario;
+  if (!sc || sc.status !== 'pending') throw new LedgerError('There is no curveball waiting for a response.');
+  const card = curveball(sc.cardId);
+  const choice = card.choices.find(c => c.id === choiceId);
+  if (!choice) throw new LedgerError('Choose one of the responses.');
+  const target = sc.targetId ? d.assets.find(a => a.id === sc.targetId) : null;
+  const unmet = choice.requires.find(r => !requirementMet(d, r, target));
+  if (unmet && !forced) throw new LedgerError('That response is not available right now.');
+  const ctx = scenarioContext(d, sc, { elect: { ...elect }, preview, choiceLabel: choice.label });
+  const cashStart = d.cash;
+  applyEffects(d, card.immediate || [], ctx, true);
+  // An unanswered card's default response is applied like a mandatory bill: cash first, then an event bill.
+  applyEffects(d, choice.effects, ctx, forced);
+  (choice.scheduled || []).forEach(item => {
+    const gated = item.effects.some(e => e.requires === 'task_completed');
+    if (gated && ctx.newTask) ctx.newTask.onComplete = item.effects;
+    else if (!gated) d.scheduled.push({ dueTurn: d.turn + item.after_own_turns, effects: item.effects, scenarioId: sc.id, cardId: card.id, targetId: sc.targetId, saved: ctx.saved, lossId: ctx.lossId || null });
+  });
+  sc.status = 'resolved';
+  sc.choiceId = choiceId;
+  sc.saved = ctx.saved;
+  const entry = {
+    cardId: card.id,
+    title: card.title,
+    color: card.color,
+    turn: d.turn,
+    choice: choice.label,
+    cashDelta: d.cash - cashStart,
+    assistance: ctx.assistance,
+    lines: ctx.lines,
+  };
+  if (!preview) d.scenarioHistory.push(entry);
+  return { ...entry, points: ctx.points, navigate: ctx.navigate || null, unknown: Boolean(ctx.unknown) };
+}
+
+/** Portal step at the start of an own turn (offer search, expiry, placement follow-up). */
+function portalStep(d, next, dice, events) {
+  const p = d.portal;
+  if (!p) return;
+  const fakeCard = curveball('B05');
+  const ctx = scenarioContext(d, { cardId: 'B05', id: p.eventId }, { card: fakeCard });
+  const failSearch = () => {
+    if (p.searches < 2) {
+      p.stage = 'searching';
+      p.searchTurn = next;
+      return;
+    }
+    if (p.mode === 'entered' && !p.recoveryOffered) {
+      applyEffects(d, PORTAL.no_placement_after_two_searches.effects, ctx, true);
+      p.recoveryOffered = true;
+      if (athleteActive(d)) {
+        p.stage = 'offers';
+        p.offers = [{ ...PORTAL.offers.find(o => o.id === 'O_BALANCED'), expiresTurn: next + 2 }];
+        events.push({ type: 'portal', label: 'No placement after two searches. A support referral offers one balanced option.' });
+        return;
+      }
+    }
+    events.push({ type: 'portal', label: p.mode === 'entered' ? 'No transfer placement. Career, business and study continue.' : 'No better offer found. You keep your current place.' });
+    d.portal = null;
+  };
+  if (p.stage === 'searching' && p.searchTurn <= next) {
+    const face = nextDie(dice);
+    p.searches += 1;
+    const ids = PORTAL.step1.faces[String(face)];
+    p.offers = ids.map(id => ({ ...PORTAL.offers.find(o => o.id === id), expiresTurn: next + 2 }));
+    p.stage = 'offers';
+    events.push({ type: 'portal', label: ids.length ? `Transfer search: ${ids.length} offer${ids.length > 1 ? 's' : ''} received` : 'Transfer search: no offers this time' });
+    if (!ids.length) failSearch();
+  } else if (p.stage === 'offers' && p.offers.every(o => o.expiresTurn < next)) {
+    failSearch();
+  } else if (p.stage === 'placed' && p.followTurn <= next) {
+    const face = nextDie(dice);
+    let band = PORTAL.followup_fit.die_faces[String(face)];
+    const task = d.tasks.find(t => t.id === p.academicTaskId);
+    if (task && task.status !== 'completed' && (band === 'positive' || band === 'extreme_positive')) band = 'middle';
+    applyEffects(d, PORTAL.followup_fit.effects[band], ctx, true);
+    events.push({ type: 'portal', label: `New team fit: ${band.replace('_', ' ')}` });
+    d.behaviors.push({ turn: next, cardId: 'B05', tag: `transfer_${band}` });
+    d.portal = null;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Operations
 // ---------------------------------------------------------------------------
 
@@ -866,6 +1416,7 @@ const handlers = {
     d.cash += amount - setAside;
     d.taxBucket += setAside;
     recordIncome(d, taxClass, amount);
+    if (taxClass === 'nil') applyIncomeShare(d, amount);
     log(d, { type: 'income', label, cashDelta: amount - setAside, bucketDelta: setAside, taxClass });
     return { cash: d.cash, taxBucket: d.taxBucket };
   },
@@ -897,13 +1448,13 @@ const handlers = {
     if (!Number.isInteger(steps) || steps < d.diceCount || steps > max) {
       throw new LedgerError(`Enter a roll between ${d.diceCount} and ${max}.`);
     }
-    const missedTasks = startOwnTurn(d);
-    const checkpoint = evaluateDeadline(d);
-
-    const target = Math.min(d.progress + steps, finalProgress(d));
     const laps = [];
     const events = [];
     const dice = { list: draws, i: 0 };
+    const missedTasks = startOwnTurn(d, dice, events);
+    const checkpoint = evaluateDeadline(d);
+
+    const target = Math.min(d.progress + steps, finalProgress(d));
     while (d.progress < target) {
       const boundary = (Math.floor(d.progress / d.boardSize) + 1) * d.boardSize;
       const end = Math.min(boundary, target, nextDuePoint(d));
@@ -919,14 +1470,19 @@ const handlers = {
     const index = position(d);
     const landed = final || index === 0 ? null : boardSpace(index);
     d.opportunity = landed ? { category: landed.category, index, progress: d.progress, used: false } : null;
-    const yellow = landed && landed.category === 'yellow' ? clone(drawYellow(d, pick)) : null;
-    const purple = landed && landed.category === 'purple' ? clone(drawPurple(d, pick)) : null;
+    const events_on = d.settings.landingEvents !== false;
+    const yellow = events_on && landed && landed.category === 'yellow' ? clone(drawYellow(d, pick)) : null;
+    const purple = events_on && landed && landed.category === 'purple' ? clone(drawPurple(d, pick)) : null;
+    if (!(landed && (landed.category === 'red' || landed.category === 'blue')) && d.scenario && d.scenario.status !== 'pending') d.scenario = null;
+    const scenario = events_on && landed && (landed.category === 'red' || landed.category === 'blue')
+      ? clone(drawCurveball(d, landed.category, pick, dice))
+      : null;
     log(d, {
       type: 'roll',
       label: final ? `Rolled ${steps} — reached the finish` : `Rolled ${steps} — space ${index}`,
       cashDelta: 0,
     });
-    return { steps, checkpoint, closedLaps: laps, events, landed, final, progress: d.progress, yellow, purple, missedTasks };
+    return { steps, checkpoint, closedLaps: laps, events, landed, final, progress: d.progress, yellow, purple, scenario, missedTasks };
   },
 
   pay_debt(d, { amount, loanId = null }) {
@@ -1028,8 +1584,8 @@ const handlers = {
     const q = quoteAcquire(d, { entryId, cashPart, targetId, optionBps });
     if (!q.ok) throw new LedgerError(q.errors[0]);
     const activation = isActivation(entry);
-    const needsTarget = activation || entry.parentMode === 'attach' || entry.parentMode === 'attach_rental';
-    if (needsTarget && !targetId) throw new LedgerError(activation ? 'Choose the business to promote.' : 'Choose the asset to upgrade.');
+    const needsTarget = activation || ['attach', 'attach_rental', 'service'].includes(entry.parentMode);
+    if (needsTarget && !targetId) throw new LedgerError(activation || entry.parentMode === 'service' ? 'Choose the business.' : 'Choose the asset to upgrade.');
     const needsFace = activation || Array.isArray(entry.launchTable);
     if (needsFace && !(Number.isInteger(face) && face >= 1 && face <= 6)) throw new LedgerError('Enter the die roll (1–6).');
     if (entry.entryOptionsBps && !entry.entryOptionsBps.includes(optionBps)) throw new LedgerError('Choose an ownership option.');
@@ -1138,6 +1694,9 @@ const handlers = {
           break;
         case 'protection':
           add({ holding: 'plan', plan: entry.plan, uses: entry.uses, usesBought: entry.uses });
+          break;
+        case 'service':
+          add({ holding: 'service_credit', targetId, components: entry.service.components, bps: entry.service.bps, cap: entry.service.cap, uses: entry.service.uses });
           break;
         default:
           throw new LedgerError('This card is not available yet.');
@@ -1442,11 +2001,77 @@ const handlers = {
     const t = d.tasks.find(x => x.id === taskId);
     if (!t || t.status !== 'open') throw new LedgerError('That task is not open.');
     if (d.turn < t.dueTurn) throw new LedgerError('This task is due on your next turn. Roll first.');
+    if (t.mandatory) throw new LedgerError('This commitment ends on its own.');
     t.status = 'completed';
     t.completedTurn = d.turn;
     if (t.reward > 0) postCashIncome(d, t.reward, t.taxClass);
+    let points = { rep: 0, career: 0 };
+    if (t.onComplete && t.onComplete.length) {
+      const ctx = scenarioContext(d, { cardId: t.cardId, id: t.eventId, targetId: t.targetId, saved: t.saved }, { taskCompleted: true });
+      applyEffects(d, t.onComplete, ctx, true);
+      points = ctx.points;
+    }
     log(d, { type: 'task_complete', label: `Completed: ${t.title}`, cashDelta: t.reward });
-    return { reward: t.reward };
+    return { reward: t.reward, points };
+  },
+
+  /** Respond to the drawn curveball. elect: which owned protections to use. */
+  scenario_respond(d, { choiceId, elect = {}, preview = false }) {
+    assertActive(d);
+    return respondScenario(d, choiceId, elect, preview);
+  },
+
+  /** Pay an event bill (settlement, advance claim, shortfall) from Available Cash. */
+  pay_payable(d, { payableId, amount }) {
+    assertActive(d);
+    const p = d.payables.find(x => x.id === payableId && x.amount > 0);
+    if (!p) throw new LedgerError('That bill is already paid.');
+    const x = Math.min(amount, p.amount);
+    if (!(x > 0)) throw new LedgerError('Enter a positive amount.');
+    if (x > d.cash) throw new LedgerError('Not enough Available Cash.');
+    d.cash -= x;
+    p.amount -= x;
+    if (p.amount === 0) p.overdue = false;
+    log(d, { type: 'pay_payable', label: `Paid ${p.label}`, cashDelta: -x });
+    return { paid: x, remaining: p.amount };
+  },
+
+  /** Accept one transfer offer: signing payment and moving cost post together. */
+  portal_accept(d, { offerId }) {
+    assertActive(d);
+    const p = d.portal;
+    if (!p || p.stage !== 'offers') throw new LedgerError('There is no transfer offer open.');
+    const o = p.offers.find(x => x.id === offerId && x.expiresTurn >= d.turn);
+    if (!o) throw new LedgerError('That offer has expired.');
+    if (d.cash + o.nil_signing_cash_cents < o.uncovered_move_cost_cents) throw new LedgerError('Not enough cash to cover the move after the signing payment.');
+    postCashIncome(d, o.nil_signing_cash_cents, 'nil');
+    d.cash -= o.uncovered_move_cost_cents;
+    const task = {
+      id: `T${d.nextId++}`, cardId: 'B05', title: 'Transfer', label: 'Academic transfer paperwork', kind: 'transfer_academic',
+      slots: o.academic_task_slots, createdTurn: d.turn, dueTurn: d.turn + o.academic_task_due_own_turns, reward: 0, mandatory: false, status: 'open',
+    };
+    d.tasks.push(task);
+    // The fit follow-up comes after the paperwork's own due turn, so finishing it can count.
+    Object.assign(p, { stage: 'placed', placed: o.id, followTurn: task.dueTurn + 1, academicTaskId: task.id, offers: [] });
+    log(d, { type: 'portal', label: `Transferred: ${o.title}`, cashDelta: o.nil_signing_cash_cents - o.uncovered_move_cost_cents });
+    return { signing: o.nil_signing_cash_cents, moveCost: o.uncovered_move_cost_cents };
+  },
+
+  /** Leave the transfer process (information mode keeps your current place). */
+  portal_stay(d) {
+    assertActive(d);
+    if (!d.portal) throw new LedgerError('There is no transfer process open.');
+    d.behaviors.push({ turn: d.turn, cardId: 'B05', tag: d.portal.mode === 'information' ? 'informed_stay' : 'portal_withdrawn' });
+    d.portal = null;
+    return { stayed: true };
+  },
+
+  /** Host content settings, fixed once the first roll happens. */
+  set_setting(d, { key, value }) {
+    if (d.turn > 0) throw new LedgerError('Content settings are fixed once the game starts.');
+    if (!['familyExpansionContent'].includes(key)) throw new LedgerError('Unknown setting.');
+    d.settings[key] = Boolean(value);
+    return { [key]: d.settings[key] };
   },
 
   /** Release an optional task to free a slot; its unearned reward is forgone. */
@@ -1476,6 +2101,14 @@ const handlers = {
       d.career.internship = null;
     }
     if (d.career.offer && d.career.offer.status === 'offered') d.career.offer.status = 'declined';
+    if (d.scenario && d.scenario.status === 'pending') respondScenario(d, defaultResponse(curveball(d.scenario.cardId)), {}, false, true);
+    // Committed follow-ups settle with their stored outcome; task-gated rewards are not earned.
+    d.scheduled.forEach(item => {
+      const ctx = scenarioContext(d, { cardId: item.cardId, id: item.scenarioId, targetId: item.targetId, saved: item.saved }, { lossId: item.lossId });
+      applyEffects(d, item.effects, ctx, true);
+    });
+    d.scheduled = [];
+    d.portal = null;
     // Income in an unfinished lap still gets one provisional bill.
     const lap = incomeLap(d);
     if (!d.closedLaps.includes(lap) && d.taxIncome[lap]) rebill(d, lap);
@@ -1496,6 +2129,8 @@ const handlers = {
       creditScore: d.creditScore,
       creditBonus: band(d.creditScore).creditBonus,
       ledgerSequence: d.seq,
+      eventLiabilities: eventLiabilities(d),
+      points: { rep: displayRep(d), career: d.points.career },
       external: clone(external),
       holdings: d.assets
         .filter(isActive)
@@ -1506,6 +2141,9 @@ const handlers = {
       luxuryResale: held.luxuryResale,
       policyDebt: held.policyDebt,
       ...external,
+      otherLiabilities: eventLiabilities(d) + (external.otherLiabilities || 0),
+      rep: displayRep(d),
+      career: d.points.career,
       cash: d.cash,
       taxBucket: d.taxBucket,
       ordinaryDebt: snapshot.ordinaryDebt,
@@ -1534,6 +2172,8 @@ export function applyOp(state, op) {
 
   const draft = clone(state);
   const result = handler(draft, payload);
+  // Handlers that award REP / Career report them as result.rep / result.career.
+  if (result && type !== 'roll' && (result.rep || result.career) && !result.points) addPoints(draft, result.rep || 0, result.career || 0, type);
   draft.receipts[id] = { key, result: clone(result) };
   draft.receiptOrder.push(id);
   if (draft.receiptOrder.length > RECEIPT_LIMIT) {
@@ -1542,6 +2182,38 @@ export function applyOp(state, op) {
     });
   }
   return { state: draft, result: clone(result), replayed: false };
+}
+
+/**
+ * Quote one curveball response for the choice screen. Numbers come from a preview that
+ * skips chance tables (so a stored roll is never revealed); availability comes from a
+ * full trial on a copy. Nothing here changes the real ledger.
+ */
+export function quoteScenario(s, choiceId, elect = {}) {
+  let available = true;
+  let reason = null;
+  try {
+    applyOp(s, { id: `quote-check-${choiceId}`, type: 'scenario_respond', choiceId, elect });
+  } catch (e) {
+    available = false;
+    reason = e.message;
+  }
+  try {
+    const { state, result } = applyOp(s, { id: `quote-${choiceId}`, type: 'scenario_respond', choiceId, elect, preview: true });
+    const before = new Set(s.payables.map(p => p.id));
+    return {
+      available,
+      reason,
+      cashDelta: state.cash - s.cash,
+      assistance: result.assistance,
+      newBills: state.payables.filter(p => !before.has(p.id) && p.amount > 0),
+      lines: result.lines,
+      chance: result.unknown,
+      points: result.points,
+    };
+  } catch (e) {
+    return { available: false, reason: e.message, cashDelta: 0, assistance: 0, newBills: [], lines: [], chance: false, points: { rep: 0, career: 0 } };
+  }
 }
 
 let opCounter = 0;

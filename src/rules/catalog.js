@@ -51,8 +51,12 @@ export const INVESTMENT_GROUPS = [
  * keeping these unavailable (with a reason) rather than selling an action nobody can use.
  */
 const UNAVAILABLE = {
-  I36: 'Its discount applies to business repair bills, which arrive with the new curveballs.',
-  I37: 'Its discount applies to website repair bills, which arrive with the new curveballs.',
+  I36: 'Its discount applies to operating and equipment repair bills, which no current curveball produces yet.',
+};
+
+/** Scoped one-use discounts bought from the green menu (investments.json support_services). */
+export const SERVICE_SCOPES = {
+  I37: { components: ['website_platform_remediation'], targetExposure: 'platform_dependency' },
 };
 
 /** Upgrades attach to one owned parent root; requirement cards only need one owned. */
@@ -119,6 +123,11 @@ function fromCard(card, group) {
   if (card.id === 'RE_TRIPLEX') entry.requiresExposure = 'rental_property';
   if (card.id === 'RE_COMMERCIAL') entry.requiresMultiUnit = true;
   if (PLAN[card.id]) Object.assign(entry, PLAN[card.id]);
+  if (SERVICE_SCOPES[card.id]) {
+    const svc = investmentsConfig.support_services[card.id];
+    entry.service = { ...SERVICE_SCOPES[card.id], bps: svc.rate_bps, cap: svc.cap_cents, uses: svc.uses };
+    entry.parentMode = 'service';
+  }
   if (card.economic_type === 'fixed_contract') {
     const life = lifeTier(card.id);
     const annuity = annuityTier(card.id);

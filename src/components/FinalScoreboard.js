@@ -133,13 +133,13 @@ function FinalScoreboard({ data }) {
               ['💳 Borrowing', -score.ordinaryDebt],
               ['🛡️ Policy loans', -score.policyDebt],
               ['🏛️ Taxes owed', -score.taxesOwed],
-              ['📉 Shady deal debt', -score.otherLiabilities],
+              ['🧾 Event bills', -score.otherLiabilities],
               ['= Financial wealth', score.financialWealth],
               ['🌟 REP value', score.repValue],
               ['📚 Career value', score.careerValue],
               ['🧠 Credit bonus', score.creditBonus],
             ]
-              .filter(([label, value]) => value !== 0 || !label.match(/Policy|Taxes|Shady|Bucket/))
+              .filter(([label, value]) => value !== 0 || !label.match(/Policy|Taxes|Event|Bucket/))
               .map(([label, value]) => (
                 <li key={label} className={statRowClass}>
                   <span>{label}</span>

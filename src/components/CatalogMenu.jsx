@@ -55,6 +55,10 @@ function laterText(entry, ledger) {
       return 'Keeps growing (or shrinking) at its launch rate every lap. High risk: an early result compounds for the rest of the game.';
     case 'event':
       return 'A one-time event: you pay the cost and receive the receipts once. Profit or loss is business income. Once per game.';
+    case 'service':
+      return entry.service
+        ? `One-time discount: ${entry.service.bps / 100}% (up to ${formatCents(entry.service.cap)}) off a later technical-recovery bill for the business you pick. No asset value.`
+        : '';
     case 'community_expense':
       return 'A community expense: +4 REP once per game. No asset value and no tax shield.';
     case 'protection': {
@@ -130,7 +134,7 @@ function PurchasePanel({ entry, ledger, onAcquire, onClose }) {
   const cashPart = method === 'cash' || entry.cashOnly ? base.price : Math.min(base.price, toCents(cashPortion));
   const q = quoteAcquire(ledger, { entryId: entry.id, cashPart, targetId: targetId || null, optionBps });
   const targets = eligibility(ledger, entry).targets || [];
-  const needsTarget = isActivation(entry) || entry.parentMode === 'attach' || entry.parentMode === 'attach_rental';
+  const needsTarget = isActivation(entry) || ['attach', 'attach_rental', 'service'].includes(entry.parentMode);
   const needsFace = isActivation(entry) || Array.isArray(entry.launchTable);
   const missing = [];
   if (needsTarget && !targetId) missing.push(isActivation(entry) ? 'Choose a business to promote.' : 'Choose the asset to upgrade.');
@@ -197,7 +201,7 @@ function PurchasePanel({ entry, ledger, onAcquire, onClose }) {
 
       {needsTarget && (
         <div>
-          <p className={label}>{isActivation(entry) ? 'Business to promote' : 'Asset to upgrade'}</p>
+          <p className={label}>{isActivation(entry) ? 'Business to promote' : entry.parentMode === 'service' ? 'Business it supports' : 'Asset to upgrade'}</p>
           <select value={targetId} onChange={e => setTargetId(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-white/40 bg-white/25 text-slate-900">
             <option value="">Choose…</option>
             {targets.map(t => (

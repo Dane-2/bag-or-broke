@@ -29,9 +29,8 @@ test('rolling closes a lap, posts the award and bills tax on NIL income', () => 
   expect(screen.getByText('$52,500')).toBeInTheDocument(); // 12,500 + 40,000
   expect(screen.getByText('$10,000')).toBeInTheDocument(); // Tax Bucket
 
-  // 6 x 6 + 4 = 40 spaces: exactly one lap.
-  for (let i = 0; i < 6; i++) roll(6);
-  roll(4);
+  // Exactly one lap, stepping only on green, diamond and purple spaces (no cash events).
+  [5, 6, 6, 6, 6, 5, 5, 1].forEach(roll);
   expect(screen.getByText('Lap 1 / 5 complete')).toBeInTheDocument();
   expect(screen.getByText('$55,000')).toBeInTheDocument(); // + $2,500 lap award
 
@@ -76,7 +75,7 @@ test('a luxury bought on credit from a diamond landing shows as debt', () => {
 test('landing on yellow draws an NIL card and posts its base benefit', () => {
   render(<PlayerDashboard playerName="Star" avatar="Walk On" startingCash={12500} totalLaps={5} showFinal={jest.fn()} />);
   roll(2); // space 2 is yellow
-  expect(screen.getByText('⭐ NIL opportunities')).toBeInTheDocument();
+  expect(screen.getByText(/NIL opportunities/)).toBeInTheDocument();
   expect(screen.getByText(/added to your cash|Emergency Fund added|Optional service offered/)).toBeInTheDocument();
 });
 
@@ -89,6 +88,13 @@ test('landing on purple offers a career activity that awards points on completio
   const choices = screen.getAllByRole('button').filter(b => b.className.includes('text-left') && !b.disabled);
   fireEvent.click(choices[choices.length - 1]);
   expect(screen.queryByText('Career opportunity')).not.toBeInTheDocument();
+});
+
+test('landing on red draws a curveball with response cards', () => {
+  render(<PlayerDashboard playerName="Grit" avatar="Walk On" startingCash={12500} totalLaps={5} showFinal={jest.fn()} />);
+  roll(4); // space 4 is red
+  const panel = screen.queryByText('Financial curveball') || screen.queryByText('All clear this turn');
+  expect(panel).toBeInTheDocument();
 });
 
 test('finish freezes the result and reports the game value', async () => {

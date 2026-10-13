@@ -49,7 +49,7 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
           <li>💳 <strong>Borrowing:</strong> -{formatCents(score.ordinaryDebt)}</li>
           {score.policyDebt > 0 && <li>🛡️ <strong>Policy loans:</strong> -{formatCents(score.policyDebt)}</li>}
           {score.taxesOwed > 0 && <li>🏛️ <strong>Taxes owed:</strong> -{formatCents(score.taxesOwed)}</li>}
-          {score.otherLiabilities > 0 && <li>⚫ <strong>Shady Debt:</strong> -{formatCents(score.otherLiabilities)}</li>}
+          {score.otherLiabilities > 0 && <li>🧾 <strong>Event bills:</strong> -{formatCents(score.otherLiabilities)}</li>}
           <li className="pt-1 font-semibold">= Financial wealth: {formatCents(score.financialWealth)}</li>
           <li>🌟 <strong>REP ({rep} × $2,500):</strong> {formatCents(score.repValue)}</li>
           <li>📚 <strong>Career ({career} × $5,000):</strong> {formatCents(score.careerValue)}</li>

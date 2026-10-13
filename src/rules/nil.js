@@ -35,6 +35,15 @@ export const RECOVERABLE_LOSSES = ['NIL Contract Scam'];
 export const TOKEN_EXCLUDED = ['Pay Your Taxes', 'IRS Audit', 'Federal Tax Audit', 'Credit Card Debt Hits', 'Market Crash'];
 
 const SPONSOR_BASE_CARDS = ['Y01', 'Y04', 'Y05', 'Y06', 'Y07', 'Y10'];
+
+/** Curveball restrictions and the yellow cards they block while active. */
+export const RESTRICTION_BLOCKS = {
+  new_nil_contract: SPONSOR_BASE_CARDS,
+  new_overlapping_sponsor_contract: SPONSOR_BASE_CARDS,
+  new_brand_collaboration: ['Y01', 'Y10'],
+};
+const activeKinds = s => (s.restrictions || []).filter(r => r.untilTurn >= s.turn).map(r => r.kind);
+const blockedYellow = s => new Set(activeKinds(s).flatMap(k => RESTRICTION_BLOCKS[k] || []));
 export const createsSponsorRelationship = id => SPONSOR_BASE_CARDS.includes(id);
 
 export const unrecoveredLoss = s => s.losses.reduce((t, l) => t + (l.amount - l.recovered), 0);
@@ -87,7 +96,7 @@ export function predicate(s, name) {
 /** Cards that can be drawn now (eligibility, four-turn cooldown, per-game repeat limit). */
 export function eligibleYellow(s) {
   return YELLOW_CARDS.filter(card => {
-    if (!card.enabled_in_recommended_preview) return false;
+    if (!card.enabled_in_recommended_preview || blockedYellow(s).has(card.id)) return false;
     const stats = s.yellowStats[card.id];
     if (stats && stats.count >= card.repeat_limit_per_game) return false;
     if (stats && s.turn - stats.lastTurn < card.cooldown_own_turns) return false;
@@ -99,14 +108,15 @@ export function eligibleYellow(s) {
 export function yellowChoices(s, card) {
   return card.choices.map(choice => {
     const needsSlot = choice.requires.includes('capacity_for_one_task');
-    const available = !needsSlot || openTaskSlots(s) + 1 <= TASK_SLOTS;
+    const paused = activeKinds(s).some(k => k === 'new_optional_task' || k === 'new_optional_social_campaign');
+    const available = !needsSlot || (!paused && openTaskSlots(s) + 1 <= TASK_SLOTS);
     const task = choice.effects.find(e => e.op === 'task');
     const reward = choice.scheduled[0]?.effects.find(e => e.op === 'cash_income');
     return {
       id: choice.id,
       label: choice.label,
       available,
-      reason: available ? null : 'Your three task slots are full. Finish or release a task first.',
+      reason: available ? null : paused ? 'A current restriction pauses new optional tasks.' : 'Your three task slots are full. Finish or release a task first.',
       task: task ? { kind: task.kind, slots: task.slots, dueTurns: task.due_own_turns } : null,
       reward: reward ? reward.amount.fixed_cents : 0,
       rewardTaxClass: reward ? reward.tax_class : null,

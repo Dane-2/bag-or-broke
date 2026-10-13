@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   availableUnsecured, currentRateBps, holds, incomeLap, inFinalWindow, loanBalance, loanInterest,
-  quoteAdvance, requiredPayment, taxesOwed, totalBorrowing, advanceableAssets,
+  quoteAdvance, requiredPayment, taxesOwed, totalBorrowing, advanceableAssets, eventLiabilities, pressure,
 } from '../rules/ledger';
 import { holdingsValue } from '../rules/holdings';
 import { annualTax, taxBillCharges, taxBillOwed, taxBillPrincipal } from '../rules/finance';
@@ -96,7 +96,21 @@ export default function FinancePanel({ ledger, act }) {
         <Row label="Tax Bucket" value={formatCents(ledger.taxBucket)} />
         <Row label="Total Borrowing" value={formatCents(borrowing)} tone={borrowing > 0 ? 'bad' : null} />
         {policyDebt > 0 && <Row label="Policy loans (8%, pay from Invest)" value={formatCents(policyDebt)} tone="bad" />}
+        {eventLiabilities(ledger) > 0 && <Row label="Event bills" value={formatCents(eventLiabilities(ledger))} tone="bad" />}
         <Row label="Taxes Owed" value={formatCents(owedTax)} tone={owedTax > 0 ? 'bad' : null} />
+        <div className="border-t border-white/50 pt-3 space-y-1">
+          {(() => {
+            const p = pressure(ledger);
+            const label = { steady: 'Steady', tight: 'Tight', strained: 'Strained' }[p.financial];
+            return (
+              <>
+                <Row label="Due before your next roll" value={formatCents(p.due)} />
+                <Row label="Financial pressure" value={`${label}${p.overdue ? ' · Overdue' : ''}`} tone={p.financial !== 'steady' || p.overdue ? 'bad' : null} />
+                <Row label="Commitments" value={`${p.commitment[0].toUpperCase()}${p.commitment.slice(1)} (${p.slots}/3 slots)`} />
+              </>
+            );
+          })()}
+        </div>
         <div className="border-t border-white/50 pt-3 space-y-1">
           <Row label="Credit score" value={ledger.creditScore} strong />
           <Row label="Borrowing rate" value={`${rate}% per lap`} />
@@ -161,6 +175,41 @@ export default function FinancePanel({ ledger, act }) {
           </>
         )}
       </section>
+
+      {(ledger.payables.some(p => p.amount > 0) || ledger.incomeShare) && (
+        <section className={card}>
+          <h4 className={h4}>Event bills</h4>
+          <p className="text-xs text-slate-700">
+            Bills from curveballs carry no interest. If one is overdue, new financed purchases pause until it is paid.
+          </p>
+          {ledger.payables.filter(p => p.amount > 0).map(p => (
+            <div key={p.id} className="rounded-xl bg-white/40 border border-white/50 p-3 space-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="font-bold text-slate-900">{p.label}</span>
+                <span className={`text-xs font-semibold ${p.overdue ? 'text-red-800' : 'text-slate-700'}`}>
+                  {p.overdue ? 'Overdue' : p.dueTurn <= ledger.turn + 1 ? 'Due before your next roll' : `Due by turn ${p.dueTurn}`}
+                </span>
+              </div>
+              <Row label="Owed" value={formatCents(p.amount)} strong />
+              <AmountForm
+                buttonText="Pay"
+                defaultCents={Math.min(p.amount, Math.max(0, ledger.cash))}
+                onSubmit={amount => act('pay_payable', { payableId: p.id, amount }, `Paid ${formatCents(Math.min(amount, p.amount))} on ${p.label}`)}
+              />
+            </div>
+          ))}
+          {ledger.incomeShare && (
+            <div className="rounded-xl bg-white/40 border border-white/50 p-3 space-y-1">
+              <p className="text-sm font-bold text-slate-900">Future earnings advance claim</p>
+              <Row label="Takes from each NIL payment" value={`${ledger.incomeShare.shareBps / 100}%`} />
+              <Row label="Payments left" value={ledger.incomeShare.receiptLimit - ledger.incomeShare.receipts} />
+              <Row label="Paid so far" value={formatCents(ledger.incomeShare.paid)} />
+              <Row label="Minimum still owed" value={formatCents(Math.max(0, ledger.incomeShare.minTotal - ledger.incomeShare.paid))} tone="bad" />
+              <Row label="Most it can take" value={formatCents(ledger.incomeShare.cap)} />
+            </div>
+          )}
+        </section>
+      )}
 
       <section className={card}>
         <h4 className={h4}>Taxes</h4>
