@@ -6,6 +6,7 @@ import RoomScreen from './components/RoomScreen';
 import LobbyScreen from './components/LobbyScreen';
 import PlayerDashboard from './components/PlayerDashboard';
 import FinalScoreboard from './components/FinalScoreboard';
+import { LEGACY_SAVE_PREFIXES, RULESET_ID, SAVE_PREFIX } from './rules';
 
 function App() {
   // GAME STATE
@@ -29,9 +30,19 @@ function App() {
     // Use setTimeout to prevent blocking initial render
     const timer = setTimeout(() => {
       try {
-        const saves = Object.keys(localStorage).filter(k =>
-          k.startsWith("bagorbroke_save_")
-        );
+        // Saves from before the central finance rules use different logic; discard them.
+        Object.keys(localStorage)
+          .filter(k => LEGACY_SAVE_PREFIXES.some(prefix => k.startsWith(prefix)))
+          .forEach(k => localStorage.removeItem(k));
+
+        const saves = Object.keys(localStorage).filter(k => {
+          if (!k.startsWith(SAVE_PREFIX)) return false;
+          try {
+            return JSON.parse(localStorage.getItem(k))?.rulesetId === RULESET_ID;
+          } catch (e) {
+            return false;
+          }
+        });
 
         if (saves.length > 0) {
           const key = saves[saves.length - 1];
@@ -46,7 +57,7 @@ function App() {
               setMode("offline");
               setPlayerName(saved.playerName);
               setAvatar(saved.avatar || '');
-              setStartingCash(saved.cash || 0);
+              setStartingCash(saved.finance?.cash !== undefined ? saved.finance.cash / 100 : saved.cash || 0);
               setTotalLaps(saved.totalLaps || 5);
               setGameStarted(true);
             } else {

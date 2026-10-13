@@ -1,0 +1,103 @@
+{
+  "ruleset_id": "BOB-DIGITAL-ASSEMBLY-20261013-v1",
+  "status": "preserved approved contracts with central processing corrections",
+  "life": {
+    "tiers": [
+      {
+        "id": "INV_LIFE_INSURANCE_TIER_A",
+        "tier": "A",
+        "price_cents": 2500000,
+        "starting_value_cents": 2500000,
+        "face_amount_cents": 10000000
+      },
+      {
+        "id": "INV_LIFE_INSURANCE_TIER_B",
+        "tier": "B",
+        "price_cents": 7500000,
+        "starting_value_cents": 7500000,
+        "face_amount_cents": 25000000
+      },
+      {
+        "id": "INV_LIFE_INSURANCE_TIER_C",
+        "tier": "C",
+        "price_cents": 10000000,
+        "starting_value_cents": 10000000,
+        "face_amount_cents": 50000000
+      },
+      {
+        "id": "INV_LIFE_INSURANCE_TIER_D",
+        "tier": "D",
+        "price_cents": 25000000,
+        "starting_value_cents": 25000000,
+        "face_amount_cents": 100000000
+      }
+    ],
+    "growth_bps": 300,
+    "value_formula": "premium*(1.03^owned_laps)",
+    "cash_only": true,
+    "dice": false,
+    "repeat": "separate contract per eligible green purchase",
+    "policy_loan": {
+      "wait_owned_laps": 1,
+      "ltv_bps": 7500,
+      "rate_bps": 800,
+      "interest": "effective compound on outstanding policy balance from transaction anchor",
+      "principal_minimum": 0,
+      "ordinary_credit_effect": 0,
+      "net_death_benefit": "max(0,face_amount-policy_debt)",
+      "lapse": "first exact point debt equals cash value; offset equal asset/debt, endcoverage, no payout or invented shortfall"
+    },
+    "surrender_fee_bps": 0,
+    "tax_at_exit": "max(0,gross_value_used_to_settle-original_premium) to annual contract gain, includes loan offset",
+    "death_benefit_in_score": false
+  },
+  "annuity": {
+    "tiers": [
+      {
+        "id": "INV_ANNUITY_TIER_5Y",
+        "name": "Fixed Income Annuity Tier A",
+        "premium_cents": 5000000,
+        "rate_bps": 400,
+        "first_wait_owned_laps": 1,
+        "second_wait_owned_laps": 2
+      },
+      {
+        "id": "INV_ANNUITY_TIER_10Y",
+        "name": "Fixed Income Annuity Tier B",
+        "premium_cents": 10000000,
+        "rate_bps": 450,
+        "first_wait_owned_laps": 2,
+        "second_wait_owned_laps": 3
+      },
+      {
+        "id": "INV_ANNUITY_TIER_15Y",
+        "name": "Fixed Income Annuity Tier C",
+        "premium_cents": 15000000,
+        "rate_bps": 500,
+        "first_wait_owned_laps": 3,
+        "second_wait_owned_laps": 4
+      },
+      {
+        "id": "INV_ANNUITY_TIER_20Y",
+        "name": "Fixed Income Annuity Tier D",
+        "premium_cents": 20000000,
+        "rate_bps": 550,
+        "first_wait_owned_laps": 4,
+        "second_wait_owned_laps": 5
+      }
+    ],
+    "cash_only": true,
+    "dice": false,
+    "borrow": false,
+    "shares": false,
+    "repeat": "separate contract per eligible green purchase",
+    "payment_formula": "P*q^(w+1)/(q+1), first rounded HALF_UP; second rounds remainder at first due *q",
+    "principal_return_each": "P/2",
+    "remaining_value": "own accrued contract carrying value after actual payouts, not sum of face-value future payments",
+    "cancel_before_first_fee_bps": 500,
+    "cancel_after_first": false,
+    "tax": "received earnings only; cancellation max(0,net_after_fee-original_premium)",
+    "late_purchase": "allowed with disclosed number of payments due by finish; no acceleration"
+  },
+  "fixed_processing": "chronological from saved purchase anchors; due payment before same-time cancellation; preserve terms and immutable final snapshot; no generic investment growth as well"
+}

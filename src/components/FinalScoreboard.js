@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import BOBReflectionForm from './BOBReflectionForm';
+import { holdingsTotals, scoreBreakdown } from '../rules/portfolio';
+import { fromCents, toCents } from '../rules/money';
 
 const shellClass =
   'min-h-[100dvh] bg-cover bg-center bg-no-repeat flex items-center justify-center p-4 py-8';
@@ -65,31 +67,32 @@ function FinalScoreboard({ data }) {
     coachJBoUnlocked = false,
   } = data;
 
-  const luxuryResale = luxuries.reduce((acc, item) => acc + item.resale, 0);
-  const investmentReturns = investments.reduce((acc, i) => acc + (i.newValue || 0), 0);
-  const repValue = rep * 5000;
-  const careerValue = career * 10000;
-  const creditBonus = credit >= 700 ? 10000 : credit >= 600 ? 5000 : credit >= 500 ? 2000 : 0;
-  const balanceBonusValue = (data.balanceBonusAwarded || false) ? 250000 : 0;
-  const netWorth =
-    cash +
-    investmentReturns +
-    luxuryResale +
-    repValue +
-    careerValue +
-    creditBonus +
-    balanceBonusValue -
-    debt -
-    shadyDebt;
+  // The frozen snapshot score from Finish & Reveal; recompute only if it is missing.
+  const score =
+    data.score ||
+    scoreBreakdown({
+      cash: toCents(cash),
+      taxBucket: toCents(data.taxBucket || 0),
+      ...holdingsTotals(investments, luxuries),
+      ordinaryDebt: toCents(debt),
+      taxesOwed: toCents(data.taxesOwed || 0),
+      otherLiabilities: toCents(shadyDebt),
+      rep,
+      career,
+      creditScore: credit,
+    });
+  const dollars = cents => fromCents(cents);
+  const money = cents => `${cents < 0 ? '-' : ''}$${Math.abs(dollars(cents)).toLocaleString()}`;
+  const netWorth = dollars(score.gameValue);
 
   const breakdownData = [
-    { name: 'Cash', value: cash },
-    { name: 'Investments', value: investmentReturns },
-    { name: 'Luxuries', value: luxuryResale },
-    { name: 'REP', value: repValue },
-    { name: 'Career', value: careerValue },
-    { name: 'Credit Bonus', value: creditBonus },
-  ];
+    { name: 'Cash', value: dollars(score.cash + score.taxBucket) },
+    { name: 'Investments', value: dollars(score.assetsValue) },
+    { name: 'Luxuries', value: dollars(score.luxuryResale) },
+    { name: 'REP', value: dollars(score.repValue) },
+    { name: 'Career', value: dollars(score.careerValue) },
+    { name: 'Credit Bonus', value: dollars(score.creditBonus) },
+  ].filter(d => d.value > 0);
 
   const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#6366f1', '#14b8a6'];
 
@@ -122,45 +125,34 @@ function FinalScoreboard({ data }) {
 
         <div className={insetPanelClass}>
           <ul className="divide-y divide-white/25">
-            <li className={statRowClass}>
-              <span>💵 Cash</span>
-              <span className="font-semibold tabular-nums">${cash.toLocaleString()}</span>
-            </li>
-            <li className={statRowClass}>
-              <span>📈 Investments</span>
-              <span className="font-semibold tabular-nums">${investmentReturns.toLocaleString()}</span>
-            </li>
-            <li className={statRowClass}>
-              <span>💎 Luxury resale</span>
-              <span className="font-semibold tabular-nums">${luxuryResale.toLocaleString()}</span>
-            </li>
-            <li className={statRowClass}>
-              <span>🌟 REP value</span>
-              <span className="font-semibold tabular-nums">${repValue.toLocaleString()}</span>
-            </li>
-            <li className={statRowClass}>
-              <span>📚 Career value</span>
-              <span className="font-semibold tabular-nums">${careerValue.toLocaleString()}</span>
-            </li>
-            <li className={statRowClass}>
-              <span>🧠 Credit bonus</span>
-              <span className="font-semibold tabular-nums">${creditBonus.toLocaleString()}</span>
-            </li>
-            <li className={statRowClass}>
-              <span>💳 Debt</span>
-              <span className="font-semibold text-red-800 tabular-nums">-${debt.toLocaleString()}</span>
-            </li>
-            <li className={statRowClass}>
-              <span>📉 Shady deal debt</span>
-              <span className="font-semibold text-red-800 tabular-nums">-${shadyDebt.toLocaleString()}</span>
-            </li>
+            {[
+              ['💵 Available Cash', score.cash],
+              ['🧾 Tax Bucket', score.taxBucket],
+              ['📈 Investments', score.assetsValue],
+              ['💎 Luxury resale', score.luxuryResale],
+              ['💳 Borrowing', -score.ordinaryDebt],
+              ['🛡️ Policy loans', -score.policyDebt],
+              ['🏛️ Taxes owed', -score.taxesOwed],
+              ['📉 Shady deal debt', -score.otherLiabilities],
+              ['= Financial wealth', score.financialWealth],
+              ['🌟 REP value', score.repValue],
+              ['📚 Career value', score.careerValue],
+              ['🧠 Credit bonus', score.creditBonus],
+            ]
+              .filter(([label, value]) => value !== 0 || !label.match(/Policy|Taxes|Shady|Bucket/))
+              .map(([label, value]) => (
+                <li key={label} className={statRowClass}>
+                  <span>{label}</span>
+                  <span className={`font-semibold tabular-nums ${value < 0 ? 'text-red-800' : ''}`}>{money(value)}</span>
+                </li>
+              ))}
           </ul>
         </div>
 
         <div
           className={`${insetPanelClass} text-center border border-emerald-200/60 bg-gradient-to-br from-emerald-100/40 to-white/30`}
         >
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">Net worth</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">Final game value</p>
           <p className="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">
             ${netWorth.toLocaleString()}
           </p>

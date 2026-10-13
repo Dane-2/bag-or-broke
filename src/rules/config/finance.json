@@ -1,0 +1,214 @@
+{
+  "ruleset_id": "BOB-CENTRAL-FINANCE-20261013-v1",
+  "status": "Recommended new-game baseline with preserved approved modules; not deployed",
+  "currency": "USD_GAME",
+  "money_storage": "integer_cents",
+  "money_rounding": "HALF_UP",
+  "capacity_rounding": "FLOOR",
+  "starting_tiers": [
+    {
+      "die": 1,
+      "name": "Walk On",
+      "capital_cents": 1000000
+    },
+    {
+      "die": 2,
+      "name": "Division One Roster",
+      "capital_cents": 2500000
+    },
+    {
+      "die": 3,
+      "name": "Division One Starter",
+      "capital_cents": 5000000
+    },
+    {
+      "die": 4,
+      "name": "Three Star Recruit",
+      "capital_cents": 7500000
+    },
+    {
+      "die": 5,
+      "name": "Four Star Recruit",
+      "capital_cents": 10000000
+    },
+    {
+      "die": 6,
+      "name": "Five Star Recruit",
+      "capital_cents": 15000000
+    }
+  ],
+  "starting_scholarship_cents": 250000,
+  "lap_award_cents": 250000,
+  "allowed_laps": [
+    5,
+    10
+  ],
+  "opening_credit_score": 500,
+  "credit_floor": 300,
+  "credit_ceiling": 850,
+  "credit_bands": [
+    {
+      "score_min": 300,
+      "score_max": 499,
+      "ordinary_rate_bps": 2500,
+      "unsecured_limit_cents": 0,
+      "final_credit_bonus_cents": 0
+    },
+    {
+      "score_min": 500,
+      "score_max": 599,
+      "ordinary_rate_bps": 2500,
+      "unsecured_limit_cents": 2000000,
+      "final_credit_bonus_cents": 0
+    },
+    {
+      "score_min": 600,
+      "score_max": 649,
+      "ordinary_rate_bps": 2000,
+      "unsecured_limit_cents": 3000000,
+      "final_credit_bonus_cents": 250000
+    },
+    {
+      "score_min": 650,
+      "score_max": 699,
+      "ordinary_rate_bps": 1500,
+      "unsecured_limit_cents": 5000000,
+      "final_credit_bonus_cents": 500000
+    },
+    {
+      "score_min": 700,
+      "score_max": 749,
+      "ordinary_rate_bps": 1000,
+      "unsecured_limit_cents": 7500000,
+      "final_credit_bonus_cents": 750000
+    },
+    {
+      "score_min": 750,
+      "score_max": 850,
+      "ordinary_rate_bps": 500,
+      "unsecured_limit_cents": 10000000,
+      "final_credit_bonus_cents": 1000000
+    }
+  ],
+  "credit_checkpoint": {
+    "on_time": 25,
+    "debt_free_or_large_reduction_extra": 25,
+    "large_reduction_bps": 2500,
+    "missed": -50,
+    "automatic_rep_change": 0,
+    "max_once_per_player_lap": true
+  },
+  "ordinary_debt": {
+    "interest": "simple_on_principal_by_game_progress",
+    "interest_on_interest": false,
+    "minimum_principal_bps": 1000,
+    "basis": "opening_principal_plus_time_weighted_draws_less_matched_reversals",
+    "early_payments": "old_due_principal_first_then_current_target",
+    "deadline": "before_next_own_movement_roll_or_final_finish",
+    "interest_due": "all_unpaid_posted_interest",
+    "score_changes": "prospective_rate_only",
+    "late_fee_cents": 0
+  },
+  "ordinary_purchase_min_cash_bps": 5000,
+  "asset_advance_ltv_bps": 5000,
+  "luxury_credit": {
+    "cash_credit_split": true,
+    "secured": false,
+    "asset_advance_eligible": false
+  },
+  "tax": {
+    "annual_rate_bps": 2000,
+    "ordinary_sale_gain_rate_bps": 2000,
+    "initial_late_bps": 500,
+    "additional_lap_late_bps": 500,
+    "late_cap_bps_original_overdue": 2500,
+    "interest_on_tax": false,
+    "manual_payment": true,
+    "reminders": false,
+    "business_loss_scope": "settled_business_subtotal_same_period_floor_zero_no_carry",
+    "capital_loss_offset": false,
+    "finance_interest_deduction": false,
+    "overpayment_destination": "available_cash",
+    "final_bill": "provisional_until_finish",
+    "sale_tax_separate": true
+  },
+  "life_policy": {
+    "premiums_cents": [
+      2500000,
+      7500000,
+      10000000,
+      25000000
+    ],
+    "growth_bps": 300,
+    "loan_rate_bps": 800,
+    "loan_ltv_bps": 7500,
+    "loan_wait_laps": 1,
+    "purchase_financing": false
+  },
+  "annuity": {
+    "tiers": [
+      {
+        "premium_cents": 5000000,
+        "rate_bps": 400,
+        "first_wait_laps": 1
+      },
+      {
+        "premium_cents": 10000000,
+        "rate_bps": 450,
+        "first_wait_laps": 2
+      },
+      {
+        "premium_cents": 15000000,
+        "rate_bps": 500,
+        "first_wait_laps": 3
+      },
+      {
+        "premium_cents": 20000000,
+        "rate_bps": 550,
+        "first_wait_laps": 4
+      }
+    ],
+    "second_payment_after_first_laps": 1,
+    "pre_first_cancellation_fee_bps": 500,
+    "post_first_cancellation": false,
+    "borrowing": false,
+    "purchase_financing": false
+  },
+  "legal_support": {
+    "prices_cents": [
+      750000,
+      1500000,
+      2250000
+    ],
+    "uses": [
+      1,
+      2,
+      3
+    ],
+    "assistance_bps": 8000,
+    "cap_per_matter_cents": 2500000,
+    "contract_check_cents": 250000,
+    "max_unused": 3
+  },
+  "final_score": {
+    "rep_value_cents": 250000,
+    "career_value_cents": 500000,
+    "historical_loss_double_deduction": false,
+    "winner": false
+  },
+  "finish": {
+    "cutoff": "exact_configured_lap",
+    "overshoot": "clamp",
+    "finance_window": true,
+    "snapshot": "immutable_even_with_new_request_key"
+  },
+  "outside_this_packet": [],
+  "legacy_migration": "Existing games pinned; compare exported Sidekick configuration before future-game activation",
+  "integrated_module_owners": {
+    "per_asset_returns": "investments.json",
+    "shared_company_clock": "shared_ownership.json",
+    "scenarios_and_pressure": "scenarios.json",
+    "career": "career.json",
+    "reveal": "archetypes.json"
+  }
+}

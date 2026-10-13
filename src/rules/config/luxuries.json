@@ -1,0 +1,3008 @@
+{
+  "schema_version": "1.0",
+  "catalog_id": "BOB-LUXURY-APPROVED-20261009-v1.1",
+  "assembly_version": "1.0",
+  "status": "Approved catalog facts with explicitly tagged central integration recommendations; not deployed",
+  "currency": "USD_GAME",
+  "money_storage": "integer_cents",
+  "rounding": "HALF_UP",
+  "counts": {
+    "total": 69,
+    "vehicles": 14,
+    "owned_goods": 33
+  },
+  "source": {
+    "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+    "approved_date": "2026-10-09",
+    "priority": "Later direct approvals and central finance supersede conflicting examples; do not overwrite historical contracts."
+  },
+  "entry": {
+    "board_space": "diamond",
+    "initial_cards_shown": 3,
+    "actions": [
+      "compare",
+      "browse_all",
+      "skip"
+    ],
+    "checkout": [
+      "cash",
+      "credit",
+      "split"
+    ],
+    "typing_required": false,
+    "additional_retail_sales_tax": false
+  },
+  "financing": {
+    "engine": "central_finance",
+    "debt_kind": "general_credit",
+    "secured_asset_id": null,
+    "minimum_down_payment_bps": 0,
+    "merchant_direct_payment": true,
+    "interest_charged_by_catalog": false,
+    "tax_bucket_spend_without_manual_transfer": false,
+    "asset_advance_eligible": false,
+    "sale_auto_repay_credit": false,
+    "historical_secured_contracts_preserved": true
+  },
+  "resale": {
+    "initial_at_purchase": true,
+    "update": "round_half_up(current_resale*(1-lap_decline_bps/10000))",
+    "timing": "each_completed_player_lap_after_purchase_including_next_boundary_and_final",
+    "whole_item_only": true,
+    "sale_gain_tax_engine": "central_finance",
+    "cost_basis": "actual_cash_plus_credit_paid_less_retained_item_price_adjustments",
+    "no_generic_sale_fee": true,
+    "no_green_growth": true,
+    "nonowned_resale_cents": 0
+  },
+  "refunds": {
+    "requires_authored_event": true,
+    "allocation": "original_cash_credit_proportions_capped_by_prior_refunds",
+    "credit_route": "original_charge_unpaid_principal_then_cash_for_repaid_excess",
+    "earned_interest_retained_unless_waived": true,
+    "income": false,
+    "tax_correction_engine": "central_finance",
+    "reverse_unearned_benefits_once": true,
+    "maximum": "actual_purchase_cost_less_prior_refunds"
+  },
+  "activation": {
+    "id": "LUX_ACTIVATION_D6_V1",
+    "approved_ids": [
+      "LX31",
+      "LX32",
+      "LX33",
+      "LX34",
+      "LX35"
+    ],
+    "outcomes": [
+      {
+        "die": 1,
+        "label": "Very weak response",
+        "gross_receipts_bps": 0,
+        "rep_ceiling": 0
+      },
+      {
+        "die": 2,
+        "label": "Limited response",
+        "gross_receipts_bps": 2500,
+        "rep_ceiling": 0
+      },
+      {
+        "die": 3,
+        "label": "Mixed response",
+        "gross_receipts_bps": 5000,
+        "rep_ceiling": 1
+      },
+      {
+        "die": 4,
+        "label": "Costs recovered",
+        "gross_receipts_bps": 10000,
+        "rep_ceiling": 1
+      },
+      {
+        "die": 5,
+        "label": "Strong response",
+        "gross_receipts_bps": 15000,
+        "rep_ceiling": 2
+      },
+      {
+        "die": 6,
+        "label": "Breakout response",
+        "gross_receipts_bps": 20000,
+        "rep_ceiling": 2
+      }
+    ],
+    "prepared": {
+      "requires": "relevant_completed_mentorship_or_internship",
+      "only_die": 1,
+      "gross_receipts_bps": 2500,
+      "rep_ceiling": 0,
+      "reroll": false,
+      "stacking": false
+    },
+    "max_per_player_lap": 1,
+    "business_ownership_required_bps": 10000,
+    "shared_business_enabled": false,
+    "roll_once_persist_before_display": true,
+    "budget_includes": [
+      "production",
+      "staffing",
+      "assumed_fulfillment"
+    ],
+    "receipts": "gross_incremental_cash",
+    "tax": "cost_once_and_receipts_once_at_settlement",
+    "financing_changes_odds": false,
+    "auto_repay_debt": false,
+    "asset_value_change": false,
+    "roi_change": false,
+    "resale_created": false
+  },
+  "rewards": {
+    "mode": "highest_earned_per_family_positive_increase_only",
+    "max_total_rep": 7,
+    "families": {
+      "identity": {
+        "ids": [
+          "LX29"
+        ],
+        "max_rep": 1
+      },
+      "content": {
+        "ids": [
+          "LX30"
+        ],
+        "max_rep": 2
+      },
+      "activation": {
+        "ids": [
+          "LX31",
+          "LX32",
+          "LX33",
+          "LX34",
+          "LX35"
+        ],
+        "max_rep": 2
+      },
+      "community": {
+        "ids": [
+          "LX45"
+        ],
+        "max_rep": 2
+      }
+    },
+    "career_points": 0,
+    "purchase_auto_rep": false,
+    "history_reset_on_rebuy_refinance_switch_sell": false
+  },
+  "care": {
+    "first_period": "remainder_of_purchase_lap",
+    "proration": false,
+    "renewal": "start_of_each_later_playable_lap",
+    "options": [
+      "cash",
+      "eligible_credit",
+      "permanent_trusted_household_care"
+    ],
+    "silent_credit_renewal": false,
+    "final_lap_extra_period": false,
+    "rehoming_cash_cents": 0,
+    "rehoming_clears_existing_debt": false,
+    "routine_care_double_bill": false,
+    "emergency_requires_disclosed_scenario": true,
+    "animal_resale_cents": 0,
+    "animal_collateral_cents": 0,
+    "breeding_income_cents": 0
+  },
+  "migration": {
+    "retire_from_new_menu": [
+      "LX06",
+      "LX07",
+      "LX08"
+    ],
+    "replace_with": [
+      "VX01",
+      "VX02",
+      "VX03",
+      "VX04",
+      "VX05",
+      "VX06",
+      "VX07",
+      "VX08",
+      "VX09",
+      "VX10",
+      "VX11",
+      "VX12",
+      "VX13",
+      "VX14"
+    ],
+    "historical_legacy_L_ids": "No automatic destructive remap. Retain old records; use this catalog for versioned future games.",
+    "luxury_equity_legacy": "Do not enable historical green-like equity as luxury under this catalog; investment registry must explicitly classify or defer."
+  },
+  "recommended_integration_closures": [
+    {
+      "id": "LUX-R01",
+      "status": "recommended",
+      "rule": "Alias green and luxury promotion channels to one player/lap activation allowance and one activation REP family. Preserve card-specific budgets; prevent cross-channel farming."
+    },
+    {
+      "id": "LUX-R02",
+      "status": "recommended",
+      "rule": "Personal goods, experiences, gifts, companions, and personal branding are nondeductible by default. Only explicitly linked settled operating-business activations enter the business tax bucket; additional business-scope service classification requires an authored record."
+    },
+    {
+      "id": "LUX-R03",
+      "status": "recommended",
+      "rule": "Service delivery uses an authored checkpoint and recorded completion conditions. If delayed, require an achievable checkpoint before final cutoff. No automatic rewards or refunds at Finish; unresolved permitted records close as incomplete with zero resale unless an authored cancellation applies."
+    },
+    {
+      "id": "LUX-R04",
+      "status": "recommended",
+      "rule": "Consume production discount on committed LX30 purchase. Refund does not refresh the allowance in that lap; future laps refresh normally. Actual net cost and money refund still reconcile."
+    },
+    {
+      "id": "LUX-R05",
+      "status": "recommended",
+      "rule": "For LX29, completed message plus approved delivered kit earns 1 REP; LX30 completed published series earns 2 REP; LX45 completed partnered event earns 2 REP. Partial/unfulfilled work earns 0. Existing family high-water prevents repetitions."
+    },
+    {
+      "id": "LUX-R06",
+      "status": "recommended",
+      "rule": "Price and recurring-care quotes remain visible even if unaffordable. Central credit-capacity rules override illustrative legacy financed amounts; never treat example dollars as authorization."
+    }
+  ],
+  "items": [
+    {
+      "id": "HX01",
+      "name": "First apartment furniture",
+      "price_cents": 500000,
+      "scope": "Bed, sofa, table, basic storage and delivery. The quote covers retained furniture, not delivery services.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Home and living"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 150000,
+      "lap_decline_bps": 2000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "home_living",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "HX02",
+      "name": "Premium living room package",
+      "price_cents": 1200000,
+      "scope": "Quality sofa, chairs, tables, lighting and setup. A furnished room; TVs are separate purchases.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Home and living"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 360000,
+      "lap_decline_bps": 2000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "home_living",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "HX03",
+      "name": "Personal home kitchen remodel",
+      "price_cents": 6000000,
+      "scope": "A defined discretionary kitchen renovation in an eligible player-owned personal residence. Requires the residence record and permission. No separate luxury resale asset or automatic increase in property value. An investment-property renovation belongs in its green house.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Home and living"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "eligible_owned_personal_residence",
+        "residence_permission"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "home_living",
+      "economic_type": "residence_improvement",
+      "effects": [
+        "personal_residence_project"
+      ],
+      "runtime_feature": "residence_links"
+    },
+    {
+      "id": "LX01",
+      "name": "Limited edition sneakers",
+      "price_cents": 75000,
+      "scope": "One pair for personal wear. Changes the player lookbook. No automatic endorsement or appreciation.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Style, watches and jewelry"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 22500,
+      "lap_decline_bps": 2000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "style_jewelry",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "LX02",
+      "name": "Tailored arrival outfit",
+      "price_cents": 150000,
+      "scope": "One tailored outfit, shoes and alterations. Choose a personal style for arrival, interview or celebration scenes. Clothing does not award a job.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Style, watches and jewelry"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 45000,
+      "lap_decline_bps": 2000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "style_jewelry",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "LX03",
+      "name": "Signature everyday watch",
+      "price_cents": 100000,
+      "scope": "One quality watch, sized and delivered. An accessible personal milestone with a visible inventory item.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Style, watches and jewelry"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 50000,
+      "lap_decline_bps": 1000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "style_jewelry",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "LX04",
+      "name": "Premium watch",
+      "price_cents": 750000,
+      "scope": "One premium timepiece. A higher spending choice with resale exposure. It does not earn more credibility than LX03.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Style, watches and jewelry"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 375000,
+      "lap_decline_bps": 1000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "style_jewelry",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "LX05",
+      "name": "Solid gold chain",
+      "price_cents": 350000,
+      "scope": "One modest solid-gold chain; weight and design are fixed in the card. A personal jewelry purchase, without a promised investment return.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Style, watches and jewelry"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 175000,
+      "lap_decline_bps": 1000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "style_jewelry",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "LX09",
+      "name": "Chauffeured celebration weekend",
+      "price_cents": 350000,
+      "scope": "Three days of scheduled local transport, with a fixed trip itinerary. Enjoy the vehicle experience without receiving a vehicle asset. Covers this event only.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Transport without ownership"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "transport",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX10",
+      "name": "Driver package for appearances",
+      "price_cents": 250000,
+      "scope": "Ten local rides for one scheduled appearance itinerary. Completes the transport subtask of that itinerary. Other travel remains uncovered.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Transport without ownership"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "existing_eligible_named_task",
+        "task_not_already_complete",
+        "task_not_included_in_other_package"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "transport",
+      "economic_type": "service",
+      "effects": [
+        "complete_named_subtask_only"
+      ],
+      "runtime_feature": "task_links"
+    },
+    {
+      "id": "LX11",
+      "name": "Weekend resort for two",
+      "price_cents": 250000,
+      "scope": "Two nights, one room, meals and regional transport for two. A leisure scene with a chosen companion. No automatic pressure reset or financial return.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Travel and time away"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "travel",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX12",
+      "name": "Friends concert weekend",
+      "price_cents": 500000,
+      "scope": "Four travelers, two nights, standard concert tickets and regional transport. A group memory and invitation choices. It does not buy loyalty.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Travel and time away"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "travel",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX13",
+      "name": "Family celebration trip",
+      "price_cents": 1000000,
+      "scope": "Four travelers, four nights, domestic flights, lodging and a set activity budget. Family interaction and a visible spending tradeoff. No asset remains after the trip.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Travel and time away"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "travel",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX14",
+      "name": "Premium international escape",
+      "price_cents": 1500000,
+      "scope": "Two travelers, five nights, upgraded flights, lodging and planned activities. An aspirational leisure choice; the budget and time commitment are shown before booking.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Travel and time away"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "travel",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX15",
+      "name": "Private flight for a special occasion",
+      "price_cents": 2500000,
+      "scope": "One regional charter flight for up to four, ground transport included; return travel excluded. A single high-cost experience. The player does not own an aircraft or a recurring flight allowance.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Travel and time away"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "travel",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX16",
+      "name": "Milestone dinner",
+      "price_cents": 150000,
+      "scope": "A private dinner for ten with a fixed menu and venue fee. Choose guests and enjoy the scene. Graduation or Career points cannot be purchased through it.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Celebrations and live experiences"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "celebration",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX17",
+      "name": "Rooftop celebration",
+      "price_cents": 750000,
+      "scope": "A hosted event for forty, including food, music, staffing and venue. A social celebration. Business promotion requires a separate explicit activation purchase.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Celebrations and live experiences"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "celebration",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX18",
+      "name": "Pro game VIP night",
+      "price_cents": 500000,
+      "scope": "Two premium tickets, hospitality and local transport to one regular-season game. Sports access and social interaction; no guaranteed meeting with a professional athlete.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Celebrations and live experiences"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "celebration",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX19",
+      "name": "Championship weekend",
+      "price_cents": 1500000,
+      "scope": "Two premium event tickets, two nights and domestic transport. A rare high-cost experience. No guaranteed sponsor or career opportunity.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Celebrations and live experiences"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "celebration",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX20",
+      "name": "Private yacht day",
+      "price_cents": 2000000,
+      "scope": "One crewed day charter for ten, catering and local transport. A premium celebration with no vessel ownership. Does not generate business income by itself.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Celebrations and live experiences"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "later_eligible_diamond_turns_no_repeat_rewards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "celebration",
+      "economic_type": "experience"
+    },
+    {
+      "id": "LX21",
+      "name": "Gaming and streaming corner",
+      "price_cents": 150000,
+      "scope": "Console, display, headset and basic accessories.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Technology and home entertainment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 60000,
+      "lap_decline_bps": 2500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "technology",
+      "economic_type": "owned_good",
+      "effects": [
+        "equipment_ownership"
+      ],
+      "notes": [
+        "Bundle is one item and one resale quote; no duplicate component assets."
+      ]
+    },
+    {
+      "id": "LX22",
+      "name": "Music creation setup",
+      "price_cents": 250000,
+      "scope": "A starter instrument or controller, microphone, interface and headphones.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Technology and home entertainment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 100000,
+      "lap_decline_bps": 2500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "technology",
+      "economic_type": "owned_good",
+      "effects": [
+        "equipment_ownership"
+      ],
+      "notes": [
+        "Bundle is one item and one resale quote; no duplicate component assets."
+      ]
+    },
+    {
+      "id": "LX23",
+      "name": "Record a personal track",
+      "price_cents": 150000,
+      "scope": "Eight studio hours with an engineer and one finished personal-use mix. A completed creative project. Commercial licensing and distribution are separate.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Technology and home entertainment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "technology",
+      "economic_type": "service"
+    },
+    {
+      "id": "LX24",
+      "name": "Personal room refresh",
+      "price_cents": 300000,
+      "scope": "Movable furniture and lighting with delivery and setup. The resale quote covers furniture only; installation and consumed supplies retain no value.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Home and living"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 90000,
+      "lap_decline_bps": 2000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "home_living",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "LX25",
+      "name": "Home training space",
+      "price_cents": 750000,
+      "scope": "Movable rack, bench, weights and floor mats; no building extension. Allows home training scenes without promising selection, recovery or injury prevention.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Home and living"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 375000,
+      "lap_decline_bps": 1500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "home_living",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "LX26",
+      "name": "Starter creator kit",
+      "price_cents": 250000,
+      "scope": "Camera, microphone, lighting and accessories. While owned, up to $250 off one LX30 production per lap. Shares one production discount allowance with LX27.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Personal brand and creative work"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 100000,
+      "lap_decline_bps": 2500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "brand_creative",
+      "economic_type": "owned_good",
+      "effects": [
+        "LX30_production_discount"
+      ],
+      "discount": {
+        "family": "content_production",
+        "target_sku": "LX30",
+        "max_cents": 25000,
+        "max_uses_per_player_lap": 1,
+        "requires_current_ownership": true,
+        "stacking": "strongest_only_all_copies_shared"
+      }
+    },
+    {
+      "id": "LX27",
+      "name": "Home editing studio",
+      "price_cents": 1000000,
+      "scope": "Editing computer, monitor, audio equipment and setup. While owned, up to $1,000 off one LX30 production per lap. Use the stronger of LX26 and LX27, never both.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Personal brand and creative work"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 400000,
+      "lap_decline_bps": 2500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "brand_creative",
+      "economic_type": "owned_good",
+      "effects": [
+        "LX30_production_discount"
+      ],
+      "discount": {
+        "family": "content_production",
+        "target_sku": "LX30",
+        "max_cents": 100000,
+        "max_uses_per_player_lap": 1,
+        "requires_current_ownership": true,
+        "stacking": "strongest_only_all_copies_shared"
+      }
+    },
+    {
+      "id": "LX28",
+      "name": "Headshots and athlete bio",
+      "price_cents": 100000,
+      "scope": "One studio session, five finished images and a concise approved bio. Refreshes profile presentation. Creates portfolio evidence without automatic REP or sponsorship.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Personal brand and creative work"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "brand_creative",
+      "economic_type": "service"
+    },
+    {
+      "id": "LX29",
+      "name": "Brand identity and media kit",
+      "price_cents": 500000,
+      "scope": "Visual identity, a one-page media kit and reusable social templates. After choosing a message and approving the completed kit, earn up to 1 REP in the identity family.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Personal brand and creative work"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 1,
+      "reward_family": "identity",
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "brand_creative",
+      "economic_type": "service",
+      "effects": [
+        "choose_message",
+        "approve_delivered_kit",
+        "family_high_water_rep"
+      ]
+    },
+    {
+      "id": "LX30",
+      "name": "Produced content series",
+      "price_cents": 1500000,
+      "scope": "Choose twelve edited short videos or three produced podcast episodes. After recording and publishing the agreed series, earn up to 2 REP in the content family. Copyright ownership is not a tradable asset in this catalog.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Personal brand and creative work"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 2,
+      "reward_family": "content",
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "brand_creative",
+      "economic_type": "service",
+      "effects": [
+        "choose_format",
+        "record_and_publish_series",
+        "family_high_water_rep"
+      ]
+    },
+    {
+      "id": "LX31",
+      "name": "Business launch celebration",
+      "price_cents": 1000000,
+      "scope": "Venue, staff, invitations, content and a defined promotional offer for one operating business. Select the business and audience; roll once for the event outcome. Same activation rules as LX32 to LX35.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Business promotion and launches"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 2,
+      "reward_family": "activation",
+      "prerequisites": [
+        "operating_business",
+        "player_owns_100_percent",
+        "remaining_player_lap_activation_allowance"
+      ],
+      "tax_class": "settled_business_activity",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_activation_per_player_lap_all_activation_cards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "business_promotion",
+      "economic_type": "business_activation",
+      "outcome_table": "LUX_ACTIVATION_D6_V1",
+      "effects": [
+        "gross_business_receipts",
+        "family_high_water_rep"
+      ],
+      "runtime_feature": "linked_business_activation"
+    },
+    {
+      "id": "LX32",
+      "name": "Product pop up weekend",
+      "price_cents": 1500000,
+      "scope": "A staffed two-day pop up with temporary display, promotion and fulfillment budget. Requires an operating product business. Does not create a merchandise company or a permanent storefront.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Business promotion and launches"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 2,
+      "reward_family": "activation",
+      "prerequisites": [
+        "operating_business",
+        "player_owns_100_percent",
+        "remaining_player_lap_activation_allowance",
+        "operating_product_business"
+      ],
+      "tax_class": "settled_business_activity",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_activation_per_player_lap_all_activation_cards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "business_promotion",
+      "economic_type": "business_activation",
+      "outcome_table": "LUX_ACTIVATION_D6_V1",
+      "effects": [
+        "gross_business_receipts",
+        "family_high_water_rep"
+      ],
+      "runtime_feature": "linked_business_activation"
+    },
+    {
+      "id": "LX33",
+      "name": "Creator collaboration campaign",
+      "price_cents": 1500000,
+      "scope": "A contracted creator collaboration with agreed posts and a tracked promotional offer. Requires an operating creator or consumer-facing business. Buying posts does not buy an endorsement outcome.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Business promotion and launches"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 2,
+      "reward_family": "activation",
+      "prerequisites": [
+        "operating_business",
+        "player_owns_100_percent",
+        "remaining_player_lap_activation_allowance",
+        "operating_creator_or_consumer_facing_business"
+      ],
+      "tax_class": "settled_business_activity",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_activation_per_player_lap_all_activation_cards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "business_promotion",
+      "economic_type": "business_activation",
+      "outcome_table": "LUX_ACTIVATION_D6_V1",
+      "effects": [
+        "gross_business_receipts",
+        "family_high_water_rep"
+      ],
+      "runtime_feature": "linked_business_activation"
+    },
+    {
+      "id": "LX34",
+      "name": "Regional advertising campaign",
+      "price_cents": 2500000,
+      "scope": "Four-week digital and local outdoor campaign with one audience and offer. Purchases placement and production. Response is uncertain; no permanent billboard or recurring passive ROI.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Business promotion and launches"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 2,
+      "reward_family": "activation",
+      "prerequisites": [
+        "operating_business",
+        "player_owns_100_percent",
+        "remaining_player_lap_activation_allowance"
+      ],
+      "tax_class": "settled_business_activity",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_activation_per_player_lap_all_activation_cards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "business_promotion",
+      "economic_type": "business_activation",
+      "outcome_table": "LUX_ACTIVATION_D6_V1",
+      "effects": [
+        "gross_business_receipts",
+        "family_high_water_rep"
+      ],
+      "runtime_feature": "linked_business_activation"
+    },
+    {
+      "id": "LX35",
+      "name": "Brand film and premiere",
+      "price_cents": 4000000,
+      "scope": "A short commissioned brand film, local screening and linked promotional offer. Requires an operating business. The film and premiere resolve as one activation, not two cash rewards.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Business promotion and launches"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 2,
+      "reward_family": "activation",
+      "prerequisites": [
+        "operating_business",
+        "player_owns_100_percent",
+        "remaining_player_lap_activation_allowance"
+      ],
+      "tax_class": "settled_business_activity",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_activation_per_player_lap_all_activation_cards",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "business_promotion",
+      "economic_type": "business_activation",
+      "outcome_table": "LUX_ACTIVATION_D6_V1",
+      "effects": [
+        "gross_business_receipts",
+        "family_high_water_rep"
+      ],
+      "runtime_feature": "linked_business_activation"
+    },
+    {
+      "id": "LX36",
+      "name": "Meal preparation package",
+      "price_cents": 300000,
+      "scope": "Ten weeks of prepared meals within one selected schedule scene. Completes one existing meal-preparation task in that scene. No blanket health or performance increase.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Practical personal support"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "existing_eligible_named_task",
+        "task_not_already_complete",
+        "task_not_included_in_other_package"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "personal_support",
+      "economic_type": "service",
+      "effects": [
+        "complete_named_subtask_only"
+      ],
+      "runtime_feature": "task_links"
+    },
+    {
+      "id": "LX37",
+      "name": "Specialist training package",
+      "price_cents": 250000,
+      "scope": "Ten coached technical sessions, appropriate to the athlete and training plan. Creates a coached-practice record and a practice scene. Does not override medical clearance or guarantee playing time.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Practical personal support"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "existing_eligible_named_task",
+        "task_not_already_complete",
+        "task_not_included_in_other_package",
+        "appropriate_training_plan_and_clearance"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "personal_support",
+      "economic_type": "service",
+      "effects": [
+        "coached_practice_record",
+        "practice_scene"
+      ],
+      "runtime_feature": "task_links"
+    },
+    {
+      "id": "LX38",
+      "name": "Project assistant",
+      "price_cents": 250000,
+      "scope": "Twenty hours for one existing, delegable project logistics task. Completes that logistics subtask. Cannot make the player attend, study, meet sponsors, pay taxes or repay debt.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Practical personal support"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "existing_eligible_named_task",
+        "task_not_already_complete",
+        "task_not_included_in_other_package"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "personal_support",
+      "economic_type": "service",
+      "effects": [
+        "complete_named_subtask_only"
+      ],
+      "runtime_feature": "task_links"
+    },
+    {
+      "id": "LX39",
+      "name": "Digital privacy setup",
+      "price_cents": 150000,
+      "scope": "An account-security review, privacy settings and recovery setup. Records completion of the account-security task. No immunity from scams, lawsuits or social consequences.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Practical personal support"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "existing_eligible_named_task",
+        "task_not_already_complete",
+        "task_not_included_in_other_package"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "personal_support",
+      "economic_type": "service",
+      "effects": [
+        "complete_named_subtask_only"
+      ],
+      "runtime_feature": "task_links"
+    },
+    {
+      "id": "LX40",
+      "name": "Professional event staff",
+      "price_cents": 400000,
+      "scope": "Staffing for one separately budgeted private event. Completes its staffing subtask. Not offered for LX17, LX20 or activations whose price already includes staffing.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Practical personal support"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "existing_eligible_named_task",
+        "task_not_already_complete",
+        "task_not_included_in_other_package",
+        "not_LX17_LX20_or_staffing_included_activation"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "personal_support",
+      "economic_type": "service",
+      "effects": [
+        "complete_named_subtask_only"
+      ],
+      "runtime_feature": "task_links"
+    },
+    {
+      "id": "LX41",
+      "name": "Family technology upgrade",
+      "price_cents": 250000,
+      "scope": "A laptop and practical technology package transferred to a family member. The recipient owns the goods. The player gains a family story event, not a resale asset.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Family and hometown"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "family_community",
+      "economic_type": "gift",
+      "effects": [
+        "family_story_event",
+        "ownership_transferred_to_recipient"
+      ]
+    },
+    {
+      "id": "LX42",
+      "name": "Parents home improvement project",
+      "price_cents": 2000000,
+      "scope": "One bounded kitchen, bathroom or accessibility improvement in a family-owned home. The contribution belongs to the household. It creates no real estate equity in the player portfolio.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Family and hometown"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "family_community",
+      "economic_type": "gift",
+      "effects": [
+        "family_story_event",
+        "ownership_transferred_to_recipient"
+      ]
+    },
+    {
+      "id": "LX43",
+      "name": "Family vehicle gift",
+      "price_cents": 3500000,
+      "scope": "One vehicle bought from the merchant and transferred to a family member. Cash, credit or split payment. The recipient owns the car; any credit charge remains the player’s general debt. No player resale asset.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Family and hometown"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "family_community",
+      "economic_type": "gift",
+      "effects": [
+        "family_story_event",
+        "ownership_transferred_to_recipient"
+      ]
+    },
+    {
+      "id": "LX44",
+      "name": "Family education contribution",
+      "price_cents": 500000,
+      "scope": "A completed contribution toward a relative’s education expenses. A family contribution, with no retained account balance or player Career credential.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Family and hometown"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "family_community",
+      "economic_type": "gift",
+      "effects": [
+        "family_story_event",
+        "ownership_transferred_to_recipient"
+      ]
+    },
+    {
+      "id": "LX45",
+      "name": "Hometown sports celebration",
+      "price_cents": 1000000,
+      "scope": "A free local celebration with venue, food, staffing and activities. After choosing partners and delivering the event, earn up to 2 REP in the community family. This does not replace Youth Sports House sponsorship.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Family and hometown"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 2,
+      "reward_family": "community",
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_unresolved_service_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "family_community",
+      "economic_type": "community_event",
+      "effects": [
+        "choose_partners",
+        "deliver_event",
+        "family_high_water_rep"
+      ]
+    },
+    {
+      "id": "LX46",
+      "name": "Custom statement jewelry",
+      "price_cents": 2500000,
+      "scope": "A commissioned chain and pendant with a fixed material and stone budget. Personal expression; customization is not assumed to retain its purchase premium.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Style, watches and jewelry"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 1000000,
+      "lap_decline_bps": 1000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "style_jewelry",
+      "economic_type": "owned_good"
+    },
+    {
+      "id": "PX01",
+      "name": "Adopted companion dog",
+      "price_cents": 250000,
+      "scope": "Companion/habitat package with first care period prepaid through current lap.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Pets and their care commitment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "suitable_housing",
+        "backup_caregiver",
+        "working_companion_and_care_flow"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_active_companion_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "companions",
+      "economic_type": "companion",
+      "setup_cents": 100000,
+      "first_care_cents": 150000,
+      "renewal_care_cents": 150000,
+      "effects": [
+        "companion_record",
+        "care_responsibility"
+      ],
+      "runtime_feature": "companion_care"
+    },
+    {
+      "id": "PX02",
+      "name": "French bulldog companion",
+      "price_cents": 800000,
+      "scope": "Companion/habitat package with first care period prepaid through current lap.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Pets and their care commitment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "suitable_housing",
+        "backup_caregiver",
+        "working_companion_and_care_flow"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_active_companion_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "companions",
+      "economic_type": "companion",
+      "setup_cents": 500000,
+      "first_care_cents": 300000,
+      "renewal_care_cents": 300000,
+      "effects": [
+        "companion_record",
+        "care_responsibility"
+      ],
+      "runtime_feature": "companion_care"
+    },
+    {
+      "id": "PX03",
+      "name": "Captive-bred reptile and habitat",
+      "price_cents": 150000,
+      "scope": "Companion/habitat package with first care period prepaid through current lap.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Pets and their care commitment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "suitable_housing",
+        "backup_caregiver",
+        "working_companion_and_care_flow"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_active_companion_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "companions",
+      "economic_type": "companion",
+      "setup_cents": 100000,
+      "first_care_cents": 50000,
+      "renewal_care_cents": 50000,
+      "effects": [
+        "companion_record",
+        "care_responsibility"
+      ],
+      "runtime_feature": "companion_care"
+    },
+    {
+      "id": "PX04",
+      "name": "Display aquarium",
+      "price_cents": 300000,
+      "scope": "Companion/habitat package with first care period prepaid through current lap.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Pets and their care commitment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 0,
+      "lap_decline_bps": 0,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [
+        "suitable_housing",
+        "backup_caregiver",
+        "working_companion_and_care_flow"
+      ],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_active_companion_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "companions",
+      "economic_type": "companion",
+      "setup_cents": 250000,
+      "first_care_cents": 50000,
+      "renewal_care_cents": 50000,
+      "effects": [
+        "companion_record",
+        "care_responsibility"
+      ],
+      "runtime_feature": "companion_care"
+    },
+    {
+      "id": "TX01",
+      "name": "Student laptop",
+      "price_cents": 75000,
+      "scope": "An entry laptop and basic protective case.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Technology and home entertainment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 30000,
+      "lap_decline_bps": 2500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "technology",
+      "economic_type": "owned_good",
+      "effects": [
+        "equipment_ownership"
+      ],
+      "notes": [
+        "Bundle is one item and one resale quote; no duplicate component assets."
+      ]
+    },
+    {
+      "id": "TX02",
+      "name": "Creator laptop",
+      "price_cents": 250000,
+      "scope": "A higher-performance laptop configured for editing.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Technology and home entertainment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 100000,
+      "lap_decline_bps": 2500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "technology",
+      "economic_type": "owned_good",
+      "effects": [
+        "equipment_ownership"
+      ],
+      "notes": [
+        "Bundle is one item and one resale quote; no duplicate component assets."
+      ]
+    },
+    {
+      "id": "TX03",
+      "name": "Premium smartphone",
+      "price_cents": 125000,
+      "scope": "One premium phone with a case; no recurring service plan included.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Technology and home entertainment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 50000,
+      "lap_decline_bps": 2500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "technology",
+      "economic_type": "owned_good",
+      "effects": [
+        "equipment_ownership"
+      ],
+      "notes": [
+        "Bundle is one item and one resale quote; no duplicate component assets."
+      ]
+    },
+    {
+      "id": "TX04",
+      "name": "Premium OLED television",
+      "price_cents": 250000,
+      "scope": "A 65-inch-class television, delivery and a basic stand.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Technology and home entertainment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 87500,
+      "lap_decline_bps": 2500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "technology",
+      "economic_type": "owned_good",
+      "effects": [
+        "equipment_ownership"
+      ],
+      "notes": [
+        "Bundle is one item and one resale quote; no duplicate component assets."
+      ]
+    },
+    {
+      "id": "TX05",
+      "name": "Large cinema display",
+      "price_cents": 650000,
+      "scope": "An 83-inch-class flagship television with basic installation.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Technology and home entertainment"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 227500,
+      "lap_decline_bps": 2500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "technology",
+      "economic_type": "owned_good",
+      "effects": [
+        "equipment_ownership"
+      ],
+      "notes": [
+        "Bundle is one item and one resale quote; no duplicate component assets."
+      ]
+    },
+    {
+      "id": "VX01",
+      "name": "Used economy sedan",
+      "price_cents": 1000000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 800000,
+      "lap_decline_bps": 1000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX02",
+      "name": "Used compact SUV",
+      "price_cents": 2000000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 1600000,
+      "lap_decline_bps": 1000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX03",
+      "name": "New everyday sedan",
+      "price_cents": 2500000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 2000000,
+      "lap_decline_bps": 1000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX04",
+      "name": "New everyday SUV",
+      "price_cents": 3500000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 2800000,
+      "lap_decline_bps": 1000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX05",
+      "name": "Electric sport sedan",
+      "price_cents": 4000000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 2800000,
+      "lap_decline_bps": 1500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX06",
+      "name": "Electric crossover",
+      "price_cents": 4500000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 3150000,
+      "lap_decline_bps": 1500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX07",
+      "name": "Performance electric sedan",
+      "price_cents": 6000000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 4200000,
+      "lap_decline_bps": 1500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX08",
+      "name": "Supercharged muscle coupe",
+      "price_cents": 7500000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 5625000,
+      "lap_decline_bps": 1000,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX09",
+      "name": "Custom supercharged muscle build",
+      "price_cents": 10000000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 6000000,
+      "lap_decline_bps": 1500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX10",
+      "name": "Midsize luxury SUV",
+      "price_cents": 7500000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 5625000,
+      "lap_decline_bps": 1200,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX11",
+      "name": "Flagship luxury SUV",
+      "price_cents": 11000000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 8250000,
+      "lap_decline_bps": 1200,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX12",
+      "name": "Angular electric pickup",
+      "price_cents": 9000000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 6300000,
+      "lap_decline_bps": 1500,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX13",
+      "name": "High-performance sports car",
+      "price_cents": 15000000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 11250000,
+      "lap_decline_bps": 1200,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    },
+    {
+      "id": "VX14",
+      "name": "Exotic supercar",
+      "price_cents": 27500000,
+      "scope": "One complete fictional vehicle.",
+      "status": "approved_baseline",
+      "source": {
+        "file": "Bag_or_Broke_Luxury_Catalog_Approved_Baseline_v1.1.docx",
+        "section": "Vehicles: the full range"
+      },
+      "payment_modes": [
+        "cash",
+        "credit",
+        "split"
+      ],
+      "debt_kind": "general_credit",
+      "secured": false,
+      "asset_advance_eligible": false,
+      "initial_resale_cents": 19250000,
+      "lap_decline_bps": 1200,
+      "rep_at_purchase": 0,
+      "career_points": 0,
+      "rep_max": 0,
+      "reward_family": null,
+      "prerequisites": [],
+      "tax_class": "personal_nondeductible",
+      "field_authority": {
+        "tax_class": "LUX-R02 recommendation unless explicitly approved activation"
+      },
+      "repeat_rule": "one_owned_unit_per_sku",
+      "integration_status": "new_game_baseline_not_deployed",
+      "category": "vehicles",
+      "economic_type": "owned_good",
+      "effects": [
+        "garage_appearance",
+        "vehicle_owner_event_eligibility"
+      ],
+      "notes": [
+        "No recurring vehicle bill. VX08 is recent used; VX09 includes the whole customized car.",
+        "Original generic vehicle design; no real model names in player-facing title."
+      ]
+    }
+  ],
+  "acceptance_cases": [
+    {
+      "id": "LUX-T01",
+      "rule": "69 unique IDs,14 vehicles, every item cash/credit/split; retired LX06–08 absent"
+    },
+    {
+      "id": "LUX-T02",
+      "rule": "VX08 cost75000,initialresale56250,nextlap50625; sale gains0,credit remains"
+    },
+    {
+      "id": "LUX-T03",
+      "rule": "Launch budget10000,die5 gives15000gross; financedprincipal10000 remains;businessprofit5000 beforeinterest;taxbucketbusinessamount5000"
+    },
+    {
+      "id": "LUX-T04",
+      "rule": "Prepared die1 launch10000 gives2500receipt and0REP; multiple supports do not stack"
+    },
+    {
+      "id": "LUX-T05",
+      "rule": "LX26 andLX27 together discount LX30 by1000 atmostonce/lap; sell/rebuy does not reset"
+    },
+    {
+      "id": "LUX-T06",
+      "rule": "LX31earned1 thenLX32earned2 =>activationfamily total2,not3"
+    },
+    {
+      "id": "LUX-T07",
+      "rule": "No car=no ownerrepair; no eligible residence=HX03 disabled; no task=service disabled"
+    },
+    {
+      "id": "LUX-T08",
+      "rule": "Companion renewal never posts after Finish and never silently borrows; rehome stopsfuturecare butretainsdebt"
+    },
+    {
+      "id": "LUX-T09",
+      "rule": "General credit cap and holds can deny credit without hiding cash alternative or forcing a purchase"
+    },
+    {
+      "id": "LUX-T10",
+      "rule": "Refunds route through originatingcharge; no secondinterest, no doublecashreturn, no retained refundedexpense deduction"
+    }
+  ]
+}

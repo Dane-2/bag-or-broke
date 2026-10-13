@@ -1,0 +1,994 @@
+{
+  "schema_version": "1.0",
+  "module": "purple_career",
+  "release_status": "recommended_new_digital_configuration",
+  "authority_note": "Preserve user-stated reward amounts; every new timing, gate, scene, benefit and repeat rule is marked R_. Legacy saves retain their existing ruleset.",
+  "decision_ids": {
+    "R_CAREER_001": "Use zero REP for veterans community service until the missing live value is recovered; one Career is established.",
+    "R_CAREER_002": "Award at completion, cap one rewarded family per completion lap across all paths; one active task per family.",
+    "R_CAREER_003": "Three rewarded mentoring visits per path per game, with fresh relevant experience after the first.",
+    "R_CAREER_004": "Graduation available after three completed laps, once per game; fictional milestone.",
+    "R_CAREER_005": "Sports referral five percent capped at 2500; defined whitelist and one unused benefit.",
+    "R_CAREER_006": "Thirteen explicit path scenes and role variants.",
+    "R_CAREER_007": "Internship next-own-turn follow-up, one extension, one repair and one workload unit.",
+    "R_CAREER_008": "Equal eligible-family weights for initial digital playtest; frozen offer on refresh.",
+    "R_CAREER_009": "Specific path and campaign-planning competency govern Prepared launch; no universal mentor multiplier."
+  },
+  "families": [
+    {
+      "id": "resume_workshop",
+      "name": "Resume Workshop",
+      "rep": 2,
+      "career": 1,
+      "reward_authority": "user_stated_baseline",
+      "instant": true,
+      "requires_new_relevant_experience_after_first": true
+    },
+    {
+      "id": "community_service",
+      "name": "Community Service for Veterans",
+      "rep": 0,
+      "career": 1,
+      "reward_authority": "Career approved; REP=0 is R_CAREER_001 recommendation",
+      "instant": true,
+      "distinct_instance_required": true
+    },
+    {
+      "id": "leadership_retreat",
+      "name": "Leadership Retreat",
+      "rep": 2,
+      "career": 2,
+      "reward_authority": "user_stated_baseline",
+      "instant": true,
+      "distinct_instance_required": true
+    },
+    {
+      "id": "internship",
+      "name": "Landed an Internship",
+      "rep": 3,
+      "career": 3,
+      "reward_authority": "amounts user_stated; completion timing R_CAREER_002",
+      "instant": false,
+      "distinct_instance_required": true
+    },
+    {
+      "id": "graduation",
+      "name": "Graduating on Time",
+      "rep": 2,
+      "career": 4,
+      "reward_authority": "user_stated_baseline",
+      "instant": true,
+      "max_rewards_per_game": 1,
+      "min_completed_laps": 3,
+      "education_status_required": "in_progress"
+    },
+    {
+      "id": "mentoring",
+      "name": "Get Mentored",
+      "rep": 1,
+      "career": 2,
+      "reward_authority": "user_stated_baseline",
+      "instant": true,
+      "max_rewarded_per_path_game": 3,
+      "requires_new_relevant_experience_after_first": true
+    }
+  ],
+  "paths": [
+    {
+      "id": "sports_business_management",
+      "name": "Sports Business and Management",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Sports program coordinator",
+      "investment_mapping_note": "Youth Sports House",
+      "internship": {
+        "scene": "Resolve overlapping court bookings at a youth event.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare a staggered schedule",
+            "competency": "event_scheduling"
+          },
+          {
+            "id": "B",
+            "label": "Coordinate an approved alternate space",
+            "competency": "venue_coordination"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:sports_business_management"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:sports_business_management"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Sports program coordinator",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:sports_business_management"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "real_estate_property_operations",
+      "name": "Real Estate and Property Operations",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Property operations assistant",
+      "investment_mapping_note": "Real Estate",
+      "internship": {
+        "scene": "Two prospective occupants need the same showing time.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare staggered viewings",
+            "competency": "viewing_schedule"
+          },
+          {
+            "id": "B",
+            "label": "Prepare a remote property-information packet",
+            "competency": "property_information"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:real_estate_property_operations"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:real_estate_property_operations"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Property operations assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:real_estate_property_operations"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "media_marketing_communications",
+      "name": "Media Marketing and Communications",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Campaign production assistant",
+      "investment_mapping_note": "Content / Media; Marketing / Ads",
+      "internship": {
+        "scene": "A partner needs a short campaign asset before the original edit is ready.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare an approved shorter cut",
+            "competency": "content_scoping"
+          },
+          {
+            "id": "B",
+            "label": "Coordinate a revised delivery schedule",
+            "competency": "campaign_scheduling"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:media_marketing_communications"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:media_marketing_communications"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Campaign production assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:media_marketing_communications"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "fashion_retail_ecommerce",
+      "name": "Fashion Retail and E-Commerce",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Merchandise operations assistant",
+      "investment_mapping_note": "Fashion; E-Commerce",
+      "internship": {
+        "scene": "A small apparel launch has more requests for one size than available stock.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Offer accurately labeled preorders",
+            "competency": "order_communication"
+          },
+          {
+            "id": "B",
+            "label": "Reallocate the available stock across delivery dates",
+            "competency": "inventory_scheduling"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:fashion_retail_ecommerce"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:fashion_retail_ecommerce"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Merchandise operations assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:fashion_retail_ecommerce"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "finance_business_management",
+      "name": "Finance and Business Management",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Business planning assistant",
+      "investment_mapping_note": "Financial Instruments; business planning",
+      "internship": {
+        "scene": "A fictional business has invoices due before its next customer receipt.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare a cash timing plan",
+            "competency": "cash_forecasting"
+          },
+          {
+            "id": "B",
+            "label": "Prepare a spending-priority summary",
+            "competency": "expense_prioritization"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:finance_business_management"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:finance_business_management"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Business planning assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:finance_business_management"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "technology_product_development",
+      "name": "Technology and Product Development",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Product operations assistant",
+      "investment_mapping_note": "Developer Tools; Sports Tech",
+      "internship": {
+        "scene": "A sports-app demonstration has two requested features and time for one.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare a smaller working demonstration",
+            "competency": "product_scoping"
+          },
+          {
+            "id": "B",
+            "label": "Prepare a sequenced feature roadmap",
+            "competency": "release_planning"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:technology_product_development"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:technology_product_development"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Product operations assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:technology_product_development"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "health_fitness_performance",
+      "name": "Health Fitness and Performance",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Fitness program assistant",
+      "investment_mapping_note": "Fitness / Health; no clinical qualification",
+      "internship": {
+        "scene": "A community fitness session has mixed experience levels.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare separate beginner and experienced activity groups",
+            "competency": "session_grouping"
+          },
+          {
+            "id": "B",
+            "label": "Coordinate an accessible equipment station rotation",
+            "competency": "equipment_coordination"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:health_fitness_performance"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:health_fitness_performance"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Fitness program assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:health_fitness_performance"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "food_hospitality_events",
+      "name": "Food Hospitality and Events",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Event operations assistant",
+      "investment_mapping_note": "Food & Hospitality",
+      "internship": {
+        "scene": "A food event has a late delivery and a fixed guest arrival time.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare a revised service sequence",
+            "competency": "service_scheduling"
+          },
+          {
+            "id": "B",
+            "label": "Coordinate a supplier-approved substitute",
+            "competency": "supplier_coordination"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:food_hospitality_events"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:food_hospitality_events"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Event operations assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:food_hospitality_events"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "education_youth_development",
+      "name": "Education and Youth Development",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Youth program assistant",
+      "investment_mapping_note": "NIL Education; youth programs",
+      "internship": {
+        "scene": "A workshop group needs two different levels of instruction.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare a simple first-step explanation",
+            "competency": "instruction_scoping"
+          },
+          {
+            "id": "B",
+            "label": "Coordinate a small-group station plan",
+            "competency": "learning_station_planning"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:education_youth_development"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:education_youth_development"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Youth program assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:education_youth_development"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "government_public_service_nonprofit",
+      "name": "Government Public Service and Nonprofit Leadership",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Community program assistant",
+      "investment_mapping_note": "Public service and nonprofit work; ownership not required",
+      "internship": {
+        "scene": "Two volunteer groups need the same event setup resources.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare an agreed sharing schedule",
+            "competency": "volunteer_scheduling"
+          },
+          {
+            "id": "B",
+            "label": "Prepare a resource request with documented needs",
+            "competency": "public_resource_planning"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:government_public_service_nonprofit"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:government_public_service_nonprofit"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Community program assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:government_public_service_nonprofit"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "agriculture_agribusiness",
+      "name": "Agriculture and Agribusiness",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Agricultural logistics assistant",
+      "investment_mapping_note": "Farming, ranching, distribution and agricultural technology",
+      "internship": {
+        "scene": "A farm delivery has a changed pickup time.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare a revised dispatch schedule",
+            "competency": "agricultural_logistics"
+          },
+          {
+            "id": "B",
+            "label": "Coordinate an approved alternate pickup",
+            "competency": "agricultural_supplier_coordination"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:agriculture_agribusiness"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:agriculture_agribusiness"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Agricultural logistics assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:agriculture_agribusiness"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "energy",
+      "name": "Energy",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Energy project planning assistant",
+      "investment_mapping_note": "Oil, natural gas, utilities, renewables and infrastructure",
+      "internship": {
+        "scene": "A simulated installation has one delayed component.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare a phased-work schedule",
+            "competency": "energy_project_scheduling"
+          },
+          {
+            "id": "B",
+            "label": "Coordinate an approved alternative delivery",
+            "competency": "energy_supply_coordination"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:energy"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:energy"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Energy project planning assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:energy"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    },
+    {
+      "id": "medical_life_sciences",
+      "name": "Medical and Life Sciences",
+      "catalog_status": "approved_direction",
+      "scenario_status": "R_CAREER_006_NEW_RECOMMENDATION",
+      "role": "Supervised laboratory operations assistant",
+      "investment_mapping_note": "Clinical care, nursing, laboratory science, biotech and healthcare administration; no license",
+      "internship": {
+        "scene": "A simulated teaching laboratory has a supply delay.",
+        "assignments": [
+          {
+            "id": "A",
+            "label": "Prepare a revised supervised session schedule",
+            "competency": "laboratory_scheduling"
+          },
+          {
+            "id": "B",
+            "label": "Prepare an inventory-priority report",
+            "competency": "laboratory_inventory"
+          }
+        ]
+      },
+      "mentoring": {
+        "focus_choices": [
+          {
+            "id": "operations",
+            "label": "Understand the work behind the business",
+            "competency": "operations_planning:medical_life_sciences"
+          },
+          {
+            "id": "promotion",
+            "label": "Prepare a credible offer and explain it clearly",
+            "competency": "campaign_planning:medical_life_sciences"
+          }
+        ]
+      },
+      "resume": {
+        "role": "Supervised laboratory operations assistant",
+        "task": "Select two truthful experience cards, or use the beginner interest-and-skills template. No typing."
+      },
+      "service": {
+        "task": "Choose a practical support role at an accessible veterans community event, then confirm the completed contribution.",
+        "role_choices": [
+          "Coordinate the activity schedule",
+          "Prepare clear participant information"
+        ],
+        "contact_role": "community_program_coordinator"
+      },
+      "leadership": {
+        "task": "Choose how to divide limited team time, then give one clear handoff.",
+        "role_choices": [
+          "Set a shared work sequence",
+          "Delegate a defined task with a check-in"
+        ],
+        "competency": "team_coordination:medical_life_sciences"
+      },
+      "graduation": {
+        "task": "Complete the fictional final-requirements scene and select a field of interest.",
+        "real_world_qualification": false
+      }
+    }
+  ],
+  "selection": {
+    "mode": "weighted_eligible_family_then_player_selects_path",
+    "family_weight": 1,
+    "draw_seed_stored": true,
+    "decline_rewards": {
+      "rep": 0,
+      "career": 0
+    },
+    "decline_penalty": 0,
+    "no_eligible_fallback": "Optional plan review; zero points, no new opportunity"
+  },
+  "repeats": {
+    "family_rewards_per_completion_lap": 1,
+    "scope": "player + family + completion_lap across all paths",
+    "active_tasks_per_family": 1,
+    "graduation_per_game": 1,
+    "fresh_experience": "A new completed, non-reversed relevant activity since the previous rewarded visit; changing industry labels or repurchasing the same item is not new experience."
+  },
+  "internship": {
+    "workload_units": 1,
+    "max_active": 1,
+    "due_offset_own_turns": 1,
+    "extensions": 1,
+    "extension_offset_own_turns": 1,
+    "repair_attempts": 1,
+    "repair_offset_own_turns": 1,
+    "acceptance_reward": {
+      "rep": 0,
+      "career": 0
+    },
+    "completion_reward": {
+      "rep": 3,
+      "career": 3
+    },
+    "withdrawal_penalty": 0,
+    "missed_response_cash_penalty": 0,
+    "award_on_repair": "original reward once",
+    "new_task_requires_remaining_own_turn": true,
+    "final_close": "Resolve already-due action before financial freeze; unfinished has no reward. Technical failure is retry, never an authored player choice."
+  },
+  "referral": {
+    "id": "sports_business_service_referral",
+    "source_path": "sports_business_management",
+    "percent": 0.05,
+    "cap": 2500,
+    "eligible_expense_types": [
+      "youth_sports_clinic_delivery",
+      "sports_equipment_repair"
+    ],
+    "max_unused": 1,
+    "repeat_issue_only_if_none_unused": true,
+    "cash_value": 0,
+    "transferable": false,
+    "expiry": "individual_game_finish",
+    "application_order": "After mandatory confirmed coverage, before elected compatible emergency support; consume only if positive discount and successful transaction."
+  },
+  "prepared_launch": {
+    "source": "approved_luxury_activation_direction; eligibility refined R_CAREER_009",
+    "required_completion": "Mentoring promotion focus, or completed whitelisted internship competency",
+    "required_business_path_match": true,
+    "cross_path_whitelist": {
+      "media_marketing_communications": [
+        "sports_business_management",
+        "real_estate_property_operations",
+        "fashion_retail_ecommerce",
+        "technology_product_development",
+        "health_fitness_performance",
+        "food_hospitality_events",
+        "education_youth_development",
+        "agriculture_agribusiness",
+        "energy",
+        "medical_life_sciences",
+        "finance_business_management"
+      ]
+    },
+    "internship_competency_whitelist": {
+      "sports_business_management": [
+        "event_scheduling",
+        "venue_coordination"
+      ],
+      "media_marketing_communications": [
+        "content_scoping",
+        "campaign_scheduling"
+      ],
+      "fashion_retail_ecommerce": [
+        "order_communication",
+        "inventory_scheduling"
+      ],
+      "technology_product_development": [
+        "product_scoping",
+        "release_planning"
+      ],
+      "food_hospitality_events": [
+        "service_scheduling",
+        "supplier_coordination"
+      ],
+      "real_estate_property_operations": [
+        "property_information"
+      ],
+      "education_youth_development": [
+        "instruction_scoping"
+      ]
+    },
+    "roll_1_receipts_factor": 0.25,
+    "all_other_rolls_unchanged": true,
+    "stackable": false,
+    "reroll": false,
+    "shared_business_promotion": "disabled until separately specified"
+  },
+  "ownership_gate": "No mandatory career bundle or luxury purchase; financial and authored house-stage rules only.",
+  "sidekick_adapter": {
+    "preserve_existing_live_rewards_and_timing_until_migrated": true,
+    "early_fixed_graduation_space": "Graduation Preparation, explicitly zero points and no graduation milestone; digital pool filters unready graduation.",
+    "no_automatic_platform_claim": true
+  },
+  "cross_system": {
+    "points_non_cash": true,
+    "mentorship_not_coach_credit": true,
+    "portfolio_value_of_contacts_and_benefits": 0,
+    "no_double_reward_from_house_tasks": true,
+    "medical_license_granted": false,
+    "choice_not_moral_grade": true
+  }
+}

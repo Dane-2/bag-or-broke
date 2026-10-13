@@ -1,0 +1,107 @@
+{
+  "ruleset_id": "BOB-DIGITAL-ASSEMBLY-20261013-v1",
+  "status": "Recommended lifecycle preserving approved founder/cash-only partner mechanics",
+  "enabled_human_ventures": [
+    "YSH_COMPLEX"
+  ],
+  "simulated_partners": [
+    "YSH_TEAM",
+    "YSH_CENTER"
+  ],
+  "company_units": 10000,
+  "minimum_transfer_units": 100,
+  "founder": {
+    "initial_units": 10000,
+    "minimum_cash_bps": 5000,
+    "loan_type": "personal_secured_acquisition",
+    "price_cents": 100000000,
+    "loan_gives_equity": false
+  },
+  "partner": {
+    "eligible_turn": "green investment opportunity",
+    "required_completions": [
+      "YSH_SPONSOR",
+      "YSH_CLINIC"
+    ],
+    "cash_only": true,
+    "finance_permitted": false,
+    "requires_current_cash_quote": true,
+    "inherits_return": true,
+    "reroll": false,
+    "retroactive_returns": false
+  },
+  "clock": {
+    "owner": "original founder for life of company",
+    "progress": "monotonic founder board steps; never wall time or partner laps",
+    "accrual": "current_value*(1+stored_rate)^(elapsed_founder_steps/board_size)",
+    "settle_before": [
+      "founder_lap",
+      "quote",
+      "transfer",
+      "value_incident",
+      "founder_finish"
+    ],
+    "fractional_recommendation": true,
+    "founder_full_exit": "Clock remains original founder; no accelerated growth or reassignment.",
+    "founder_finish": "Settle to cutoff, stop future scheduled growth, retire all purchase/listing offers. Active partners may market-sell frozen current stakes.",
+    "partner_finish": "Settle to current founder progress; freeze own snapshot, mark lot nontradable and exclude owner from subsequent personal invoices. Other active lots may continue changing until founder cutoff."
+  },
+  "listing": {
+    "seller": "active current human holder",
+    "sold_units": "absolute percentage of whole company, not percentage of remaining stake",
+    "minimum_units": 100,
+    "reservation": "only committed paid transfer reserves shares",
+    "price": "current_company_equity_value * offered_units /10000",
+    "quote_revision_required": true,
+    "one_purchase_consumes_green": true,
+    "cancel_allowed": true,
+    "founder_finish_disables_new_buys": true
+  },
+  "seller_settlement": {
+    "gain_tax_bps": 2000,
+    "gain_base": "max(0,gross_price-prorated_cost_basis)",
+    "linked_debt": "mandatory proportional payoff of seller secured debt including posted accrued interest before net seller cash",
+    "unsecured_debt": "no automatic payoff",
+    "cash_to_company": 0,
+    "debt_to_buyer": 0,
+    "new_buyer_basis": "actual cash price",
+    "retired_rule": "Oct2 gross sale credit/no payoff superseded by later approved central sale rules"
+  },
+  "incidents": {
+    "value_shock": "once to whole-company value; derive current owner stakes; no personal cash duplicate",
+    "cash_invoice": "disabled unless authored payer and current owner allocation exist",
+    "asset_failure": "value0; close company, cancel listings, stop growth; personal debt persists; no free rescue",
+    "no_negative_company_value": true,
+    "after_founder_finish": "Disable new company incidents. Settle or explicitly cancel pending company incidents before freeze; no silently skipped invoice."
+  },
+  "notifications": [
+    "purchase_committed",
+    "launch_resolved",
+    "shares_listed",
+    "shares_transferred",
+    "listing_withdrawn",
+    "company_closed",
+    "founder_clock_closed"
+  ],
+  "integrity": [
+    "ownership units sum10000 including simulated/system holders",
+    "atomic cash/units/basis/debt/tax",
+    "no over-sale",
+    "retry same economic event no duplicate",
+    "finished player money and snapshot immutable",
+    "no player-to-player lending",
+    "no partner may borrow purchase cash within same transaction"
+  ],
+  "deferred_alternative": {
+    "name": "Bounded continuing Youth House rates",
+    "rate_by_launch_face_bps": [
+      -1000,
+      -500,
+      0,
+      500,
+      1000,
+      1500
+    ],
+    "status": "deferred recommendation NOT default; needs separate decision because approved continuing rates would change"
+  }
+}

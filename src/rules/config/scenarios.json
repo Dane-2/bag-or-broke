@@ -1,0 +1,4051 @@
+{
+  "rules_version": "BOB_RECONCILED_SCENARIOS_1.0",
+  "status": "RECOMMENDED_IMPLEMENTATION_UNDER_AUTHORIZED_ASSEMBLY_NOT_LIVE_DEPLOYMENT",
+  "source_map": {
+    "R01-R18": "Recovered Oct7 conversation titles supplied by root; prior review also contains12themes. Amounts/schedules/probabilities newly authored unless specifically preserved.",
+    "R19-R21": "New predatory-contract extensions implementing approved assigned-trap direction.",
+    "B01-B12": "Curveball Master Review internalv1.1; B05 sixbandapproveddirection overrides earlier NewCoachtitle.",
+    "B13": "Legacy season-ending theme retained; scope and numbers proposed.",
+    "Y01-Y05": "Founder-reported base75k/15k/token25k/50k/50k; guarantee-base-beforeoptionalexpansion directionapproved.",
+    "Y06-Y12": "Recovered approved supplemental titles and base values15k/10k/25k/20kexample/25k/up-to25k-recovery/30k-service; optionalboost schedulesnewrecommendations."
+  },
+  "global_rules": {
+    "chance": "A visible six-face table is authored fiction; each face equal only where explicitly die_faces. Stored cryptographically-secure server draw once per event/table, seedable in tests; no AI odds or client reroll.",
+    "selection": "Filter all eligibility/context/phase predicates, exclude active same matter/source, last4ownturns samecardtarget and repeatlimit. Uniform draw among eligible distinct card IDs. Precompute seed at turn start, log candidateIDs and rulesversion. Never reroll to punish/benefit the player.",
+    "empty_pool": "Record NO_ELIGIBLE_SCENARIO and show All clear this turn. No cash, REP, career or extra roll; do not invent a generic penalty.",
+    "target_selection": "Show actual target; choose earliest acquired eligible owned target, tie holdingID. No selecting the most costly target secretly. Marketcardtargetsall qualifyingholdings once.",
+    "choice_ui": "Voice/captions; 2-3 touchcards; show now cost, laterbindingcost, affectedrecord, chancefaceswhenapplicable, availableprotection/netcost; no requiredtyping.",
+    "mandatory_bill": "Expense debits min(AvailableCash,netexpense), creates event_payable for remainder. TaxBucket untouched. Zero interest; payable persists finalwealth once. Doesnot auto-originate loan or ordinarycreditpunishment.",
+    "event_payable_due": "Default eventbill due before next ownroll unless authoredlater. Missing due keeps it unpaid, disables new optional financed purchases until it is cleared, but does not take a whole turn or create a second moneyfine. Restriction is reason-specific and shown only in Finance/affectedquote; no tax/debtreminder.",
+    "optional_payment": "Disable unaffordable optional immediatecash choices; require atomic net-costquote after electiveprotection. Always at least one affordable/noimmediatecashresponse.",
+    "followup_order": "At start ownturn: due committedscenariocheckpoints; currenttaskresponses; movement andcentralfinance. Show story consequences without unsolicited tax/debtreminders.",
+    "unanswered_choice": "No default risky choice; session pauses/resumes. At forcedauthorizedclose, apply eachscenario declaredcost-freebranch or preserveexistingbindingclaim; no AIdecision.",
+    "task_completion": "Tap a compact authored interaction at next ownturn. Only actualcompletionpostsreward. Same task cannot award again through a curveball; missedoptional rewardisforegoneincome.",
+    "reputation": "ClampdisplayREP at0; lognegativechanges actualdelta. Victimization, medicalevents, poorluck, assetloss anddecliningunaffordablepurchases cause no automaticREPpenalty.",
+    "company_effects": "Companyvalueeffectonce/company/eventID; investorvaluesderived. Companycash/serviceexpense paidonlyby consentingauthorizedoperator; nocapitalcalltohumans or personallegalplancompanybill.",
+    "status_rewards": "BluepositiveREP/Careershowreward_key once/game; ordinarypurpleownrules.",
+    "finish": "No newpurchase/task/offer. Committedmoneyoutcomessettledusingstoredresult and sourceids; pendingunearnedoffersworth0; payablescountonce; nocurrentstatus penaltywithoutauthoredcash. ThenCentralFinancefinaltaxandimmutableFinish.",
+    "mixed_coverage": "Other scopedinsurancefirst; matchinghealth/legalfeeplansecond; onechoseneligiblecareer/businessservicediscountthird; yellowtokenlastforremainingmandatoryexpense. No doubleclaim or assistanceaboveunderlyingexpense. Personallegalplannevercoverscompanybill."
+  },
+  "pressure": {
+    "status": "RECOMMENDED_DISPLAY_RULES",
+    "financial": "ratio=unpaidcashobligationsduebyownnextroll / AvailableCash. Ifdue0 steady; ifcash0 anddue>0 strained. Ratio<0.5 steady;0.5through1 tight;>1 strained; actuallypastdue separatelyoverdue. TaxBucket shownalongside asreservedcash, notspendingcash.",
+    "commitment": {
+      "capacity_slots": 3,
+      "bands": {
+        "0": "light",
+        "1": "light",
+        "2": "busy",
+        "3": "full",
+        "4+": "overloaded"
+      },
+      "effects": "At3optionalnewtasks requirefreecapacity; mandatorycare/recoveryallowedandcanreplaceoptional. Noautomaticcashfine; taskdeadlinesoperateindependently."
+    },
+    "recovery": "Payorreconcileactualbills,explicitlymoveTaxBucketcash,sellperCentralFinance,complete/delegate/releaseanactualtask. Signalsupdateimmediately. Nothinginfersmentalhealth."
+  },
+  "coach": {
+    "label": "What Would Coach J-Bo Do?",
+    "starting_credits": 3,
+    "purchasable_extra_credits": false,
+    "cost": "1credit percurrentdecision after advice successfullydelivered; replayandbasicruleexplanationfree",
+    "inputs": "currentvisiblechoicequotes,playerledger/capacity,existingprotections,knownfutureobligations; nohiddenrandomroll",
+    "output": "one recommendedoption,reason,tradeoff,onevalidalternative;playerchooses",
+    "transaction": "reservecreditbydecisionID;cachecompletion;commitdebitonceondelivery;failure releasesreservation;race/retryreturnsameadvice withoutdoublecharge",
+    "model_failure": "authoreddeterministicadvice canfulfillrequestonlywhendisplayed; ifnoneavailable returnfree rules,nochargedcredit",
+    "effects": "Nochangedodds,automaticreward,claimforgiveness,medicalclearanceorlegalguarantee"
+  },
+  "legal_support": {
+    "authority": "ApprovedLegalSupportv1.0 governs; do notoverwrite",
+    "prices_cents": [
+      750000,
+      1500000,
+      2250000
+    ],
+    "future_matters": [
+      1,
+      2,
+      3
+    ],
+    "assistance_basis_points": 8000,
+    "cap_per_matter_cents": 2500000,
+    "purchase_before_disclosed_matter": true,
+    "contract_check_cents": 250000,
+    "excluded": [
+      "settlement",
+      "contract_exit",
+      "advance_principal",
+      "income_share",
+      "tax",
+      "ordinary_debt",
+      "scam_loss",
+      "asset_loss",
+      "operating_expense"
+    ],
+    "same_matter_followups_share_cap": true
+  },
+  "health_support_replacement": {
+    "status": "NEW_RECOMMENDATION_TO_SCOPE_EXISTING_DEF_HEALTH_TIERS",
+    "source_ids": [
+      "DEF_HEALTH_BASIC",
+      "DEF_HEALTH_STANDARD",
+      "DEF_HEALTH_PREMIUM"
+    ],
+    "prices_cents": [
+      500000,
+      1000000,
+      1500000
+    ],
+    "uses": [
+      1,
+      2,
+      3
+    ],
+    "eligible_component": "health_expense only",
+    "assistance_basis_points": 8000,
+    "cap_per_incident_cents": 2000000,
+    "purchase_before_incident": true,
+    "max_unused_uses": 3,
+    "cash_only": true,
+    "growth_resale_collateral": 0,
+    "expiry": "player_finish",
+    "exclude": "Nohealing,eligibilityguarantee,unrelatedfamilytravel orordinarylivingcost;familyemergencyonlyifauthoredhealthcomponent",
+    "coordination": "samecumulativecap/refund/activationlogic aslegal;personalplanonlypersonalbill"
+  },
+  "portal": {
+    "status": "APPROVED_SIX_BANDS_WITH_RECOMMENDED_NUMERIC_STATE_MACHINE",
+    "phase": "college_sim only; remaining_athletic_laps from pinned game profile, not real NCAA clock",
+    "initial_state": "info_or_entered; old placement retained only in information mode",
+    "step1": {
+      "at": "start next own turn",
+      "offer_die": "server stores once; no rerolls",
+      "faces": {
+        "1": [],
+        "2": [
+          "O_BALANCED"
+        ],
+        "3": [
+          "O_BALANCED"
+        ],
+        "4": [
+          "O_ROLE"
+        ],
+        "5": [
+          "O_MONEY",
+          "O_BALANCED"
+        ],
+        "6": [
+          "O_ROLE",
+          "O_MONEY",
+          "O_BALANCED"
+        ]
+      }
+    },
+    "offers": [
+      {
+        "id": "O_BALANCED",
+        "title": "Balanced fit",
+        "uncovered_move_cost_cents": 500000,
+        "nil_signing_cash_cents": 1000000,
+        "role": "projected rotation",
+        "academic_task_slots": 1,
+        "academic_task_due_own_turns": 1,
+        "expiry_own_turns_after_offer": 2
+      },
+      {
+        "id": "O_ROLE",
+        "title": "Stronger projected role",
+        "uncovered_move_cost_cents": 250000,
+        "nil_signing_cash_cents": 500000,
+        "role": "projected larger role; not guaranteed",
+        "academic_task_slots": 1,
+        "academic_task_due_own_turns": 1,
+        "expiry_own_turns_after_offer": 2
+      },
+      {
+        "id": "O_MONEY",
+        "title": "Larger paid NIL campaign",
+        "uncovered_move_cost_cents": 750000,
+        "nil_signing_cash_cents": 2500000,
+        "role": "projected depth role",
+        "academic_task_slots": 2,
+        "academic_task_due_own_turns": 1,
+        "expiry_own_turns_after_offer": 2
+      }
+    ],
+    "offer_acceptance": "Show net move cost and actual guaranteed signed campaign payment; accept only if uncovered cost can be paid after same atomic signed payment. Payment is taxable NIL; expense is personal, not tax deduction. Actual amount earned as signing deliverable, not promised professional earnings. Accept one, expire others; no stacking.",
+    "search_again": "If no accepted offer, a second search occurs one own turn later using same table and new stored die. Information mode may stay without losing its current place. Entered mode has no guaranteed return. Return offer appears only if original place explicitly available.",
+    "followup_fit": {
+      "at": "one own turn after placement",
+      "die_faces": {
+        "1": "negative",
+        "2": "middle",
+        "3": "middle",
+        "4": "positive",
+        "5": "positive",
+        "6": "extreme_positive"
+      },
+      "deterministic_adjustment": "If academic task was missed, cap result at middle and schedule academic repair; do not change die. Preparation opens information; it does not rig athletic outcomes.",
+      "effects": {
+        "negative": [
+          {
+            "op": "restriction",
+            "kind": "sport_appearance",
+            "own_turns": 1
+          }
+        ],
+        "middle": [],
+        "positive": [
+          {
+            "op": "record_outcome",
+            "band": "better_fit"
+          }
+        ],
+        "extreme_positive": [
+          {
+            "op": "cash_income",
+            "tax_class": "nil",
+            "source": "authored_breakthrough_campaign",
+            "amount": {
+              "fixed_cents": 1500000
+            }
+          },
+          {
+            "op": "record_outcome",
+            "band": "breakthrough"
+          }
+        ]
+      }
+    },
+    "no_placement_after_two_searches": {
+      "band": "extreme_negative",
+      "effects": [
+        {
+          "op": "restriction",
+          "kind": "sport_appearance",
+          "own_turns": 2
+        },
+        {
+          "op": "expense",
+          "component": "uncovered_living_support",
+          "amount": {
+            "fixed_cents": 500000
+          }
+        }
+      ],
+      "recovery": "Next own turn offers O_BALANCED by authored support referral if remaining_athletic_laps positive; player may accept or stay in education/career. No mandatory paid mentor."
+    },
+    "worst_case": "Only when entered, no accepted placement after at least two searches plus the recovery checkpoint, AND remaining_athletic_laps reaches zero through normal game clock. Then set athletics_phase=ended; no additional arbitrary money fine. Career, business, study, Finance and earned contract cash continue.",
+    "finish": "Settle already-earned signed amounts and actual incurred expenses; pending unaccepted offers add $0. Do not roll extra searches or force worst_case just because the game ended.",
+    "disclosure": "Fictional timing, costs and probabilities are game-balance settings, not real NCAA transfer advice or measured likelihoods."
+  },
+  "scenarios": [
+    {
+      "id": "R01",
+      "color": "red",
+      "title": "Tax Review Notice",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "has_closed_tax_period"
+      ],
+      "target_scope": "player",
+      "scene": "The game reviews an actual filed period. The notice itself is not a fine.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "reconcile",
+          "label": "Review the existing bill",
+          "requires": [],
+          "effects": [
+            {
+              "op": "navigate",
+              "target": "finance_tax_reconciliation"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "professional",
+          "label": "Use a professional response",
+          "requires": [
+            "tax_case_requires_professional_response",
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 500000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "continue",
+          "label": "Continue with the recorded findings",
+          "requires": [],
+          "effects": [
+            {
+              "op": "link_existing_bill",
+              "target": "tax_bill"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "source obligation/contract/period ID; no repeat for same state revision",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Only a genuine recorded correction creates an adjustment under Central Finance. Existing overdue penalties are not charged again; tax status does not automatically affect REP or credit. Correct records can yield $0 additional tax."
+    },
+    {
+      "id": "R02",
+      "color": "red",
+      "title": "Sponsor Hasn’t Paid",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "earned_receivable_scheduled_within_two_turns",
+        "unsettled_receivable"
+      ],
+      "target_scope": "player",
+      "scene": "Completed promotional work has an outstanding earned payment. The sponsor reports its expected payment will be delayed.",
+      "immediate": [
+        {
+          "op": "delay_receivable",
+          "turns": 2,
+          "basis": "later_of_original_due_and_current_turn"
+        }
+      ],
+      "choices": [
+        {
+          "id": "wait",
+          "label": "Follow up and wait",
+          "requires": [],
+          "effects": [],
+          "scheduled": [
+            {
+              "at": "source_receivable_due",
+              "source": "receivable_id",
+              "effects": [
+                {
+                  "op": "collect_existing_receivable"
+                }
+              ],
+              "finish_rule": "collect_same_earned_receivable_once_at_finish"
+            }
+          ]
+        },
+        {
+          "id": "expedite",
+          "label": "Pay for expedited collection",
+          "requires": [
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 200000
+              }
+            },
+            {
+              "op": "reschedule_receivable",
+              "due": "current_own_turn_plus_1"
+            }
+          ],
+          "scheduled": [
+            {
+              "at": "source_receivable_due",
+              "source": "receivable_id",
+              "effects": [
+                {
+                  "op": "collect_existing_receivable"
+                }
+              ],
+              "finish_rule": "collect_same_earned_receivable_once_at_finish"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No cash is removed for money never received. Wait uses revised due=max(original_due,current_own_turn)+2; expedite replaces it with current_own_turn+1. Both retarget the same receivable collector, canceling its prior schedule rather than adding a second payout. Show the resulting due turn explicitly. Guaranteed collection pays only the outstanding amount; no fee changes face value. A tax entry occurs on actual income receipt."
+    },
+    {
+      "id": "R03",
+      "color": "red",
+      "title": "NIL Contract Dispute",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_signed_nil_contract",
+        "no_open_same_contract_dispute"
+      ],
+      "target_scope": "player",
+      "scene": "An active agreement has a disputed obligation. All response paths cost something.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "settle",
+          "label": "Negotiate a resolution",
+          "requires": [],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 1500000
+              }
+            },
+            {
+              "op": "expense",
+              "component": "settlement",
+              "amount": {
+                "fixed_cents": 2000000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "defer",
+          "label": "Preserve cash; accept a later obligation",
+          "requires": [],
+          "effects": [
+            {
+              "op": "event_payable",
+              "due_own_turns": 2,
+              "component": "settlement",
+              "amount": {
+                "fixed_cents": 4500000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "challenge",
+          "label": "Fund a challenge",
+          "requires": [
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 1000000
+              }
+            },
+            {
+              "op": "resolve_table",
+              "table": "R03_CHALLENGE"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": {
+        "R03_CHALLENGE": {
+          "die_faces": {
+            "1": [
+              {
+                "op": "event_payable",
+                "due_own_turns": 1,
+                "component": "settlement",
+                "amount": {
+                  "fixed_cents": 3000000
+                }
+              }
+            ],
+            "2": [
+              {
+                "op": "event_payable",
+                "due_own_turns": 1,
+                "component": "settlement",
+                "amount": {
+                  "fixed_cents": 3000000
+                }
+              }
+            ],
+            "3": [
+              {
+                "op": "event_payable",
+                "due_own_turns": 1,
+                "component": "settlement",
+                "amount": {
+                  "fixed_cents": 1500000
+                }
+              }
+            ],
+            "4": [
+              {
+                "op": "event_payable",
+                "due_own_turns": 1,
+                "component": "settlement",
+                "amount": {
+                  "fixed_cents": 1500000
+                }
+              }
+            ],
+            "5": [],
+            "6": []
+          }
+        }
+      },
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "The $35,000 resolution is split into fees and settlement, not charged on top of them. Deferred payable has no ordinary borrowing interest."
+    },
+    {
+      "id": "R04",
+      "color": "red",
+      "title": "“Brand Manager” in DMs",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "public_nil_profile",
+        "available_cash_at_least_5000"
+      ],
+      "target_scope": "player",
+      "scene": "A fraudulent transfer connected to an impersonated representative is discovered. This authored incident is a chance setback, not a claim about a real person.",
+      "immediate": [
+        {
+          "op": "expense",
+          "component": "scam_loss",
+          "save_as": "incident_loss",
+          "amount": {
+            "field": "available_cash_before_event",
+            "basis_points": 2500,
+            "cap_cents": 2500000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "report",
+          "label": "Secure the account and report",
+          "requires": [],
+          "effects": [
+            {
+              "op": "restriction",
+              "kind": "new_nil_contract",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 2,
+              "effects": [
+                {
+                  "op": "refund_loss",
+                  "source": "incident_loss",
+                  "amount": {
+                    "field": "incident_loss",
+                    "basis_points": 2500
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "recover",
+          "label": "Pay for a recovery attempt",
+          "requires": [
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 500000
+              }
+            },
+            {
+              "op": "resolve_table",
+              "table": "R04_RECOVERY"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": {
+        "R04_RECOVERY": {
+          "die_faces": {
+            "1": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 0
+                }
+              }
+            ],
+            "2": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 0
+                }
+              }
+            ],
+            "3": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 5000
+                }
+              }
+            ],
+            "4": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 5000
+                }
+              }
+            ],
+            "5": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 5000
+                }
+              }
+            ],
+            "6": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 5000
+                }
+              }
+            ]
+          }
+        }
+      },
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No sensitive credentials requested. Loss is frozen at reveal; refunds reverse the original loss, not NIL income."
+    },
+    {
+      "id": "R05",
+      "color": "red",
+      "title": "Business Partner Can’t Cover Their Share",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "shared_operating_venture",
+        "recorded_partner_contribution_overdue",
+        "recorded_shortfall_positive"
+      ],
+      "target_scope": "company",
+      "scene": "An agreed operating contribution is missing. Show the actual amount and responsible party.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "reduce",
+          "label": "Reduce the planned activity",
+          "requires": [],
+          "effects": [
+            {
+              "op": "reduce_activity_budget",
+              "amount": {
+                "field": "recorded_shortfall_cents",
+                "basis_points": 10000
+              }
+            },
+            {
+              "op": "asset_write_down",
+              "target": "company",
+              "amount": {
+                "field": "company_value",
+                "basis_points": 300
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "cover",
+          "label": "Cover the shortfall without new equity",
+          "requires": [
+            "can_afford_full_shortfall"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "operating_expense",
+              "payer": "volunteering_player",
+              "amount": {
+                "field": "recorded_shortfall_cents",
+                "basis_points": 10000
+              }
+            },
+            {
+              "op": "mark_contribution_satisfied"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "delay",
+          "label": "Pause and renegotiate",
+          "requires": [],
+          "effects": [
+            {
+              "op": "restriction",
+              "kind": "affected_company_expansion",
+              "own_turns": 2
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Only a recorded peer action or an authored external partner creates this event. Never invent another human player’s failure. Extra cash does not grant equity. Scope reduction posts one company impairment; do not bill every shareholder."
+    },
+    {
+      "id": "R06",
+      "color": "red",
+      "title": "Merchandise Order Arrived Wrong",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "owned_merchandise_venture",
+        "recorded_inventory_order",
+        "company_value_positive"
+      ],
+      "target_scope": "company",
+      "scene": "A production error damages stock for the current launch.",
+      "immediate": [
+        {
+          "op": "asset_write_down",
+          "target": "company",
+          "save_as": "inventory_loss",
+          "amount": {
+            "field": "company_value",
+            "basis_points": 500
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "correct",
+          "label": "Request supplier correction",
+          "requires": [],
+          "effects": [],
+          "scheduled": [
+            {
+              "after_own_turns": 2,
+              "effects": [
+                {
+                  "op": "restore_prior_value_loss",
+                  "amount": {
+                    "field": "inventory_loss",
+                    "basis_points": 5000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "replace",
+          "label": "Pay for a rapid replacement",
+          "requires": [
+            "authorized_company_operator",
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "operating_remediation",
+              "amount": {
+                "field": "company_value_before_event",
+                "basis_points": 200,
+                "cap_cents": 1000000
+              }
+            },
+            {
+              "op": "restore_prior_value_loss",
+              "amount": {
+                "field": "inventory_loss",
+                "basis_points": 10000
+              }
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Restoration never exceeds this incident’s impairment. A real prior refund must reverse its original purchase allocation; this branch is repair cost, not refund."
+    },
+    {
+      "id": "R07",
+      "color": "red",
+      "title": "The Hype Didn’t Become Sales",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "recorded_poor_promotion_result",
+        "owned_inventory_venture",
+        "inventory_unsold_value_positive"
+      ],
+      "target_scope": "company",
+      "scene": "A recorded campaign produced attention but left unsold stock.",
+      "immediate": [
+        {
+          "op": "asset_write_down",
+          "target": "company",
+          "save_as": "inventory_loss",
+          "amount": {
+            "field": "inventory_unsold_value",
+            "basis_points": 1000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "test",
+          "label": "Test a smaller offer",
+          "requires": [],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "demand_test",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "restore_prior_value_loss",
+                  "requires": "task_completed",
+                  "amount": {
+                    "field": "inventory_loss",
+                    "basis_points": 5000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "pause",
+          "label": "Pause additional promotion",
+          "requires": [],
+          "effects": [
+            {
+              "op": "restriction",
+              "kind": "same_campaign_new_spend",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Requires actual campaign and inventory records; a low launch die does not establish poor demand. No cash loss duplicates the campaign’s already-paid cost."
+    },
+    {
+      "id": "R08",
+      "color": "red",
+      "title": "Essential Equipment Breaks",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "operating_business",
+        "equipment_exposure",
+        "company_value_positive"
+      ],
+      "target_scope": "company",
+      "scene": "Equipment needed for a recorded service fails.",
+      "immediate": [
+        {
+          "op": "asset_write_down",
+          "target": "company",
+          "save_as": "equipment_loss",
+          "amount": {
+            "field": "company_value",
+            "basis_points": 500
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "repair",
+          "label": "Repair now",
+          "requires": [
+            "authorized_company_operator",
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "equipment_repair",
+              "amount": {
+                "field": "company_value_before_event",
+                "basis_points": 300,
+                "cap_cents": 2000000
+              }
+            },
+            {
+              "op": "restore_prior_value_loss",
+              "amount": {
+                "field": "equipment_loss",
+                "basis_points": 10000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "substitute",
+          "label": "Use a temporary substitute",
+          "requires": [],
+          "effects": [
+            {
+              "op": "restriction",
+              "kind": "affected_service_expansion",
+              "own_turns": 2
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 2,
+              "effects": [
+                {
+                  "op": "restore_prior_value_loss",
+                  "amount": {
+                    "field": "equipment_loss",
+                    "basis_points": 5000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Business-coach, web-service or career discounts apply only to specifically eligible service components; equipment-repair career benefit can apply once. No implied medical or personal insurance coverage."
+    },
+    {
+      "id": "R09",
+      "color": "red",
+      "title": "Your Event Venue Falls Through",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "paid_event_booking",
+        "active_uncompleted_event"
+      ],
+      "target_scope": "player",
+      "scene": "The booked venue cancels before the event.",
+      "immediate": [
+        {
+          "op": "refund_original",
+          "source": "booking_payment",
+          "amount": {
+            "field": "refundable_venue_deposit",
+            "basis_points": 10000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "replace",
+          "label": "Book a replacement",
+          "requires": [
+            "can_afford_10000"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "event_operating_cost",
+              "amount": {
+                "fixed_cents": 1000000
+              }
+            },
+            {
+              "op": "keep_original_event_schedule"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "reschedule",
+          "label": "Reschedule transparently",
+          "requires": [],
+          "effects": [
+            {
+              "op": "delay_task",
+              "own_turns": 2
+            },
+            {
+              "op": "restriction",
+              "kind": "additional_event_booking",
+              "own_turns": 2
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "cancel",
+          "label": "Cancel and refund customers",
+          "requires": [],
+          "effects": [
+            {
+              "op": "refund_customer_prepayment",
+              "amount": {
+                "field": "unearned_customer_prepayments",
+                "basis_points": 10000
+              }
+            },
+            {
+              "op": "cancel_task_without_reward"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Only the actual refundable deposit returns through original cash/debt funding. Customer prepayments are liabilities until earned; their refund removes that liability, not a second expense. No fabricated customer bill."
+    },
+    {
+      "id": "R10",
+      "color": "red",
+      "title": "Your Account Is Restricted",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "platform_dependent_venture",
+        "company_value_positive"
+      ],
+      "target_scope": "company",
+      "scene": "A selling or content account becomes temporarily inaccessible.",
+      "immediate": [
+        {
+          "op": "asset_write_down",
+          "target": "company",
+          "save_as": "platform_loss",
+          "amount": {
+            "field": "company_value",
+            "basis_points": 200
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "official",
+          "label": "Use official recovery",
+          "requires": [],
+          "effects": [],
+          "scheduled": [
+            {
+              "after_own_turns": 2,
+              "effects": [
+                {
+                  "op": "restore_prior_value_loss",
+                  "amount": {
+                    "field": "platform_loss",
+                    "basis_points": 5000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "specialist",
+          "label": "Pay for technical recovery",
+          "requires": [
+            "authorized_company_operator",
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "website_platform_remediation",
+              "amount": {
+                "fixed_cents": 500000
+              }
+            },
+            {
+              "op": "restore_prior_value_loss",
+              "amount": {
+                "field": "platform_loss",
+                "basis_points": 10000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "backup",
+          "label": "Use the existing backup channel",
+          "requires": [
+            "owned_verified_backup_channel"
+          ],
+          "effects": [
+            {
+              "op": "restore_prior_value_loss",
+              "amount": {
+                "field": "platform_loss",
+                "basis_points": 7500
+              }
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Technical recovery is not eligible legal work unless a separate authored legal component exists. Company event once, no double shareholder bill."
+    },
+    {
+      "id": "R11",
+      "color": "red",
+      "title": "Tempting Deal, Expensive Terms",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "no_open_advance_contract"
+      ],
+      "target_scope": "player",
+      "scene": "This red card assigns the legacy unfavorable advance: $25,000 now with $40,000 due later. You choose how to manage the situation.",
+      "immediate": [
+        {
+          "op": "cash_advance",
+          "taxable": false,
+          "amount": {
+            "fixed_cents": 2500000
+          }
+        },
+        {
+          "op": "event_payable",
+          "due_own_turns": 2,
+          "component": "advance_contract",
+          "save_as": "advance_claim",
+          "amount": {
+            "fixed_cents": 4000000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "keep",
+          "label": "Keep the terms",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "renegotiate",
+          "label": "Pay for renegotiation",
+          "requires": [
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 500000
+              }
+            },
+            {
+              "op": "replace_existing_payable",
+              "target": "advance_claim",
+              "due_own_turns": 1,
+              "amount": {
+                "fixed_cents": 3000000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "return",
+          "label": "Return the advance and pay the exit cost",
+          "requires": [
+            "can_afford_25000"
+          ],
+          "effects": [
+            {
+              "op": "pay_existing_payable",
+              "target": "advance_claim",
+              "amount": {
+                "fixed_cents": 2500000
+              }
+            },
+            {
+              "op": "replace_existing_payable",
+              "target": "advance_claim",
+              "due_own_turns": 1,
+              "amount": {
+                "fixed_cents": 500000
+              }
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 1,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Advance is non-taxable borrowed money, not a bonus. $40,000 includes the original $25,000; never create an extra principal debt. Replacing the claim reduces the existing balance rather than adding another bill."
+    },
+    {
+      "id": "R12",
+      "color": "red",
+      "title": "You Sold Out—and Can’t Keep Up",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "recorded_successful_campaign",
+        "paid_orders_exceed_capacity",
+        "unearned_customer_prepayments_positive"
+      ],
+      "target_scope": "company",
+      "scene": "A successful launch leaves paid orders beyond current capacity.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "fulfill",
+          "label": "Buy the needed capacity",
+          "requires": [
+            "authorized_company_operator",
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "operating_expense",
+              "amount": {
+                "field": "unearned_customer_prepayments",
+                "basis_points": 2500,
+                "cap_cents": 2000000
+              }
+            },
+            {
+              "op": "earn_existing_customer_prepayments"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "limit",
+          "label": "Limit orders and refund the excess",
+          "requires": [],
+          "effects": [
+            {
+              "op": "refund_customer_prepayment",
+              "amount": {
+                "field": "unearned_customer_prepayments",
+                "basis_points": 5000
+              }
+            },
+            {
+              "op": "earn_remaining_customer_prepayments"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "extend",
+          "label": "Ask customers for a later date",
+          "requires": [],
+          "effects": [
+            {
+              "op": "delay_task",
+              "own_turns": 1
+            },
+            {
+              "op": "restriction",
+              "kind": "new_orders",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "refund_customer_prepayment",
+                  "amount": {
+                    "field": "unearned_customer_prepayments",
+                    "basis_points": 2500
+                  }
+                },
+                {
+                  "op": "earn_remaining_customer_prepayments"
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Customer receipts already held are not paid again when earned. Source records distinguish cash collection from profit recognition. Final closure uses the same refund fraction and earned remainder."
+    },
+    {
+      "id": "R13",
+      "color": "red",
+      "title": "Unexpected Lawsuit",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "recorded_hosted_event_or_personal_liability_exposure",
+        "no_open_same_incident_claim"
+      ],
+      "target_scope": "player",
+      "scene": "A civil claim follows a recorded activity. A claim is not proof of wrongdoing.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "resolve",
+          "label": "Negotiate a resolution",
+          "requires": [],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 2500000
+              }
+            },
+            {
+              "op": "expense",
+              "component": "settlement",
+              "amount": {
+                "fixed_cents": 2500000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "defer",
+          "label": "Accept a deferred resolution",
+          "requires": [],
+          "effects": [
+            {
+              "op": "event_payable",
+              "due_own_turns": 2,
+              "component": "settlement",
+              "amount": {
+                "fixed_cents": 6000000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "defend",
+          "label": "Fund a defense",
+          "requires": [
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 1000000
+              }
+            },
+            {
+              "op": "resolve_table",
+              "table": "R13_DEFENSE"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": {
+        "R13_DEFENSE": {
+          "die_faces": {
+            "1": [
+              {
+                "op": "event_payable",
+                "component": "settlement",
+                "due_own_turns": 1,
+                "amount": {
+                  "fixed_cents": 5000000
+                }
+              }
+            ],
+            "2": [
+              {
+                "op": "event_payable",
+                "component": "settlement",
+                "due_own_turns": 1,
+                "amount": {
+                  "fixed_cents": 5000000
+                }
+              }
+            ],
+            "3": [
+              {
+                "op": "event_payable",
+                "component": "settlement",
+                "due_own_turns": 1,
+                "amount": {
+                  "fixed_cents": 2500000
+                }
+              }
+            ],
+            "4": [
+              {
+                "op": "event_payable",
+                "component": "settlement",
+                "due_own_turns": 1,
+                "amount": {
+                  "fixed_cents": 2500000
+                }
+              }
+            ],
+            "5": [
+              {
+                "op": "event_payable",
+                "component": "settlement",
+                "due_own_turns": 1,
+                "amount": {
+                  "fixed_cents": 0
+                }
+              }
+            ],
+            "6": [
+              {
+                "op": "event_payable",
+                "component": "settlement",
+                "due_own_turns": 1,
+                "amount": {
+                  "fixed_cents": 0
+                }
+              }
+            ]
+          }
+        }
+      },
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "The familiar $50,000 branch is $25,000 fees plus $25,000 settlement. No REP loss just for being sued."
+    },
+    {
+      "id": "R14",
+      "color": "red",
+      "title": "Market / Industry Downturn",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "owns_qualifying_market_exposure"
+      ],
+      "target_scope": "player",
+      "scene": "A new market shock affects the investments you actually own.",
+      "immediate": [
+        {
+          "op": "asset_write_down_tagged",
+          "rates_basis_points": {
+            "tradable_equity": 1500,
+            "crypto": 2500
+          },
+          "precedence": [
+            "crypto",
+            "tradable_equity"
+          ],
+          "exclude": [
+            "cash",
+            "bond",
+            "policy",
+            "annuity",
+            "luxury",
+            "unrelated_private_business"
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "review",
+          "label": "Review affected holdings",
+          "requires": [],
+          "effects": [
+            {
+              "op": "navigate",
+              "target": "portfolio"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "continue",
+          "label": "Continue with the new values",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No second cash deduction. This is a new shock independent of the earlier investment die. A company-specific industry variant is disabled until its own precise exposure map exists."
+    },
+    {
+      "id": "R15",
+      "color": "red",
+      "title": "Credit-Line Review",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "unsecured_debt_positive",
+        "existing_credit_capacity_or_hold_changed"
+      ],
+      "target_scope": "player",
+      "scene": "Your current credit status changes new borrowing availability.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Review a debt payment",
+          "requires": [],
+          "effects": [
+            {
+              "op": "navigate",
+              "target": "finance_debt"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "sell",
+          "label": "Review eligible sales",
+          "requires": [],
+          "effects": [
+            {
+              "op": "navigate",
+              "target": "portfolio_sell"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "continue",
+          "label": "Continue within the current limit",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "source obligation/contract/period ID; no repeat for same state revision",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Read Central Finance; do not impose a second score loss or fabricated $10,000 debt. Existing spending can remain above a reduced limit; it is not forcibly liquidated."
+    },
+    {
+      "id": "R16",
+      "color": "red",
+      "title": "The “Free” Perk Has a Tax Cost",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "received_authored_taxable_perk",
+        "perk_not_yet_tax_recorded"
+      ],
+      "target_scope": "player",
+      "scene": "A noncash sponsor benefit carries a disclosed taxable game value.",
+      "immediate": [
+        {
+          "op": "recognize_noncash_income",
+          "source": "perk_id",
+          "amount": {
+            "field": "perk_disclosed_taxable_value",
+            "basis_points": 10000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "reserve",
+          "label": "Move the estimated tax into Tax Bucket",
+          "requires": [
+            "can_afford_perk_tax_estimate"
+          ],
+          "effects": [
+            {
+              "op": "tax_bucket_transfer",
+              "amount": {
+                "field": "perk_disclosed_taxable_value",
+                "basis_points": 2000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "later",
+          "label": "Keep cash available and pay by the normal deadline",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No cash income or instant tax payment is invented. Tax is assessed once under the annual 20% game rule; already-recorded perks are ineligible. A loaned item has no resale asset unless ownership was explicitly transferred."
+    },
+    {
+      "id": "R17",
+      "color": "red",
+      "title": "Your Representative Moved Money",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_recorded_representative_relationship",
+        "available_cash_at_least_5000"
+      ],
+      "target_scope": "player",
+      "scene": "An unauthorized movement of funds by a fictional representative is discovered.",
+      "immediate": [
+        {
+          "op": "expense",
+          "component": "unauthorized_transfer",
+          "save_as": "incident_loss",
+          "amount": {
+            "field": "available_cash_before_event",
+            "basis_points": 2500,
+            "cap_cents": 2500000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "restrict",
+          "label": "Remove access and file a complaint",
+          "requires": [],
+          "effects": [
+            {
+              "op": "terminate_representative_access"
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 2,
+              "effects": [
+                {
+                  "op": "refund_loss",
+                  "source": "incident_loss",
+                  "amount": {
+                    "field": "incident_loss",
+                    "basis_points": 5000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "recover",
+          "label": "Fund a recovery case",
+          "requires": [
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 500000
+              }
+            },
+            {
+              "op": "resolve_table",
+              "table": "R17_RECOVERY"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": {
+        "R17_RECOVERY": {
+          "die_faces": {
+            "1": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 2000
+                }
+              }
+            ],
+            "2": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 2000
+                }
+              }
+            ],
+            "3": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 8000
+                }
+              }
+            ],
+            "4": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 8000
+                }
+              }
+            ],
+            "5": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 8000
+                }
+              }
+            ],
+            "6": [
+              {
+                "op": "refund_loss",
+                "source": "incident_loss",
+                "amount": {
+                  "field": "incident_loss",
+                  "basis_points": 8000
+                }
+              }
+            ]
+          }
+        }
+      },
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No real advisor allegation. The case is chance-assigned; the response—not being victimized—contributes to playstyle evidence."
+    },
+    {
+      "id": "R18",
+      "color": "red",
+      "title": "The Deal Doesn’t Renew",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "recorded_nil_contract_expiring",
+        "renewal_not_guaranteed"
+      ],
+      "target_scope": "player",
+      "scene": "A sponsor chooses not to renew an expiring agreement.",
+      "immediate": [
+        {
+          "op": "close_contract_at_recorded_expiry"
+        },
+        {
+          "op": "remove_unearned_projection"
+        }
+      ],
+      "choices": [
+        {
+          "id": "network",
+          "label": "Work on a replacement introduction",
+          "requires": [],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "sponsor_outreach",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "career_delta",
+                  "points": 1,
+                  "requires": "task_completed",
+                  "reward_key": "R18_once_game"
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "adjust",
+          "label": "Adjust plans to current income",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "budget_adjustment"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "source obligation/contract/period ID; no repeat for same state revision",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Earned receivables remain due; projected future income is never subtracted from cash. Nonrenewal alone does not lower REP."
+    },
+    {
+      "id": "R19",
+      "color": "red",
+      "title": "Future Earnings Advance Trap",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_athlete_or_nil_creator",
+        "no_open_income_share_claim"
+      ],
+      "target_scope": "player",
+      "scene": "An unfavorable future-earnings advance is assigned and fully disclosed: $20,000 arrives, with a 25% claim on the next three qualifying NIL cash receipts, capped at $35,000. At closure at least the original $20,000 must have been returned.",
+      "immediate": [
+        {
+          "op": "cash_advance",
+          "taxable": false,
+          "amount": {
+            "fixed_cents": 2000000
+          }
+        },
+        {
+          "op": "income_share_contract",
+          "advance_cents": 2000000,
+          "share_basis_points": 2500,
+          "receipt_limit": 3,
+          "total_cap_cents": 3500000,
+          "final_minimum_total_cents": 2000000,
+          "save_as": "income_share_claim"
+        }
+      ],
+      "choices": [
+        {
+          "id": "keep",
+          "label": "Keep the capped income-share terms",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "buyout",
+          "label": "Use a fixed exit price",
+          "requires": [
+            "can_afford_25000"
+          ],
+          "effects": [
+            {
+              "op": "settle_income_share",
+              "target": "income_share_claim",
+              "amount": {
+                "fixed_cents": 2500000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "review",
+          "label": "Negotiate a narrower claim",
+          "requires": [
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 750000
+              }
+            },
+            {
+              "op": "amend_income_share",
+              "target": "income_share_claim",
+              "share_basis_points": 1000,
+              "receipt_limit": 3,
+              "total_cap_cents": 2500000,
+              "final_minimum_total_cents": 2000000
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 1,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Every future qualifying income receipt is recognized gross for tax, then its claim payment reduces spendable cash. No NFL contract is invented. Until settled, portfolio liability is the remaining minimum principal; show the remaining maximum contingent exposure separately, not as duplicate debt. No ordinary interest."
+    },
+    {
+      "id": "R20",
+      "color": "red",
+      "title": "Exclusive Agency Lock",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_nil_contract",
+        "no_open_agency_lock"
+      ],
+      "target_scope": "player",
+      "scene": "An assigned unfavorable agency clause blocks new overlapping sponsor agreements for two own turns.",
+      "immediate": [
+        {
+          "op": "restriction",
+          "kind": "new_overlapping_sponsor_contract",
+          "own_turns": 2
+        }
+      ],
+      "choices": [
+        {
+          "id": "wait",
+          "label": "Wait out the restriction",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "release",
+          "label": "Negotiate an immediate release",
+          "requires": [
+            "can_afford_net_quoted_total"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 500000
+              }
+            },
+            {
+              "op": "expense",
+              "component": "contract_exit",
+              "amount": {
+                "fixed_cents": 1000000
+              }
+            },
+            {
+              "op": "clear_event_restriction"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "challenge",
+          "label": "Challenge the scope",
+          "requires": [
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 750000
+              }
+            },
+            {
+              "op": "resolve_table",
+              "table": "R20_SCOPE"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": {
+        "R20_SCOPE": {
+          "die_faces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [
+              {
+                "op": "clear_event_restriction"
+              }
+            ],
+            "5": [
+              {
+                "op": "clear_event_restriction"
+              }
+            ],
+            "6": [
+              {
+                "op": "clear_event_restriction"
+              }
+            ]
+          }
+        }
+      },
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 1,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Only overlapping new offers are restricted; existing earned payments, study, investment and career remain available. If no future affected opportunity can occur, exclude from final-turn pool."
+    },
+    {
+      "id": "R21",
+      "color": "red",
+      "title": "Guaranteed Payment, Expensive Exit",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_nil_contract",
+        "no_open_same_contract_dispute"
+      ],
+      "target_scope": "player",
+      "scene": "A fictional signed contract contains an already-triggered $30,000 exit obligation. Each response retains a cost.",
+      "immediate": [
+        {
+          "op": "event_payable",
+          "component": "contract_exit",
+          "due_own_turns": 2,
+          "save_as": "exit_claim",
+          "amount": {
+            "fixed_cents": 3000000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Accept the existing obligation",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "mediate",
+          "label": "Use mediation",
+          "requires": [
+            "can_afford_net_quoted_service"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "eligible_legal_fee",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 500000
+              }
+            },
+            {
+              "op": "replace_existing_payable",
+              "target": "exit_claim",
+              "due_own_turns": 1,
+              "amount": {
+                "fixed_cents": 2000000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "perform",
+          "label": "Complete a defined substitute deliverable",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "contract_repair",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "reduce_existing_payable",
+                  "target": "exit_claim",
+                  "requires": "task_completed",
+                  "amount": {
+                    "fixed_cents": 1000000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 1,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "This is an assigned contract predicament, not a supposedly voluntary obvious scam. Failure leaves the same $30,000 obligation; it does not add another one."
+    },
+    {
+      "id": "B01",
+      "color": "blue",
+      "title": "You’re Benched This Week",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_athlete"
+      ],
+      "target_scope": "player",
+      "scene": "You are not selected for the next game.",
+      "immediate": [
+        {
+          "op": "restriction",
+          "kind": "sport_appearance",
+          "own_turns": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "feedback",
+          "label": "Ask for specific feedback",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "feedback_practice",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "rep_delta",
+                  "points": 1,
+                  "requires": "task_completed",
+                  "reward_key": "B01_once_game"
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "prepare",
+          "label": "Prepare quietly for the next chance",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "preparation_without_promise"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "post",
+          "label": "Post an insulting public response",
+          "requires": [],
+          "effects": [
+            {
+              "op": "rep_delta",
+              "points": -1
+            },
+            {
+              "op": "restriction",
+              "kind": "sport_appearance",
+              "own_turns": 2
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Benching itself does not lower REP or cancel existing sponsorship cash. Respectful feedback earns evidence of response, not guaranteed captaincy. The authored restriction clears at its checkpoint."
+    },
+    {
+      "id": "B02",
+      "color": "blue",
+      "title": "Something Doesn’t Feel Right",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_athlete",
+        "no_open_health_incident"
+      ],
+      "target_scope": "player",
+      "scene": "A physical concern needs qualified evaluation. Gameplay options model disclosure and scheduling, not diagnosis.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "report",
+          "label": "Report it and adjust commitments",
+          "requires": [],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "health_expense",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 500000
+              }
+            },
+            {
+              "op": "restriction",
+              "kind": "sport_appearance",
+              "own_turns": 1
+            },
+            {
+              "op": "record_behavior",
+              "tag": "support_use"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "support",
+          "label": "Ask support to help rearrange the week",
+          "requires": [],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "health_expense",
+              "matter": "this_event",
+              "amount": {
+                "fixed_cents": 500000
+              }
+            },
+            {
+              "op": "restriction",
+              "kind": "sport_appearance",
+              "own_turns": 1
+            },
+            {
+              "op": "delay_one_eligible_task",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "hide",
+          "label": "Conceal the concern and continue",
+          "requires": [],
+          "effects": [
+            {
+              "op": "resolve_table",
+              "table": "B02_IMPACT"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": {
+        "B02_IMPACT": {
+          "die_faces": {
+            "1": [
+              {
+                "op": "expense",
+                "component": "health_expense",
+                "matter": "this_event",
+                "amount": {
+                  "fixed_cents": 2000000
+                }
+              },
+              {
+                "op": "restriction",
+                "kind": "sport_appearance",
+                "own_turns": 3
+              }
+            ],
+            "2": [
+              {
+                "op": "expense",
+                "component": "health_expense",
+                "matter": "this_event",
+                "amount": {
+                  "fixed_cents": 2000000
+                }
+              },
+              {
+                "op": "restriction",
+                "kind": "sport_appearance",
+                "own_turns": 3
+              }
+            ],
+            "3": [
+              {
+                "op": "expense",
+                "component": "health_expense",
+                "matter": "this_event",
+                "amount": {
+                  "fixed_cents": 1000000
+                }
+              },
+              {
+                "op": "restriction",
+                "kind": "sport_appearance",
+                "own_turns": 2
+              }
+            ],
+            "4": [
+              {
+                "op": "expense",
+                "component": "health_expense",
+                "matter": "this_event",
+                "amount": {
+                  "fixed_cents": 1000000
+                }
+              },
+              {
+                "op": "restriction",
+                "kind": "sport_appearance",
+                "own_turns": 2
+              }
+            ],
+            "5": [
+              {
+                "op": "record_outcome",
+                "band": "no_immediate_complication"
+              },
+              {
+                "op": "schedule_care_checkpoint",
+                "own_turns": 1
+              }
+            ],
+            "6": [
+              {
+                "op": "record_outcome",
+                "band": "no_immediate_complication"
+              },
+              {
+                "op": "schedule_care_checkpoint",
+                "own_turns": 1
+              }
+            ]
+          }
+        }
+      },
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "The table is fictional scheduling severity, not real injury probability or medical clearance. No REP penalty for reporting symptoms. Return requires the authored qualified-care checkpoint, never a lucky die."
+    },
+    {
+      "id": "B03",
+      "color": "blue",
+      "title": "Everybody Knows Your Name Now",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_athlete",
+        "not_currently_restricted_sport_appearance"
+      ],
+      "target_scope": "player",
+      "scene": "A scene-established breakout brings several invitations.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "one",
+          "label": "Accept one focused campaign",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "breakout_campaign",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "cash_income",
+                  "tax_class": "nil",
+                  "requires": "task_completed",
+                  "amount": {
+                    "fixed_cents": 1000000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "bundle",
+          "label": "Accept the larger campaign bundle",
+          "requires": [
+            "capacity_for_two_tasks"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 2,
+              "kind": "breakout_bundle",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "cash_income",
+                  "tax_class": "nil",
+                  "requires": "task_completed",
+                  "amount": {
+                    "fixed_cents": 2500000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "decline",
+          "label": "Enjoy the moment and keep the current schedule",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "declined_optional_obligation"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Cash only after delivery; no prepayment, debt or fee for declining. Missing the new task loses unearned opportunity, not cash already owned."
+    },
+    {
+      "id": "B04",
+      "color": "blue",
+      "title": "The Comments Won’t Stop",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_public_athlete"
+      ],
+      "target_scope": "player",
+      "scene": "Online abuse follows a disappointing performance. Being targeted is not misconduct.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "report",
+          "label": "Document and report the abuse",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "support_use"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "pause",
+          "label": "Step away from posting",
+          "requires": [],
+          "effects": [
+            {
+              "op": "restriction",
+              "kind": "new_optional_social_campaign",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "retaliate",
+          "label": "Reply with a personal insult",
+          "requires": [],
+          "effects": [
+            {
+              "op": "rep_delta",
+              "points": -1
+            },
+            {
+              "op": "restriction",
+              "kind": "new_optional_social_campaign",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No REP loss for the abuse or a calm factual response. Prohibited threats are not rewarded. The response card specifically identifies the chosen insult; it never invents an earlier post."
+    },
+    {
+      "id": "B05",
+      "color": "blue",
+      "title": "Transfer Portal Chaos",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "phase_college_sim",
+        "active_athlete",
+        "remaining_athletic_laps_positive",
+        "no_open_transfer_process"
+      ],
+      "target_scope": "player",
+      "scene": "A recorded coaching or role change creates uncertainty. Compare the current situation, actual offers, funding, academics and remaining game eligibility.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "stay",
+          "label": "Stay and review the new role",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "informed_stay"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "gather",
+          "label": "Gather offer and academic information",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "transfer_information",
+              "due_own_turns": 1
+            },
+            {
+              "op": "start_transfer_process",
+              "mode": "information",
+              "table": "PORTAL_OFFERS"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "enter",
+          "label": "Begin the transfer process now",
+          "requires": [],
+          "effects": [
+            {
+              "op": "start_transfer_process",
+              "mode": "entered",
+              "table": "PORTAL_OFFERS"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 1,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "Execute the current documented offer/decision result; do not advance eligibility or invent future seasons at Finish. Worst case requires actual remaining-athletic-laps zero after prior failed-placement checkpoints.",
+      "notes": "Six approved bands are NOT equally likely die faces. A first random result cannot end a college career. Full specified state machine below; offers are simulated, not claims about NCAA rules."
+    },
+    {
+      "id": "B06",
+      "color": "blue",
+      "title": "The Schedule Just Changed",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_athlete",
+        "recorded_career_or_business_task_due_next_turn"
+      ],
+      "target_scope": "player",
+      "scene": "A rescheduled competition overlaps with a recorded opportunity.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "ask",
+          "label": "Ask to move the opportunity",
+          "requires": [],
+          "effects": [
+            {
+              "op": "delay_one_eligible_task",
+              "own_turns": 1
+            },
+            {
+              "op": "restriction",
+              "kind": "new_optional_task",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "delegate",
+          "label": "Use a qualified existing collaborator",
+          "requires": [
+            "recorded_qualified_collaborator",
+            "eligible_delegable_logistics_subtask",
+            "can_afford_2500"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "task_delegate",
+              "amount": {
+                "fixed_cents": 250000
+              }
+            },
+            {
+              "op": "complete_named_delegable_subtask"
+            },
+            {
+              "op": "recheck_parent_task_completion"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "release",
+          "label": "Release the optional commitment",
+          "requires": [],
+          "effects": [
+            {
+              "op": "cancel_task_without_reward"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Do not invent the interview or collaborator. The delegated reward follows the originating task rules; no extra B06 reward."
+    },
+    {
+      "id": "B07",
+      "color": "blue",
+      "title": "Grade Check Before the Big Week",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "phase_college_sim",
+        "recorded_academic_risk"
+      ],
+      "target_scope": "player",
+      "scene": "A recorded course checkpoint requires attention before the next athletic week.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "tutor",
+          "label": "Use tutoring and rebuild the plan",
+          "requires": [],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "academic_repair",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "clear_academic_risk",
+                  "requires": "task_completed"
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "restructure",
+          "label": "Release an optional task to study",
+          "requires": [
+            "has_optional_task"
+          ],
+          "effects": [
+            {
+              "op": "cancel_one_optional_task"
+            },
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "academic_repair",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "clear_academic_risk",
+                  "requires": "task_completed"
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Keep the same overloaded schedule",
+          "requires": [],
+          "effects": [
+            {
+              "op": "restriction",
+              "kind": "sport_appearance",
+              "own_turns": 2
+            },
+            {
+              "op": "schedule_academic_repair",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "An unavoidable initial problem is separate from response. Academic repair remains selectable even at capacity by replacing an optional task; no actual GPA or universal NCAA eligibility rule is asserted."
+    },
+    {
+      "id": "B08",
+      "color": "blue",
+      "title": "Your Family Needs You",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "fictional_family_context"
+      ],
+      "target_scope": "player",
+      "scene": "A family emergency creates an uncovered practical support expense.",
+      "immediate": [
+        {
+          "op": "expense",
+          "component": "family_support_expense",
+          "matter": "this_event",
+          "amount": {
+            "fixed_cents": 1000000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "coordinate",
+          "label": "Coordinate help from campus",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "support_coordination"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "travel",
+          "label": "Travel and rearrange responsibilities",
+          "requires": [
+            "can_afford_2500"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "family_travel",
+              "amount": {
+                "fixed_cents": 250000
+              }
+            },
+            {
+              "op": "delay_one_eligible_task",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "limit",
+          "label": "Set a clear limit and help remotely",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "bounded_support"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No REP penalty for the emergency or for choosing a caring affordable response. Health support applies only if this incident is explicitly health-tagged; yellow emergency relief may cover its mandatory expense."
+    },
+    {
+      "id": "B09",
+      "color": "blue",
+      "title": "The Group Chat Goes Public",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "public_social_context"
+      ],
+      "target_scope": "player",
+      "scene": "A screenshot includes your name. Your actual recorded involvement, if any, is displayed.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "clarify",
+          "label": "Check context and address your own actions",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "fact_check_and_accountability"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "support",
+          "label": "Support the targeted person",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "peer_support",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "rep_delta",
+                  "points": 1,
+                  "requires": "task_completed",
+                  "reward_key": "B09_once_game"
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "pileon",
+          "label": "Join the public pile-on",
+          "requires": [],
+          "effects": [
+            {
+              "op": "rep_delta",
+              "points": -2
+            },
+            {
+              "op": "restriction",
+              "kind": "new_brand_collaboration",
+              "own_turns": 2
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Being in the chat is not endorsement. Negative REP attaches only to the current explicit harmful action or an actual recorded action; no invented prior like."
+    },
+    {
+      "id": "B10",
+      "color": "blue",
+      "title": "An Unexpected Pregnancy",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "adult_fictional_profile",
+        "appropriate_family_context",
+        "family_expansion_content_enabled"
+      ],
+      "target_scope": "player",
+      "scene": "An authored adult character or partner faces new planning and support needs.",
+      "immediate": [
+        {
+          "op": "expense",
+          "component": "health_expense",
+          "matter": "this_event",
+          "amount": {
+            "fixed_cents": 1000000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "plan",
+          "label": "Seek confidential support and make a plan",
+          "requires": [],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "family_planning",
+              "due_own_turns": 1
+            },
+            {
+              "op": "delay_one_eligible_task",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "share",
+          "label": "Discuss and share practical responsibilities",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "shared_responsibility"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "postpone",
+          "label": "Postpone the planning conversation",
+          "requires": [],
+          "effects": [
+            {
+              "op": "mandatory_commitment",
+              "slots": 1,
+              "own_turns": 2
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 1,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No moral judgment, REP penalty, forced medical choice, or inference about the real player. Replaces legacy automatic $25,000 loss in new mode only. Host content setting is selected before the match; disabled content uses another eligible blue, not a penalty."
+    },
+    {
+      "id": "B11",
+      "color": "blue",
+      "title": "Your Home Isn’t a Place to Rest",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "recorded_shared_housing"
+      ],
+      "target_scope": "player",
+      "scene": "Late-night guests disrupt rest before existing commitments.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "boundaries",
+          "label": "Agree on household boundaries",
+          "requires": [],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "housing_plan",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "temporary",
+          "label": "Pay for a temporary room",
+          "requires": [
+            "can_afford_2500"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "personal_housing",
+              "amount": {
+                "fixed_cents": 250000
+              }
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "support",
+          "label": "Use available housing support",
+          "requires": [],
+          "effects": [
+            {
+              "op": "restriction",
+              "kind": "new_optional_task",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No random medical effect or status judgment about affordable housing. Housing support is free and finishes the decision without cash."
+    },
+    {
+      "id": "B12",
+      "color": "blue",
+      "title": "Too Much on Your Plate",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "commitment_slots_above_capacity"
+      ],
+      "target_scope": "player",
+      "scene": "Actual commitments exceed the three-slot optional capacity.",
+      "immediate": [],
+      "choices": [
+        {
+          "id": "reduce",
+          "label": "Release an optional commitment",
+          "requires": [
+            "has_optional_task"
+          ],
+          "effects": [
+            {
+              "op": "cancel_one_optional_task"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "delegate",
+          "label": "Delegate an eligible task",
+          "requires": [
+            "recorded_qualified_collaborator",
+            "eligible_delegable_logistics_subtask",
+            "can_afford_2500"
+          ],
+          "effects": [
+            {
+              "op": "expense",
+              "component": "task_delegate",
+              "amount": {
+                "fixed_cents": 250000
+              }
+            },
+            {
+              "op": "complete_named_delegable_subtask"
+            },
+            {
+              "op": "recheck_parent_task_completion"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "keep",
+          "label": "Keep the schedule and face its deadlines",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "maintain_overload"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 2,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No automatic cash fine or diagnosis from a meter. The originating task’s disclosed missed-deadline rule controls any later consequence. Mandatory care/academic recovery stays available."
+    },
+    {
+      "id": "B13",
+      "color": "blue",
+      "title": "Season-Ending Injury",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "active_athlete",
+        "no_open_health_incident"
+      ],
+      "target_scope": "player",
+      "scene": "A scene-established injury ends the current competition segment; other parts of life and the game continue.",
+      "immediate": [
+        {
+          "op": "expense",
+          "component": "health_expense",
+          "matter": "this_event",
+          "amount": {
+            "fixed_cents": 2000000
+          }
+        },
+        {
+          "op": "restriction",
+          "kind": "sport_appearance",
+          "own_turns": 3
+        }
+      ],
+      "choices": [
+        {
+          "id": "recover",
+          "label": "Organize care and a revised schedule",
+          "requires": [],
+          "effects": [
+            {
+              "op": "record_behavior",
+              "tag": "recovery_plan"
+            },
+            {
+              "op": "delay_one_eligible_task",
+              "own_turns": 1
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "career",
+          "label": "Use the period for an accessible career task",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "accessible_career_exploration",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "career_delta",
+                  "points": 1,
+                  "requires": "task_completed",
+                  "reward_key": "B13_once_game"
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        },
+        {
+          "id": "pause",
+          "label": "Reduce optional obligations",
+          "requires": [],
+          "effects": [
+            {
+              "op": "cancel_one_optional_task",
+              "allow_noop": true
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 1,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Replaces old automatic $40,000 new-mode loss with scoped authored cost. No lucky-roll cure; no all-turn skip. Existing earned sponsorship receivables remain governed by contract."
+    },
+    {
+      "id": "Y01",
+      "color": "yellow",
+      "title": "Brand Collab Bonus",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "brand_collaboration_eligible"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "cash_income",
+          "tax_class": "nil",
+          "amount": {
+            "fixed_cents": 7500000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "bank",
+          "label": "Keep the base and continue",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "expand",
+          "label": "Accept a follow-up content delivery",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "collaboration_extension",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "cash_income",
+                  "tax_class": "nil",
+                  "requires": "task_completed",
+                  "amount": {
+                    "fixed_cents": 1000000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "$75,000 base preserved from founder-reported yellow. No paid entry or gamble of the base. New $10,000 follow-up recommended."
+    },
+    {
+      "id": "Y02",
+      "color": "yellow",
+      "title": "NIL Back Pay Received",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "earned_nil_receivable_at_least_15000"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "collect_existing_receivable",
+          "amount": {
+            "fixed_cents": 1500000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "collect",
+          "label": "Collect and continue",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "source obligation/contract/period ID; no repeat for same state revision",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Collect $15,000 against existing earned unpaid NIL receivable; cannot invent back pay or pay twice. Remaining receivable stays. Existing larger payment schedule must deduct this collected part."
+    },
+    {
+      "id": "Y03",
+      "color": "yellow",
+      "title": "Emergency Fund Activated",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "unused_emergency_tokens_below_one"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "protection_token",
+          "limit_cents": 2500000,
+          "uses": 1,
+          "expires": "player_finish"
+        }
+      ],
+      "choices": [
+        {
+          "id": "hold",
+          "label": "Keep it for a covered curveball",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "No cash added or asset value. Apply after other valid coverage to one future mandatory eligible curveball expense; excludes taxes, debt, value losses and chosen risky extra spend. Exact recommended scope replaces old block-any-curveball wording."
+    },
+    {
+      "id": "Y04",
+      "color": "yellow",
+      "title": "NIL Sponsorship Received",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "new_sponsorship_eligible"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "cash_income",
+          "tax_class": "nil",
+          "amount": {
+            "fixed_cents": 5000000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "base",
+          "label": "Accept the completed sponsorship payment",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "deliver",
+          "label": "Take a new appearance assignment",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "sponsor_appearance",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "cash_income",
+                  "tax_class": "nil",
+                  "requires": "task_completed",
+                  "amount": {
+                    "fixed_cents": 750000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Scene establishes the base has been earned; new unsigned future services do not masquerade as unconditional cash. Follow-up $7,500 recommended."
+    },
+    {
+      "id": "Y05",
+      "color": "yellow",
+      "title": "NIL Collective Increase",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "phase_college_sim",
+        "collective_campaign_eligible"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "cash_income",
+          "tax_class": "nil",
+          "amount": {
+            "fixed_cents": 5000000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "base",
+          "label": "Keep the base payment",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "expand",
+          "label": "Deliver another campaign segment",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "collective_segment",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "cash_income",
+                  "tax_class": "nil",
+                  "requires": "task_completed",
+                  "amount": {
+                    "fixed_cents": 1000000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Founder-reported $50,000 increase retained as one paid campaign award, not automatic every-lap increase. No real institution compliance claim."
+    },
+    {
+      "id": "Y06",
+      "color": "yellow",
+      "title": "Local Business Campaign",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "local_campaign_eligible"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "cash_income",
+          "tax_class": "nil",
+          "amount": {
+            "fixed_cents": 1500000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "base",
+          "label": "Receive the completed campaign payment",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "add",
+          "label": "Add one small content piece",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "local_campaign_extra",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "cash_income",
+                  "tax_class": "nil",
+                  "requires": "task_completed",
+                  "amount": {
+                    "fixed_cents": 250000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": ""
+    },
+    {
+      "id": "Y07",
+      "color": "yellow",
+      "title": "Paid Appearance",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "appearance_eligible"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "cash_income",
+          "tax_class": "nil",
+          "amount": {
+            "fixed_cents": 1000000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "base",
+          "label": "Receive the appearance payment",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "follow",
+          "label": "Accept a later appearance",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "second_appearance",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "cash_income",
+                  "tax_class": "nil",
+                  "requires": "task_completed",
+                  "amount": {
+                    "fixed_cents": 250000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": ""
+    },
+    {
+      "id": "Y08",
+      "color": "yellow",
+      "title": "Content Licensed",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "owned_licensable_content"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "cash_income",
+          "tax_class": "business",
+          "amount": {
+            "fixed_cents": 2500000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "license",
+          "label": "Take the defined nonexclusive license payment",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Requires actual player-owned content; license does not transfer underlying business ownership or book a second asset. Recommended final numerical registry."
+    },
+    {
+      "id": "Y09",
+      "color": "yellow",
+      "title": "Merchandise Royalties",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "owned_merchandise_royalty_rights"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "cash_income",
+          "tax_class": "business",
+          "amount": {
+            "fixed_cents": 2000000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "collect",
+          "label": "Collect the royalty payment",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "The $20,000 example was recovered from the approved expansion direction. Requires a rights record and unique accounting period."
+    },
+    {
+      "id": "Y10",
+      "color": "yellow",
+      "title": "Brand Wants You Back",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "recorded_completed_sponsor_contract",
+        "no_unresolved_same_sponsor_breach"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "cash_income",
+          "tax_class": "nil",
+          "amount": {
+            "fixed_cents": 2500000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "base",
+          "label": "Accept the completed renewal payment",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        },
+        {
+          "id": "extra",
+          "label": "Deliver one additional story segment",
+          "requires": [
+            "capacity_for_one_task"
+          ],
+          "effects": [
+            {
+              "op": "task",
+              "slots": 1,
+              "kind": "returning_brand_extra",
+              "due_own_turns": 1
+            }
+          ],
+          "scheduled": [
+            {
+              "after_own_turns": 1,
+              "effects": [
+                {
+                  "op": "cash_income",
+                  "tax_class": "nil",
+                  "requires": "task_completed",
+                  "amount": {
+                    "fixed_cents": 500000
+                  }
+                }
+              ],
+              "finish_rule": "resolve_same_committed_effect_at_finish; no_new_offer"
+            }
+          ]
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Base25k recovered; optional5k delivery new recommendation. This is distinct from R18 nonrenewal and requires an actual fulfilled prior agreement."
+    },
+    {
+      "id": "Y11",
+      "color": "yellow",
+      "title": "Lost Funds Recovered",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "unrecovered_recorded_cash_loss_positive"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "refund_loss",
+          "source": "original_loss_id",
+          "amount": {
+            "field": "unrecovered_recorded_cash_loss",
+            "basis_points": 10000,
+            "cap_cents": 2500000
+          }
+        }
+      ],
+      "choices": [
+        {
+          "id": "recover",
+          "label": "Receive the recovered funds",
+          "requires": [],
+          "effects": [],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Up to25k of an actual previously recorded loss; never more than the outstanding loss and no new taxable bonus. Recovery reverses original allocations and tax treatment. Cannot recover the same loss through another claim."
+    },
+    {
+      "id": "Y12",
+      "color": "yellow",
+      "title": "Sponsor-Funded Media Photo Shoot",
+      "status": "RECOMMENDED_NUMERICAL_IMPLEMENTATION",
+      "authority": "Approved category/direction; recovered title where source_map says so; numerical branch values and schedules newly recommended",
+      "enabled_in_recommended_preview": true,
+      "eligible_all": [
+        "media_service_not_already_delivered_same_period"
+      ],
+      "target_scope": "player",
+      "scene": "Receive the valid base benefit first. Optional expansion never takes that base away.",
+      "immediate": [
+        {
+          "op": "sponsored_service_offer",
+          "service_id": "nil_media_photo_shoot",
+          "face_value_cents": 3000000,
+          "resale_cents": 0,
+          "tax_on_delivery_cents": 3000000,
+          "rep_on_delivery": 0
+        }
+      ],
+      "choices": [
+        {
+          "id": "use",
+          "label": "Complete the sponsored photo shoot",
+          "requires": [],
+          "effects": [
+            {
+              "op": "complete_sponsored_service_once"
+            }
+          ],
+          "scheduled": []
+        },
+        {
+          "id": "decline",
+          "label": "Decline the service and its tax obligation",
+          "requires": [],
+          "effects": [
+            {
+              "op": "expire_unused_service_offer"
+            }
+          ],
+          "scheduled": []
+        }
+      ],
+      "chance": null,
+      "cooldown_own_turns": 4,
+      "repeat_limit_per_game": 3,
+      "repeat_key": "scenario_id + target_id; never duplicate same obligation or matter",
+      "timing": "Own-turn checkpoint, not wall time. Due follow-up resolves automatically without another color landing.",
+      "final_settlement": "All committed scheduled financial effects use same locked outcome at Finish; payable remains a liability. Restrictions expire without fictional compensation; new optional offers are not opened at Finish.",
+      "notes": "Recovered30k service rather than cash. Benefit is one service, not a new30k asset. Photography alone awards0REP under the later approved luxury delivery rules; this explicitly reconciles the older1REP example. A separate completed identity-kit task may use the existing identity family cap, never both. Sponsor ownership/licensing terms are shown. Same delivery cannot also award the paid luxury reward. Recommended tax treatment: disclose the6k estimatedtax before accepting; noncash NIL income30k recognized only at actualdelivery. Declining costs0anddoesnotreduceREP. R16 cannot add the sameincomeagain."
+    }
+  ],
+  "producer_contract": {
+    "status": "NEW_EXPLICIT_INTEGRATION_RULES",
+    "initial_profile": "At start author a simulated adult college athlete, public NIL profile, shared student housing, and fictional family context. Do not infer real age, family, medical or educational records. Set phase and remaining_athletic_laps from the pinned profile. Academic risk and misconduct start false.",
+    "yellow_contracts": "Y01/Y04/Y05/Y06/Y07/Y10 base delivery creates a completed paid invoice plus a sponsor relationship record lasting 3 own turns. Active_signed_nil_contract means a real ongoing agreement or selected follow-up, not the opening die valuation. Each optional follow-up creates signed terms, task, known due date and one obligation ID.",
+    "receivables": "For scenario-producer testing, permit authored completed-delivery invoices with disbursement_due=current_own_turn+2. At delivery create receivable and do not also add cash. Its scheduled collection pays once. R02 sets revised_due=max(original_due,current_own_turn)+2; waiting collects at that exact source due date. Expediting replaces it with current_own_turn+1. Retarget the existing collector atomically; do not retain its old scheduled payout. Y02 collects up to15k early and reduces the same receivable. Existing yellow guaranteed base remains immediate cash and never uses this deferred mode. Add deferred invoicing only to an explicit green business/customer job or separately labeled future-payment NIL option; do not silently defer existing promised cash rewards.",
+    "operating_ventures": "Green operating business purchase stores equipment and platform/inventory exposure tags only when its authored card supplies them. A promotion linked to that business creates the actual campaign record. Only inventory-bearing merchandising activations create inventory/order records, with inventory_unsold_value bounded by company value.",
+    "bookings_and_orders": "An accepted event activation creates booking_id, original_payment_id, refundable_deposit and customer prepayment amounts from its actual budget and sales. Defaults are0; do not invent paid bookings or customer cash. Prepayments remain liabilities until delivery. Enable R09/R12 only after this producer is integrated.",
+    "partnerships": "The shared venture registry stores actual contribution promises and due dates. Default none. R05 is unavailable until an actual human nonpayment or explicitly authored external NPC contribution exists. No peer misconduct is inferred from low cash.",
+    "representatives": "Only selecting an explicitly authored representative-management contract creates representative_relationship and access scope. Business coach, career mentor and lawyer do not automatically have access. R17 is unavailable until that contract producer exists.",
+    "licensing": "A completed content/merchandising activity can create licensable content or royalty rights only when its approved deliverable names those rights. No generic business purchase invents intellectual property. Y08/Y09 unavailable without rights.",
+    "perk": "Y12 stores perk_id and tax_recorded=false, then actual delivery sets tax_recorded=true and recognizes30k noncash NIL income. R16 applies only to another explicitly authored perk producer that has deferred tax recognition; never repeat theY12 tax.",
+    "academic": "A simulated academic review task can set academic_risk when its disclosed deadline is missed. Until that task exists B07 is ineligible; never randomize a bad grade because another blue card is unavailable.",
+    "release_gate": "Every scenario must have a supported producer and ledger handler before a production manifest enables it. Recommended-preview availability does not assert deployed reachability. Missing predicates fail closed and may yield All clear. Unsupported fields must not be guessed by AI."
+  },
+  "component_mappings": {
+    "sports_equipment_repair": {
+      "source_component": "equipment_repair",
+      "required_target_industry": "sports_business_management",
+      "accepted_youth_house_ids": [
+        "YSH_TEAM",
+        "YSH_CENTER",
+        "YSH_COMPLEX"
+      ]
+    },
+    "delegation": "only named logistics subtask; cannot substitute athlete attendance, study, required participation or professional credentials",
+    "sponsored_photo_rep": "Y12 photography0REP; later approved luxury completion rules supersede historical1REP example"
+  }
+}

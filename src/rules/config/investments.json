@@ -1,0 +1,5142 @@
+{
+  "ruleset_id": "BOB-DIGITAL-ASSEMBLY-20261013-v1",
+  "status": "Preserved source records plus explicitly recommended digital reconciliation; not deployed",
+  "source_count": 76,
+  "legacy_source_records": [
+    {
+      "id": "I1",
+      "title": "Buy Vacant Property",
+      "cost": 30000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          15,
+          20,
+          25
+        ]
+      },
+      "category": "Real Estate"
+    },
+    {
+      "id": "I2",
+      "title": "Renovate the Property",
+      "cost": 40000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -15,
+          -5,
+          10,
+          20,
+          25,
+          30
+        ]
+      },
+      "category": "Real Estate"
+    },
+    {
+      "id": "I3",
+      "title": "Rent It Out Long-Term",
+      "cost": 60000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          10,
+          15,
+          20,
+          25,
+          30
+        ]
+      },
+      "category": "Real Estate"
+    },
+    {
+      "id": "I4",
+      "title": "Start a Video Creator Channel",
+      "cost": 10000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          15,
+          25,
+          40
+        ]
+      },
+      "category": "Content/Media"
+    },
+    {
+      "id": "I5",
+      "title": "Secure Sponsorship Deals",
+      "cost": 25000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          20,
+          25,
+          35
+        ]
+      },
+      "category": "Content/Media"
+    },
+    {
+      "id": "I6",
+      "title": "Become a Brand Influencer",
+      "cost": 50000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          0,
+          10,
+          20,
+          30,
+          40,
+          60
+        ]
+      },
+      "category": "Content/Media"
+    },
+    {
+      "id": "I7",
+      "title": "Launch Online Store",
+      "cost": 15000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          5,
+          10,
+          15,
+          20
+        ]
+      },
+      "category": "E-Commerce"
+    },
+    {
+      "id": "I8",
+      "title": "Scale with Paid Ads",
+      "cost": 25000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -25,
+          -10,
+          0,
+          15,
+          30,
+          50
+        ]
+      },
+      "category": "E-Commerce"
+    },
+    {
+      "id": "I9",
+      "title": "License a Private Label Brand",
+      "cost": 50000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          0,
+          10,
+          20,
+          30,
+          40,
+          60
+        ]
+      },
+      "category": "E-Commerce"
+    },
+    {
+      "id": "I10",
+      "title": "Write a NIL Playbook eBook",
+      "cost": 12000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          5,
+          10,
+          15,
+          20,
+          25
+        ]
+      },
+      "category": "NIL Education"
+    },
+    {
+      "id": "I11",
+      "title": "Launch Masterclass Series",
+      "cost": 25000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          15,
+          25,
+          35
+        ]
+      },
+      "category": "NIL Education"
+    },
+    {
+      "id": "I12",
+      "title": "National Speaking Tour",
+      "cost": 45000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          0,
+          10,
+          15,
+          20,
+          30,
+          50
+        ]
+      },
+      "category": "NIL Education"
+    },
+    {
+      "id": "I13",
+      "title": "Buy a Small Coin",
+      "cost": 5000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -50,
+          -25,
+          0,
+          25,
+          50,
+          100
+        ]
+      },
+      "category": "Crypto/Web3"
+    },
+    {
+      "id": "I14",
+      "title": "Stake NFT Assets",
+      "cost": 15000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -70,
+          -30,
+          0,
+          40,
+          60,
+          100
+        ]
+      },
+      "category": "Crypto/Web3"
+    },
+    {
+      "id": "I15",
+      "title": "Launch Token Collab",
+      "cost": 35000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -100,
+          -50,
+          0,
+          50,
+          100,
+          150
+        ]
+      },
+      "category": "Crypto/Web3"
+    },
+    {
+      "id": "I16",
+      "title": "Buy a Food Truck",
+      "cost": 25000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          15,
+          25,
+          35
+        ]
+      },
+      "category": "Food & Hospitality"
+    },
+    {
+      "id": "I17",
+      "title": "Add a Second Truck",
+      "cost": 35000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -15,
+          0,
+          15,
+          25,
+          30,
+          45
+        ]
+      },
+      "category": "Food & Hospitality"
+    },
+    {
+      "id": "I18",
+      "title": "Open Brick-and-Mortar Restaurant",
+      "cost": 60000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -25,
+          -10,
+          20,
+          30,
+          40,
+          60
+        ]
+      },
+      "category": "Food & Hospitality"
+    },
+    {
+      "id": "I19",
+      "title": "Launch Supplement Line",
+      "cost": 20000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          15,
+          25,
+          40
+        ]
+      },
+      "category": "Fitness/Health"
+    },
+    {
+      "id": "I20",
+      "title": "Sign Athlete Influencers",
+      "cost": 30000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -15,
+          0,
+          15,
+          25,
+          30,
+          50
+        ]
+      },
+      "category": "Fitness/Health"
+    },
+    {
+      "id": "I21",
+      "title": "Expand to Global Brand",
+      "cost": 65000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -30,
+          0,
+          25,
+          40,
+          50,
+          75
+        ]
+      },
+      "category": "Fitness/Health"
+    },
+    {
+      "id": "I22",
+      "title": "Build a Backyard Gym",
+      "cost": 15000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          5,
+          10,
+          15,
+          20,
+          25
+        ]
+      },
+      "category": "Fitness/Health"
+    },
+    {
+      "id": "I23",
+      "title": "Launch Training App",
+      "cost": 35000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          15,
+          25,
+          35,
+          50
+        ]
+      },
+      "category": "Fitness/Health"
+    },
+    {
+      "id": "I24",
+      "title": "License Curriculum to Schools",
+      "cost": 70000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -20,
+          0,
+          30,
+          40,
+          60,
+          100
+        ]
+      },
+      "category": "Fitness/Health"
+    },
+    {
+      "id": "I25",
+      "title": "Launch T-Shirt Brand",
+      "cost": 10000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          5,
+          10,
+          15,
+          20,
+          30
+        ]
+      },
+      "category": "Fashion"
+    },
+    {
+      "id": "I26",
+      "title": "Drop Signature Collection",
+      "cost": 30000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          15,
+          25,
+          30,
+          45
+        ]
+      },
+      "category": "Fashion"
+    },
+    {
+      "id": "I27",
+      "title": "Fashion Week Feature",
+      "cost": 60000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -15,
+          0,
+          25,
+          35,
+          50,
+          75
+        ]
+      },
+      "category": "Fashion"
+    },
+    {
+      "id": "I28",
+      "title": "Record First Podcast Episode",
+      "cost": 10000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          5,
+          10,
+          15,
+          20,
+          30
+        ]
+      },
+      "category": "Content/Media"
+    },
+    {
+      "id": "I29",
+      "title": "Build Podcast Network",
+      "cost": 30000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          15,
+          25,
+          35,
+          50
+        ]
+      },
+      "category": "Content/Media"
+    },
+    {
+      "id": "I30",
+      "title": "Sign a Distribution Deal",
+      "cost": 50000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          0,
+          20,
+          30,
+          40,
+          50,
+          75
+        ]
+      },
+      "category": "Content/Media"
+    },
+    {
+      "id": "I31",
+      "title": "Buy an E-Commerce Store",
+      "cost": 25000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          15,
+          25,
+          30,
+          45
+        ]
+      },
+      "category": "E-Commerce"
+    },
+    {
+      "id": "I32",
+      "title": "Sponsor an AAU Team",
+      "cost": 20000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -5,
+          0,
+          10,
+          20,
+          25,
+          35
+        ]
+      },
+      "category": "NIL Community"
+    },
+    {
+      "id": "I33",
+      "title": "Acquire Sneaker Resale Inventory",
+      "cost": 15000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -25,
+          -10,
+          0,
+          20,
+          40,
+          60
+        ]
+      },
+      "category": "Support Services"
+    },
+    {
+      "id": "I34",
+      "title": "Write NIL Booklet",
+      "cost": 10000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          5,
+          10,
+          15,
+          20,
+          25
+        ]
+      },
+      "category": "NIL Education"
+    },
+    {
+      "id": "I35",
+      "title": "Start a Social Media Ad Campaign",
+      "cost": 10000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          20,
+          30,
+          50
+        ]
+      },
+      "category": "Marketing/Ads"
+    },
+    {
+      "id": "I36",
+      "title": "Pay for a Business Coach",
+      "cost": 30000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -15,
+          0,
+          10,
+          20,
+          25,
+          40
+        ]
+      },
+      "category": "Branding/Growth"
+    },
+    {
+      "id": "I37",
+      "title": "Hire a Web Developer",
+      "cost": 15000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          5,
+          10,
+          15,
+          20,
+          30
+        ]
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "id": "I38",
+      "title": "Start a Music Collab Studio",
+      "cost": 40000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -20,
+          -10,
+          10,
+          25,
+          35,
+          50
+        ]
+      },
+      "category": "Music/Creative"
+    },
+    {
+      "id": "I39",
+      "title": "Buy Billboard Ad",
+      "cost": 20000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          0,
+          5,
+          15,
+          20,
+          30,
+          45
+        ]
+      },
+      "category": "Marketing/Ads"
+    },
+    {
+      "id": "I40",
+      "title": "Invest in NIL Fund",
+      "cost": 50000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          10,
+          20,
+          25,
+          30,
+          40
+        ]
+      },
+      "category": "Branding/Growth"
+    },
+    {
+      "id": "I41",
+      "title": "Buy an E-Commerce Store (Repeat)",
+      "cost": 25000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          15,
+          25,
+          30,
+          45
+        ]
+      },
+      "category": "E-Commerce"
+    },
+    {
+      "id": "I42",
+      "title": "Sponsor an AAU Team (Repeat)",
+      "cost": 20000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -5,
+          0,
+          10,
+          20,
+          25,
+          35
+        ]
+      },
+      "category": "NIL Community"
+    },
+    {
+      "id": "I43",
+      "title": "Acquire Sneaker Resale Inventory (Repeat)",
+      "cost": 15000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -25,
+          -10,
+          0,
+          20,
+          40,
+          60
+        ]
+      },
+      "category": "Support Services"
+    },
+    {
+      "id": "I44",
+      "title": "Write NIL Booklet (Repeat)",
+      "cost": 10000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          5,
+          10,
+          15,
+          20,
+          25
+        ]
+      },
+      "category": "NIL Education"
+    },
+    {
+      "id": "I45",
+      "title": "Start a Social Media Ad Campaign (Repeat)",
+      "cost": 10000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          20,
+          30,
+          50
+        ]
+      },
+      "category": "Marketing/Ads"
+    },
+    {
+      "id": "I46",
+      "title": "Pay for a Business Coach (Repeat)",
+      "cost": 30000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -15,
+          0,
+          10,
+          20,
+          25,
+          40
+        ]
+      },
+      "category": "Branding/Growth"
+    },
+    {
+      "id": "I47",
+      "title": "Hire a Web Developer (Repeat)",
+      "cost": 15000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          5,
+          10,
+          15,
+          20,
+          30
+        ]
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "id": "I48",
+      "title": "Start a Music Collab Studio (Repeat)",
+      "cost": 40000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -20,
+          -10,
+          10,
+          25,
+          35,
+          50
+        ]
+      },
+      "category": "Music/Creative"
+    },
+    {
+      "id": "I49",
+      "title": "Buy Billboard Ad (Repeat)",
+      "cost": 20000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          0,
+          5,
+          15,
+          20,
+          30,
+          45
+        ]
+      },
+      "category": "Marketing/Ads"
+    },
+    {
+      "id": "I50",
+      "title": "Invest in NIL Fund (Repeat)",
+      "cost": 50000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          10,
+          20,
+          25,
+          30,
+          40
+        ]
+      },
+      "category": "Branding/Growth"
+    },
+    {
+      "id": "RE_SHORT_TERM_RENTAL",
+      "title": "Convert to Short-Term Rental",
+      "cost": 50000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -30,
+          -15,
+          0,
+          25,
+          40,
+          60
+        ]
+      },
+      "category": "Real Estate",
+      "type": "Upgrade",
+      "requirements": {
+        "hasRentalProperty": true
+      },
+      "portfolioEffects": {
+        "real_estate_active": true,
+        "high_volatility": true,
+        "hospitality_exposure": true
+      },
+      "protectionInteraction": {
+        "blocks": [
+          "Unexpected Lawsuit",
+          "Federal Tax Audit"
+        ]
+      }
+    },
+    {
+      "id": "RE_DUPLEX",
+      "title": "Acquire Duplex",
+      "cost": 300000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          20,
+          30,
+          40
+        ]
+      },
+      "category": "Real Estate",
+      "type": "Multi-Unit",
+      "portfolioEffects": {
+        "rental_units": 2,
+        "qualifies_multi_unit": true
+      }
+    },
+    {
+      "id": "RE_TRIPLEX",
+      "title": "Acquire Triplex",
+      "cost": 500000,
+      "availableRisks": [
+        "Moderate-High"
+      ],
+      "roiTables": {
+        "Moderate-High": [
+          -15,
+          0,
+          15,
+          25,
+          35,
+          50
+        ]
+      },
+      "category": "Real Estate",
+      "type": "Multi-Unit",
+      "requirements": {
+        "hasRentalProperty": true
+      },
+      "portfolioEffects": {
+        "rental_units": 3,
+        "debt_sensitive": true
+      }
+    },
+    {
+      "id": "RE_FOURPLEX",
+      "title": "Acquire Fourplex",
+      "cost": 1000000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -20,
+          -5,
+          15,
+          30,
+          45,
+          65
+        ]
+      },
+      "category": "Real Estate",
+      "type": "Institutional Residential",
+      "portfolioEffects": {
+        "rental_units": 4,
+        "institutional_asset": true,
+        "unlocks_commercial": true,
+        "qualifies_empire": true
+      }
+    },
+    {
+      "id": "RE_COMMERCIAL",
+      "title": "Acquire Commercial Real Estate",
+      "cost": 2000000,
+      "availableRisks": [
+        "Moderate-High"
+      ],
+      "roiTables": {
+        "Moderate-High": [
+          -25,
+          -10,
+          20,
+          35,
+          50,
+          75
+        ]
+      },
+      "category": "Real Estate",
+      "type": "Commercial Asset",
+      "requirements": {
+        "hasMultiUnit": true
+      },
+      "portfolioEffects": {
+        "commercial_asset": true,
+        "tenant_dependency": true,
+        "qualifies_empire": true
+      }
+    },
+    {
+      "id": "RE_REIT",
+      "title": "Invest in REITs",
+      "cost": 50000,
+      "availableRisks": [
+        "Low-Moderate"
+      ],
+      "roiTables": {
+        "Low-Moderate": [
+          -5,
+          0,
+          8,
+          12,
+          18,
+          25
+        ]
+      },
+      "category": "Financial Instruments",
+      "type": "Passive Real Estate",
+      "repeatable": true,
+      "portfolioEffects": {
+        "passive_real_estate": true,
+        "high_liquidity": true,
+        "lower_exit_tax": true
+      }
+    },
+    {
+      "id": "RE_HOLDCO",
+      "title": "Form a Holding Company",
+      "cost": 25000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          2,
+          5,
+          7,
+          10,
+          12
+        ]
+      },
+      "category": "Legal / Structure",
+      "type": "Portfolio Infrastructure",
+      "protectionFlags": {
+        "blocks_unexpected_lawsuit": true,
+        "blocks_federal_tax_audit": true
+      },
+      "portfolioEffects": {
+        "entity_owned_assets": true,
+        "improves_exit_tax": true,
+        "empire_bonus_eligible": true
+      }
+    },
+    {
+      "id": "RE_INSURANCE",
+      "title": "Insurance & Capital Reserves",
+      "cost": 20000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          0,
+          3,
+          5,
+          7,
+          10,
+          15
+        ]
+      },
+      "category": "Risk Management",
+      "type": "Defensive Infrastructure",
+      "protectionFlags": {
+        "blocks_unexpected_lawsuit": true,
+        "blocks_federal_tax_audit": true
+      },
+      "portfolioEffects": {
+        "loss_mitigation": true,
+        "empire_bonus_eligible": true
+      }
+    },
+    {
+      "id": "INV_LIFE_INSURANCE_TIER_A",
+      "title": "Cash-Value Life Insurance — Tier A",
+      "cost": 25000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Life Insurance",
+      "type": "Life Insurance",
+      "cashOnly": true,
+      "noDice": true,
+      "startingFaceAmount": 100000,
+      "startingCashValue": 25000,
+      "portfolioEffects": {
+        "guaranteed_asset": true,
+        "borrowable_liquidity": true,
+        "defensive_core": true,
+        "impenetrable_wealth_component": true
+      }
+    },
+    {
+      "id": "INV_LIFE_INSURANCE_TIER_B",
+      "title": "Cash-Value Life Insurance — Tier B",
+      "cost": 75000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Life Insurance",
+      "type": "Life Insurance",
+      "cashOnly": true,
+      "noDice": true,
+      "startingFaceAmount": 250000,
+      "startingCashValue": 75000,
+      "portfolioEffects": {
+        "guaranteed_asset": true,
+        "borrowable_liquidity": true,
+        "defensive_core": true,
+        "impenetrable_wealth_component": true
+      }
+    },
+    {
+      "id": "INV_LIFE_INSURANCE_TIER_C",
+      "title": "Cash-Value Life Insurance — Tier C",
+      "cost": 100000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Life Insurance",
+      "type": "Life Insurance",
+      "cashOnly": true,
+      "noDice": true,
+      "startingFaceAmount": 500000,
+      "startingCashValue": 100000,
+      "portfolioEffects": {
+        "guaranteed_asset": true,
+        "borrowable_liquidity": true,
+        "defensive_core": true,
+        "impenetrable_wealth_component": true
+      }
+    },
+    {
+      "id": "INV_LIFE_INSURANCE_TIER_D",
+      "title": "Cash-Value Life Insurance — Tier D",
+      "cost": 250000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Life Insurance",
+      "type": "Life Insurance",
+      "cashOnly": true,
+      "noDice": true,
+      "startingFaceAmount": 1000000,
+      "startingCashValue": 250000,
+      "portfolioEffects": {
+        "guaranteed_asset": true,
+        "borrowable_liquidity": true,
+        "defensive_core": true,
+        "impenetrable_wealth_component": true
+      }
+    },
+    {
+      "id": "INV_ANNUITY_TIER_5Y",
+      "title": "Deferred Income Annuity — 5 Year",
+      "cost": 50000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Annuities",
+      "type": "Annuity",
+      "cashOnly": true,
+      "noDice": true,
+      "maturityLaps": 1,
+      "perLapPayout": 25000,
+      "portfolioEffects": {
+        "guaranteed_income": true,
+        "patience_tier_1": true,
+        "impenetrable_wealth_component": true
+      }
+    },
+    {
+      "id": "INV_ANNUITY_TIER_10Y",
+      "title": "Deferred Income Annuity — 10 Year",
+      "cost": 100000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Annuities",
+      "type": "Annuity",
+      "cashOnly": true,
+      "noDice": true,
+      "maturityLaps": 2,
+      "perLapPayout": 50000,
+      "portfolioEffects": {
+        "guaranteed_income": true,
+        "patience_tier_2": true,
+        "impenetrable_wealth_component": true
+      }
+    },
+    {
+      "id": "INV_ANNUITY_TIER_15Y",
+      "title": "Deferred Income Annuity — 15 Year",
+      "cost": 150000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Annuities",
+      "type": "Annuity",
+      "cashOnly": true,
+      "noDice": true,
+      "maturityLaps": 3,
+      "perLapPayout": 75000,
+      "portfolioEffects": {
+        "guaranteed_income": true,
+        "patience_tier_3": true,
+        "impenetrable_wealth_component": true
+      }
+    },
+    {
+      "id": "INV_ANNUITY_TIER_20Y",
+      "title": "Deferred Income Annuity — 20 Year",
+      "cost": 200000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Annuities",
+      "type": "Annuity",
+      "cashOnly": true,
+      "noDice": true,
+      "maturityLaps": 4,
+      "perLapPayout": 100000,
+      "portfolioEffects": {
+        "guaranteed_income": true,
+        "patience_tier_4": true,
+        "elite_income_engine": true,
+        "impenetrable_wealth_component": true
+      }
+    },
+    {
+      "id": "OFF_STOCKS",
+      "title": "Invest in Stocks",
+      "cost": 20000,
+      "availableRisks": [
+        "High"
+      ],
+      "roiTables": {
+        "High": [
+          -25,
+          -10,
+          0,
+          20,
+          35,
+          50
+        ]
+      },
+      "category": "Offensive Planning",
+      "type": "Offensive Planning",
+      "investmentType": "offensivePlanning",
+      "portfolioEffects": {
+        "high_volatility": true,
+        "growth_chaser": true,
+        "offensive_asset": true
+      }
+    },
+    {
+      "id": "OFF_ETFS",
+      "title": "Invest in ETFs",
+      "cost": 20000,
+      "availableRisks": [
+        "Moderate"
+      ],
+      "roiTables": {
+        "Moderate": [
+          -10,
+          0,
+          10,
+          18,
+          25,
+          35
+        ]
+      },
+      "category": "Offensive Planning",
+      "type": "Offensive Planning",
+      "investmentType": "offensivePlanning",
+      "portfolioEffects": {
+        "diversified_growth": true,
+        "modern_allocator": true,
+        "offensive_asset": true
+      }
+    },
+    {
+      "id": "OFF_BONDS",
+      "title": "Invest in Bonds",
+      "cost": 15000,
+      "availableRisks": [
+        "Low"
+      ],
+      "roiTables": {
+        "Low": [
+          -5,
+          0,
+          5,
+          8,
+          10,
+          12
+        ]
+      },
+      "category": "Offensive Planning",
+      "type": "Offensive Planning",
+      "investmentType": "offensivePlanning",
+      "portfolioEffects": {
+        "capital_preservation": true,
+        "volatility_buffer": true,
+        "offensive_asset": true
+      }
+    },
+    {
+      "id": "DEF_HEALTH_BASIC",
+      "title": "Health & Disability Protection — Basic",
+      "cost": 5000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Defensive Planning",
+      "type": "Defensive Protection",
+      "investmentType": "healthDisabilityProtection",
+      "protectionType": "health",
+      "usesRemaining": 1,
+      "cashOnly": true,
+      "noDice": true,
+      "protectsAgainst": [
+        "Season-Ending Injury",
+        "Family Emergency",
+        "Unexpected Pregnancy"
+      ]
+    },
+    {
+      "id": "DEF_HEALTH_STANDARD",
+      "title": "Health & Disability Protection — Standard",
+      "cost": 10000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Defensive Planning",
+      "type": "Defensive Protection",
+      "investmentType": "healthDisabilityProtection",
+      "protectionType": "health",
+      "usesRemaining": 2,
+      "cashOnly": true,
+      "noDice": true,
+      "protectsAgainst": [
+        "Season-Ending Injury",
+        "Family Emergency",
+        "Unexpected Pregnancy"
+      ]
+    },
+    {
+      "id": "DEF_HEALTH_PREMIUM",
+      "title": "Health & Disability Protection — Premium",
+      "cost": 15000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Defensive Planning",
+      "type": "Defensive Protection",
+      "investmentType": "healthDisabilityProtection",
+      "protectionType": "health",
+      "usesRemaining": 3,
+      "cashOnly": true,
+      "noDice": true,
+      "protectsAgainst": [
+        "Season-Ending Injury",
+        "Family Emergency",
+        "Unexpected Pregnancy"
+      ]
+    },
+    {
+      "id": "DEF_LEGAL_BASIC",
+      "title": "Legal Protection — Basic",
+      "cost": 5000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Defensive Planning",
+      "type": "Defensive Protection",
+      "investmentType": "legalProtection",
+      "protectionType": "legal",
+      "usesRemaining": 1,
+      "cashOnly": true,
+      "noDice": true,
+      "protectsAgainst": [
+        "Unexpected Lawsuit",
+        "IRS Audit",
+        "Federal Tax Audit",
+        "Last-Minute NIL Lawsuit"
+      ]
+    },
+    {
+      "id": "DEF_LEGAL_STANDARD",
+      "title": "Legal Protection — Standard",
+      "cost": 10000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Defensive Planning",
+      "type": "Defensive Protection",
+      "investmentType": "legalProtection",
+      "protectionType": "legal",
+      "usesRemaining": 2,
+      "cashOnly": true,
+      "noDice": true,
+      "protectsAgainst": [
+        "Unexpected Lawsuit",
+        "IRS Audit",
+        "Federal Tax Audit",
+        "Last-Minute NIL Lawsuit"
+      ]
+    },
+    {
+      "id": "DEF_LEGAL_PREMIUM",
+      "title": "Legal Protection — Premium",
+      "cost": 15000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Defensive Planning",
+      "type": "Defensive Protection",
+      "investmentType": "legalProtection",
+      "protectionType": "legal",
+      "usesRemaining": 3,
+      "cashOnly": true,
+      "noDice": true,
+      "protectsAgainst": [
+        "Unexpected Lawsuit",
+        "IRS Audit",
+        "Federal Tax Audit",
+        "Last-Minute NIL Lawsuit"
+      ]
+    },
+    {
+      "id": "DEF_UMBRELLA",
+      "title": "Umbrella Liability Coverage",
+      "cost": 100000,
+      "availableRisks": [],
+      "roiTables": {},
+      "category": "Defensive Planning",
+      "type": "Defensive Protection",
+      "investmentType": "umbrellaLiability",
+      "protectionType": "umbrella",
+      "usesRemaining": -1,
+      "cashOnly": true,
+      "noDice": true,
+      "repeatable": false,
+      "protectsAgainst": [
+        "ALL"
+      ]
+    }
+  ],
+  "aliases": {
+    "I41": "I31",
+    "I42": "YSH_SPONSOR",
+    "I43": "I33",
+    "I44": "I34",
+    "I45": "I35",
+    "I46": "I36",
+    "I47": "I37",
+    "I48": "I38",
+    "I49": "I39",
+    "I50": "I40",
+    "I32": "YSH_SPONSOR"
+  },
+  "cards": [
+    {
+      "id": "I1",
+      "canonical_id": "I1",
+      "source_title": "Buy Vacant Property",
+      "title": "Buy Vacant Property",
+      "category": "Real Estate",
+      "price_cents": 3000000,
+      "source_price_cents": 3000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "property",
+      "profile": "property_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1000,
+        1500,
+        2000,
+        2500
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        15,
+        20,
+        25
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "property"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I1"
+    },
+    {
+      "id": "I2",
+      "canonical_id": "I2",
+      "source_title": "Renovate the Property",
+      "title": "Renovate the Property",
+      "category": "Real Estate",
+      "price_cents": 4000000,
+      "source_price_cents": 4000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "property_bounded",
+      "launch_table_bps": [
+        -1500,
+        -500,
+        1000,
+        2000,
+        2500,
+        3000
+      ],
+      "source_launch_table_percent": [
+        -15,
+        -5,
+        10,
+        20,
+        25,
+        30
+      ],
+      "parent_any_of": [
+        "I1"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "property"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I2"
+    },
+    {
+      "id": "I3",
+      "canonical_id": "I3",
+      "source_title": "Rent It Out Long-Term",
+      "title": "Rent It Out Long-Term",
+      "category": "Real Estate",
+      "price_cents": 6000000,
+      "source_price_cents": 6000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "property_bounded",
+      "launch_table_bps": [
+        0,
+        1000,
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "source_launch_table_percent": [
+        0,
+        10,
+        15,
+        20,
+        25,
+        30
+      ],
+      "parent_any_of": [
+        "I1"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "property",
+        "rental_property"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I3"
+    },
+    {
+      "id": "I4",
+      "canonical_id": "I4",
+      "source_title": "Start a Video Creator Channel",
+      "title": "Start a Video Creator Channel",
+      "category": "Content/Media",
+      "price_cents": 1000000,
+      "source_price_cents": 1000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1000,
+        1500,
+        2500,
+        4000
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        15,
+        25,
+        40
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business",
+        "platform_dependency"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I4"
+    },
+    {
+      "id": "I5",
+      "canonical_id": "I5",
+      "source_title": "Secure Sponsorship Deals",
+      "title": "Secure Sponsorship Deals",
+      "category": "Content/Media",
+      "price_cents": 2500000,
+      "source_price_cents": 2500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "event",
+      "profile": "none",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1000,
+        2000,
+        2500,
+        3500
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        20,
+        25,
+        35
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "event"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_per_game",
+      "rules": [
+        "Pay event cost then receive cost*(1+source launch percent) once; net profit or loss enters business tax bucket.",
+        "No enduring asset, resale, lap growth, or duplicate reward.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I5"
+    },
+    {
+      "id": "I6",
+      "canonical_id": "I6",
+      "source_title": "Become a Brand Influencer",
+      "title": "Become a Brand Influencer",
+      "category": "Content/Media",
+      "price_cents": 5000000,
+      "source_price_cents": 5000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        0,
+        1000,
+        2000,
+        3000,
+        4000,
+        6000
+      ],
+      "source_launch_table_percent": [
+        0,
+        10,
+        20,
+        30,
+        40,
+        60
+      ],
+      "parent_any_of": [
+        "I4"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business",
+        "platform_dependency"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I6"
+    },
+    {
+      "id": "I7",
+      "canonical_id": "I7",
+      "source_title": "Launch Online Store",
+      "title": "Launch Online Store",
+      "category": "E-Commerce",
+      "price_cents": 1500000,
+      "source_price_cents": 1500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        500,
+        1000,
+        1500,
+        2000
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        5,
+        10,
+        15,
+        20
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "inventory",
+        "operating_business",
+        "platform_dependency"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I7"
+    },
+    {
+      "id": "I8",
+      "canonical_id": "I8",
+      "source_title": "Scale with Paid Ads",
+      "title": "Scale with Paid Ads",
+      "category": "E-Commerce",
+      "price_cents": 2500000,
+      "source_price_cents": 2500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "activation",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        -25,
+        -10,
+        0,
+        15,
+        30,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "event"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 0,
+      "funding_route": "central_unsecured_credit_or_cash_or_split",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_per_lap_global_activation",
+      "rules": [
+        "Use luxury approved six-face activation table rather than old ROI; 100%-owned operating venture required.",
+        "Shared one activation per player per lap across green and luxury aliases; family REP cap2/game.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I8"
+    },
+    {
+      "id": "I9",
+      "canonical_id": "I9",
+      "source_title": "License a Private Label Brand",
+      "title": "License a Private Label Brand",
+      "category": "E-Commerce",
+      "price_cents": 5000000,
+      "source_price_cents": 5000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        0,
+        1000,
+        2000,
+        3000,
+        4000,
+        6000
+      ],
+      "source_launch_table_percent": [
+        0,
+        10,
+        20,
+        30,
+        40,
+        60
+      ],
+      "parent_any_of": [
+        "I7",
+        "I31"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "inventory",
+        "operating_business",
+        "platform_dependency"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I9"
+    },
+    {
+      "id": "I10",
+      "canonical_id": "I10",
+      "source_title": "Write a NIL Playbook eBook",
+      "title": "Write a NIL Playbook eBook",
+      "category": "NIL Education",
+      "price_cents": 1200000,
+      "source_price_cents": 1200000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        0,
+        500,
+        1000,
+        1500,
+        2000,
+        2500
+      ],
+      "source_launch_table_percent": [
+        0,
+        5,
+        10,
+        15,
+        20,
+        25
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business",
+        "owned_ip"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I10"
+    },
+    {
+      "id": "I11",
+      "canonical_id": "I11",
+      "source_title": "Launch Masterclass Series",
+      "title": "Launch Masterclass Series",
+      "category": "NIL Education",
+      "price_cents": 2500000,
+      "source_price_cents": 2500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1000,
+        1500,
+        2500,
+        3500
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        15,
+        25,
+        35
+      ],
+      "parent_any_of": [
+        "I10",
+        "I34"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business",
+        "owned_ip"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I11"
+    },
+    {
+      "id": "I12",
+      "canonical_id": "I12",
+      "source_title": "National Speaking Tour",
+      "title": "National Speaking Tour",
+      "category": "NIL Education",
+      "price_cents": 4500000,
+      "source_price_cents": 4500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "event",
+      "profile": "none",
+      "launch_table_bps": [
+        0,
+        1000,
+        1500,
+        2000,
+        3000,
+        5000
+      ],
+      "source_launch_table_percent": [
+        0,
+        10,
+        15,
+        20,
+        30,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "event"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_per_game",
+      "rules": [
+        "Pay event cost then receive cost*(1+source launch percent) once; net profit or loss enters business tax bucket.",
+        "No enduring asset, resale, lap growth, or duplicate reward.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I12"
+    },
+    {
+      "id": "I13",
+      "canonical_id": "I13",
+      "source_title": "Buy a Small Coin",
+      "title": "Buy a Small Coin",
+      "category": "Crypto/Web3",
+      "price_cents": 500000,
+      "source_price_cents": 500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "market_position",
+      "profile": "crypto",
+      "launch_table_bps": [
+        -5000,
+        -2500,
+        0,
+        2500,
+        5000,
+        10000
+      ],
+      "source_launch_table_percent": [
+        -50,
+        -25,
+        0,
+        25,
+        50,
+        100
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "crypto"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I13"
+    },
+    {
+      "id": "I14",
+      "canonical_id": "I14",
+      "source_title": "Stake NFT Assets",
+      "title": "Stake NFT Assets",
+      "category": "Crypto/Web3",
+      "price_cents": 1500000,
+      "source_price_cents": 1500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "market_position",
+      "profile": "crypto",
+      "launch_table_bps": [
+        -7000,
+        -3000,
+        0,
+        4000,
+        6000,
+        10000
+      ],
+      "source_launch_table_percent": [
+        -70,
+        -30,
+        0,
+        40,
+        60,
+        100
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "crypto"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I14"
+    },
+    {
+      "id": "I15",
+      "canonical_id": "I15",
+      "source_title": "Launch Token Collab",
+      "title": "Launch Token Collab",
+      "category": "Crypto/Web3",
+      "price_cents": 3500000,
+      "source_price_cents": 3500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "market_position",
+      "profile": "crypto",
+      "launch_table_bps": [
+        -10000,
+        -5000,
+        0,
+        5000,
+        10000,
+        15000
+      ],
+      "source_launch_table_percent": [
+        -100,
+        -50,
+        0,
+        50,
+        100,
+        150
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "crypto"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I15"
+    },
+    {
+      "id": "I16",
+      "canonical_id": "I16",
+      "source_title": "Buy a Food Truck",
+      "title": "Buy a Food Truck",
+      "category": "Food & Hospitality",
+      "price_cents": 2500000,
+      "source_price_cents": 2500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1000,
+        1500,
+        2500,
+        3500
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        15,
+        25,
+        35
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I16"
+    },
+    {
+      "id": "I17",
+      "canonical_id": "I17",
+      "source_title": "Add a Second Truck",
+      "title": "Add a Second Truck",
+      "category": "Food & Hospitality",
+      "price_cents": 3500000,
+      "source_price_cents": 3500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1500,
+        0,
+        1500,
+        2500,
+        3000,
+        4500
+      ],
+      "source_launch_table_percent": [
+        -15,
+        0,
+        15,
+        25,
+        30,
+        45
+      ],
+      "parent_any_of": [
+        "I16"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I17"
+    },
+    {
+      "id": "I18",
+      "canonical_id": "I18",
+      "source_title": "Open Brick-and-Mortar Restaurant",
+      "title": "Open Brick-and-Mortar Restaurant",
+      "category": "Food & Hospitality",
+      "price_cents": 6000000,
+      "source_price_cents": 6000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -2500,
+        -1000,
+        2000,
+        3000,
+        4000,
+        6000
+      ],
+      "source_launch_table_percent": [
+        -25,
+        -10,
+        20,
+        30,
+        40,
+        60
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I18"
+    },
+    {
+      "id": "I19",
+      "canonical_id": "I19",
+      "source_title": "Launch Supplement Line",
+      "title": "Launch Supplement Line",
+      "category": "Fitness/Health",
+      "price_cents": 2000000,
+      "source_price_cents": 2000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1000,
+        1500,
+        2500,
+        4000
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        15,
+        25,
+        40
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "inventory",
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I19"
+    },
+    {
+      "id": "I20",
+      "canonical_id": "I20",
+      "source_title": "Sign Athlete Influencers",
+      "title": "Sign Athlete Influencers",
+      "category": "Fitness/Health",
+      "price_cents": 3000000,
+      "source_price_cents": 3000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "activation",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        -15,
+        0,
+        15,
+        25,
+        30,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "event"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 0,
+      "funding_route": "central_unsecured_credit_or_cash_or_split",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_per_lap_global_activation",
+      "rules": [
+        "Use luxury approved six-face activation table rather than old ROI; 100%-owned operating venture required.",
+        "Shared one activation per player per lap across green and luxury aliases; family REP cap2/game.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I20"
+    },
+    {
+      "id": "I21",
+      "canonical_id": "I21",
+      "source_title": "Expand to Global Brand",
+      "title": "Expand to Global Brand",
+      "category": "Fitness/Health",
+      "price_cents": 6500000,
+      "source_price_cents": 6500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -3000,
+        0,
+        2500,
+        4000,
+        5000,
+        7500
+      ],
+      "source_launch_table_percent": [
+        -30,
+        0,
+        25,
+        40,
+        50,
+        75
+      ],
+      "parent_any_of": [
+        "I19"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "inventory",
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I21"
+    },
+    {
+      "id": "I22",
+      "canonical_id": "I22",
+      "source_title": "Build a Backyard Gym",
+      "title": "Build a Backyard Gym",
+      "category": "Fitness/Health",
+      "price_cents": 1500000,
+      "source_price_cents": 1500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        0,
+        500,
+        1000,
+        1500,
+        2000,
+        2500
+      ],
+      "source_launch_table_percent": [
+        0,
+        5,
+        10,
+        15,
+        20,
+        25
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "Commercial training setup in player-controlled space; distinct from personal luxury home gym; no building ownership.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I22"
+    },
+    {
+      "id": "I23",
+      "canonical_id": "I23",
+      "source_title": "Launch Training App",
+      "title": "Launch Training App",
+      "category": "Fitness/Health",
+      "price_cents": 3500000,
+      "source_price_cents": 3500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1500,
+        2500,
+        3500,
+        5000
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        15,
+        25,
+        35,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I23"
+    },
+    {
+      "id": "I24",
+      "canonical_id": "I24",
+      "source_title": "License Curriculum to Schools",
+      "title": "License Curriculum to Schools",
+      "category": "Fitness/Health",
+      "price_cents": 7000000,
+      "source_price_cents": 7000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -2000,
+        0,
+        3000,
+        4000,
+        6000,
+        10000
+      ],
+      "source_launch_table_percent": [
+        -20,
+        0,
+        30,
+        40,
+        60,
+        100
+      ],
+      "parent_any_of": [
+        "I10",
+        "I11",
+        "I23",
+        "I34"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business",
+        "owned_ip"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "Select owned education/training IP as deliverable; no clinical or teaching credential granted.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I24"
+    },
+    {
+      "id": "I25",
+      "canonical_id": "I25",
+      "source_title": "Launch T-Shirt Brand",
+      "title": "Launch T-Shirt Brand",
+      "category": "Fashion",
+      "price_cents": 1000000,
+      "source_price_cents": 1000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        0,
+        500,
+        1000,
+        1500,
+        2000,
+        3000
+      ],
+      "source_launch_table_percent": [
+        0,
+        5,
+        10,
+        15,
+        20,
+        30
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "inventory",
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I25"
+    },
+    {
+      "id": "I26",
+      "canonical_id": "I26",
+      "source_title": "Drop Signature Collection",
+      "title": "Drop Signature Collection",
+      "category": "Fashion",
+      "price_cents": 3000000,
+      "source_price_cents": 3000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1500,
+        2500,
+        3000,
+        4500
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        15,
+        25,
+        30,
+        45
+      ],
+      "parent_any_of": [
+        "I25"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "inventory",
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I26"
+    },
+    {
+      "id": "I27",
+      "canonical_id": "I27",
+      "source_title": "Fashion Week Feature",
+      "title": "Fashion Week Feature",
+      "category": "Fashion",
+      "price_cents": 6000000,
+      "source_price_cents": 6000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "activation",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        -15,
+        0,
+        25,
+        35,
+        50,
+        75
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "event"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 0,
+      "funding_route": "central_unsecured_credit_or_cash_or_split",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_per_lap_global_activation",
+      "rules": [
+        "Use luxury approved six-face activation table rather than old ROI; 100%-owned operating venture required.",
+        "Shared one activation per player per lap across green and luxury aliases; family REP cap2/game.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I27"
+    },
+    {
+      "id": "I28",
+      "canonical_id": "I28",
+      "source_title": "Record First Podcast Episode",
+      "title": "Record First Podcast Episode",
+      "category": "Content/Media",
+      "price_cents": 1000000,
+      "source_price_cents": 1000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        0,
+        500,
+        1000,
+        1500,
+        2000,
+        3000
+      ],
+      "source_launch_table_percent": [
+        0,
+        5,
+        10,
+        15,
+        20,
+        30
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business",
+        "owned_ip",
+        "platform_dependency"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I28"
+    },
+    {
+      "id": "I29",
+      "canonical_id": "I29",
+      "source_title": "Build Podcast Network",
+      "title": "Build Podcast Network",
+      "category": "Content/Media",
+      "price_cents": 3000000,
+      "source_price_cents": 3000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1500,
+        2500,
+        3500,
+        5000
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        15,
+        25,
+        35,
+        50
+      ],
+      "parent_any_of": [
+        "I28"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business",
+        "owned_ip",
+        "platform_dependency"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I29"
+    },
+    {
+      "id": "I30",
+      "canonical_id": "I30",
+      "source_title": "Sign a Distribution Deal",
+      "title": "Sign a Distribution Deal",
+      "category": "Content/Media",
+      "price_cents": 5000000,
+      "source_price_cents": 5000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "event",
+      "profile": "none",
+      "launch_table_bps": [
+        0,
+        2000,
+        3000,
+        4000,
+        5000,
+        7500
+      ],
+      "source_launch_table_percent": [
+        0,
+        20,
+        30,
+        40,
+        50,
+        75
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "event"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_per_game",
+      "rules": [
+        "Pay event cost then receive cost*(1+source launch percent) once; net profit or loss enters business tax bucket.",
+        "No enduring asset, resale, lap growth, or duplicate reward.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I30"
+    },
+    {
+      "id": "I31",
+      "canonical_id": "I31",
+      "source_title": "Buy an E-Commerce Store",
+      "title": "Buy an E-Commerce Store",
+      "category": "E-Commerce",
+      "price_cents": 2500000,
+      "source_price_cents": 2500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1500,
+        2500,
+        3000,
+        4500
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        15,
+        25,
+        30,
+        45
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "inventory",
+        "operating_business",
+        "platform_dependency"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I31"
+    },
+    {
+      "id": "I32",
+      "canonical_id": "YSH_SPONSOR",
+      "source_title": "Sponsor an AAU Team",
+      "title": "Sponsor an AAU Team",
+      "category": "NIL Community",
+      "price_cents": 2000000,
+      "source_price_cents": 2000000,
+      "status": "superseded_by_approved_house",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        -5,
+        0,
+        10,
+        20,
+        25,
+        35
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "community_support"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I32"
+    },
+    {
+      "id": "I33",
+      "canonical_id": "I33",
+      "source_title": "Acquire Sneaker Resale Inventory",
+      "title": "Acquire Sneaker Resale Inventory",
+      "category": "Support Services",
+      "price_cents": 1500000,
+      "source_price_cents": 1500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -2500,
+        -1000,
+        0,
+        2000,
+        4000,
+        6000
+      ],
+      "source_launch_table_percent": [
+        -25,
+        -10,
+        0,
+        20,
+        40,
+        60
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "inventory",
+        "operating_business"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I33"
+    },
+    {
+      "id": "I34",
+      "canonical_id": "I34",
+      "source_title": "Write NIL Booklet",
+      "title": "Write NIL Booklet",
+      "category": "NIL Education",
+      "price_cents": 1000000,
+      "source_price_cents": 1000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        0,
+        500,
+        1000,
+        1500,
+        2000,
+        2500
+      ],
+      "source_launch_table_percent": [
+        0,
+        5,
+        10,
+        15,
+        20,
+        25
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business",
+        "owned_ip"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I34"
+    },
+    {
+      "id": "I35",
+      "canonical_id": "I35",
+      "source_title": "Start a Social Media Ad Campaign",
+      "title": "Start a Social Media Ad Campaign",
+      "category": "Marketing/Ads",
+      "price_cents": 1000000,
+      "source_price_cents": 1000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "activation",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        20,
+        30,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "event"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 0,
+      "funding_route": "central_unsecured_credit_or_cash_or_split",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_per_lap_global_activation",
+      "rules": [
+        "Use luxury approved six-face activation table rather than old ROI; 100%-owned operating venture required.",
+        "Shared one activation per player per lap across green and luxury aliases; family REP cap2/game.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I35"
+    },
+    {
+      "id": "I36",
+      "canonical_id": "I36",
+      "source_title": "Pay for a Business Coach",
+      "title": "Pay for a Business Coach",
+      "category": "Branding/Growth",
+      "price_cents": 3000000,
+      "source_price_cents": 3000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "service",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        -15,
+        0,
+        10,
+        20,
+        25,
+        40
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "business_support"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_unused_per_target",
+      "rules": [
+        "Paid service; zero resale and generic growth.",
+        "Must select owned operating venture; one unused benefit per service and target.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I36"
+    },
+    {
+      "id": "I37",
+      "canonical_id": "I37",
+      "source_title": "Hire a Web Developer",
+      "title": "Hire a Web Developer",
+      "category": "Developer Tools",
+      "price_cents": 1500000,
+      "source_price_cents": 1500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "service",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        0,
+        5,
+        10,
+        15,
+        20,
+        30
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "business_support"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_unused_per_target",
+      "rules": [
+        "Paid service; zero resale and generic growth.",
+        "Must select owned operating venture; one unused benefit per service and target.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I37"
+    },
+    {
+      "id": "I38",
+      "canonical_id": "I38",
+      "source_title": "Start a Music Collab Studio",
+      "title": "Start a Music Collab Studio",
+      "category": "Music/Creative",
+      "price_cents": 4000000,
+      "source_price_cents": 4000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "business",
+      "profile": "business_bounded",
+      "launch_table_bps": [
+        -2000,
+        -1000,
+        1000,
+        2500,
+        3500,
+        5000
+      ],
+      "source_launch_table_percent": [
+        -20,
+        -10,
+        10,
+        25,
+        35,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "operating_business",
+        "platform_dependency"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I38"
+    },
+    {
+      "id": "I39",
+      "canonical_id": "I39",
+      "source_title": "Buy Billboard Ad",
+      "title": "Buy Billboard Ad",
+      "category": "Marketing/Ads",
+      "price_cents": 2000000,
+      "source_price_cents": 2000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "activation",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        0,
+        5,
+        15,
+        20,
+        30,
+        45
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "event"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 0,
+      "funding_route": "central_unsecured_credit_or_cash_or_split",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "one_per_lap_global_activation",
+      "rules": [
+        "Use luxury approved six-face activation table rather than old ROI; 100%-owned operating venture required.",
+        "Shared one activation per player per lap across green and luxury aliases; family REP cap2/game.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I39"
+    },
+    {
+      "id": "I40",
+      "canonical_id": "I40",
+      "source_title": "Invest in NIL Fund",
+      "title": "Invest in NIL Fund",
+      "category": "Branding/Growth",
+      "price_cents": 5000000,
+      "source_price_cents": 5000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "market_position",
+      "profile": "fund",
+      "launch_table_bps": [
+        0,
+        1000,
+        2000,
+        2500,
+        3000,
+        4000
+      ],
+      "source_launch_table_percent": [
+        0,
+        10,
+        20,
+        25,
+        30,
+        40
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "tradable_equity"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "NIL Fund is explicitly a diversified sports-business equity fund in this proposed version; source had unspecified holdings.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I40"
+    },
+    {
+      "id": "I41",
+      "canonical_id": "I31",
+      "source_title": "Buy an E-Commerce Store (Repeat)",
+      "title": "Buy an E-Commerce Store",
+      "category": "E-Commerce",
+      "price_cents": 2500000,
+      "source_price_cents": 2500000,
+      "status": "alias_no_duplicate_menu_entry",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1500,
+        2500,
+        3000,
+        4500
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        15,
+        25,
+        30,
+        45
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I41"
+    },
+    {
+      "id": "I42",
+      "canonical_id": "YSH_SPONSOR",
+      "source_title": "Sponsor an AAU Team (Repeat)",
+      "title": "Sponsor an AAU Team",
+      "category": "NIL Community",
+      "price_cents": 2000000,
+      "source_price_cents": 2000000,
+      "status": "superseded_by_approved_house",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        -5,
+        0,
+        10,
+        20,
+        25,
+        35
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "community_support"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I42"
+    },
+    {
+      "id": "I43",
+      "canonical_id": "I33",
+      "source_title": "Acquire Sneaker Resale Inventory (Repeat)",
+      "title": "Acquire Sneaker Resale Inventory",
+      "category": "Support Services",
+      "price_cents": 1500000,
+      "source_price_cents": 1500000,
+      "status": "alias_no_duplicate_menu_entry",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": [
+        -2500,
+        -1000,
+        0,
+        2000,
+        4000,
+        6000
+      ],
+      "source_launch_table_percent": [
+        -25,
+        -10,
+        0,
+        20,
+        40,
+        60
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I43"
+    },
+    {
+      "id": "I44",
+      "canonical_id": "I34",
+      "source_title": "Write NIL Booklet (Repeat)",
+      "title": "Write NIL Booklet",
+      "category": "NIL Education",
+      "price_cents": 1000000,
+      "source_price_cents": 1000000,
+      "status": "alias_no_duplicate_menu_entry",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": [
+        0,
+        500,
+        1000,
+        1500,
+        2000,
+        2500
+      ],
+      "source_launch_table_percent": [
+        0,
+        5,
+        10,
+        15,
+        20,
+        25
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I44"
+    },
+    {
+      "id": "I45",
+      "canonical_id": "I35",
+      "source_title": "Start a Social Media Ad Campaign (Repeat)",
+      "title": "Start a Social Media Ad Campaign",
+      "category": "Marketing/Ads",
+      "price_cents": 1000000,
+      "source_price_cents": 1000000,
+      "status": "alias_no_duplicate_menu_entry",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1000,
+        2000,
+        3000,
+        5000
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        20,
+        30,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I45"
+    },
+    {
+      "id": "I46",
+      "canonical_id": "I36",
+      "source_title": "Pay for a Business Coach (Repeat)",
+      "title": "Pay for a Business Coach",
+      "category": "Branding/Growth",
+      "price_cents": 3000000,
+      "source_price_cents": 3000000,
+      "status": "alias_no_duplicate_menu_entry",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": [
+        -1500,
+        0,
+        1000,
+        2000,
+        2500,
+        4000
+      ],
+      "source_launch_table_percent": [
+        -15,
+        0,
+        10,
+        20,
+        25,
+        40
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I46"
+    },
+    {
+      "id": "I47",
+      "canonical_id": "I37",
+      "source_title": "Hire a Web Developer (Repeat)",
+      "title": "Hire a Web Developer",
+      "category": "Developer Tools",
+      "price_cents": 1500000,
+      "source_price_cents": 1500000,
+      "status": "alias_no_duplicate_menu_entry",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": [
+        0,
+        500,
+        1000,
+        1500,
+        2000,
+        3000
+      ],
+      "source_launch_table_percent": [
+        0,
+        5,
+        10,
+        15,
+        20,
+        30
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I47"
+    },
+    {
+      "id": "I48",
+      "canonical_id": "I38",
+      "source_title": "Start a Music Collab Studio (Repeat)",
+      "title": "Start a Music Collab Studio",
+      "category": "Music/Creative",
+      "price_cents": 4000000,
+      "source_price_cents": 4000000,
+      "status": "alias_no_duplicate_menu_entry",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": [
+        -2000,
+        -1000,
+        1000,
+        2500,
+        3500,
+        5000
+      ],
+      "source_launch_table_percent": [
+        -20,
+        -10,
+        10,
+        25,
+        35,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I48"
+    },
+    {
+      "id": "I49",
+      "canonical_id": "I39",
+      "source_title": "Buy Billboard Ad (Repeat)",
+      "title": "Buy Billboard Ad",
+      "category": "Marketing/Ads",
+      "price_cents": 2000000,
+      "source_price_cents": 2000000,
+      "status": "alias_no_duplicate_menu_entry",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": [
+        0,
+        500,
+        1500,
+        2000,
+        3000,
+        4500
+      ],
+      "source_launch_table_percent": [
+        0,
+        5,
+        15,
+        20,
+        30,
+        45
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I49"
+    },
+    {
+      "id": "I50",
+      "canonical_id": "I40",
+      "source_title": "Invest in NIL Fund (Repeat)",
+      "title": "Invest in NIL Fund",
+      "category": "Branding/Growth",
+      "price_cents": 5000000,
+      "source_price_cents": 5000000,
+      "status": "alias_no_duplicate_menu_entry",
+      "implementation_enabled": false,
+      "economic_type": "alias",
+      "profile": "none",
+      "launch_table_bps": [
+        0,
+        1000,
+        2000,
+        2500,
+        3000,
+        4000
+      ],
+      "source_launch_table_percent": [
+        0,
+        10,
+        20,
+        25,
+        30,
+        40
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / I50"
+    },
+    {
+      "id": "RE_SHORT_TERM_RENTAL",
+      "canonical_id": "RE_SHORT_TERM_RENTAL",
+      "source_title": "Convert to Short-Term Rental",
+      "title": "Convert to Short-Term Rental",
+      "category": "Real Estate",
+      "price_cents": 5000000,
+      "source_price_cents": 5000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "upgrade",
+      "profile": "property_bounded",
+      "launch_table_bps": [
+        -3000,
+        -1500,
+        0,
+        2500,
+        4000,
+        6000
+      ],
+      "source_launch_table_percent": [
+        -30,
+        -15,
+        0,
+        25,
+        40,
+        60
+      ],
+      "parent_any_of": [
+        "I3",
+        "RE_DUPLEX",
+        "RE_TRIPLEX",
+        "RE_FOURPLEX"
+      ],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "property",
+        "rental_property"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "with_parent_only",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "one_per_parent_stage",
+      "rules": [
+        "Attach to exactly one eligible parent; no independent second asset.",
+        "Add cost times launch multiplier to parent value; do not reroll the entire parent value.",
+        "Add cost to parent basis; replace parent continuing profile prospectively; do not stack two growth schedules.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {
+        "hasRentalProperty": true
+      },
+      "source": "Cards.txt / investmentCards / RE_SHORT_TERM_RENTAL"
+    },
+    {
+      "id": "RE_DUPLEX",
+      "canonical_id": "RE_DUPLEX",
+      "source_title": "Acquire Duplex",
+      "title": "Acquire Duplex",
+      "category": "Real Estate",
+      "price_cents": 30000000,
+      "source_price_cents": 30000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "property",
+      "profile": "property_bounded",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1000,
+        2000,
+        3000,
+        4000
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        20,
+        30,
+        40
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "property",
+        "rental_property"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / RE_DUPLEX"
+    },
+    {
+      "id": "RE_TRIPLEX",
+      "canonical_id": "RE_TRIPLEX",
+      "source_title": "Acquire Triplex",
+      "title": "Acquire Triplex",
+      "category": "Real Estate",
+      "price_cents": 50000000,
+      "source_price_cents": 50000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "property",
+      "profile": "property_bounded",
+      "launch_table_bps": [
+        -1500,
+        0,
+        1500,
+        2500,
+        3500,
+        5000
+      ],
+      "source_launch_table_percent": [
+        -15,
+        0,
+        15,
+        25,
+        35,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "property",
+        "rental_property"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {
+        "hasRentalProperty": true
+      },
+      "source": "Cards.txt / investmentCards / RE_TRIPLEX"
+    },
+    {
+      "id": "RE_FOURPLEX",
+      "canonical_id": "RE_FOURPLEX",
+      "source_title": "Acquire Fourplex",
+      "title": "Acquire Fourplex",
+      "category": "Real Estate",
+      "price_cents": 100000000,
+      "source_price_cents": 100000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "property",
+      "profile": "property_bounded",
+      "launch_table_bps": [
+        -2000,
+        -500,
+        1500,
+        3000,
+        4500,
+        6500
+      ],
+      "source_launch_table_percent": [
+        -20,
+        -5,
+        15,
+        30,
+        45,
+        65
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "property",
+        "rental_property"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / RE_FOURPLEX"
+    },
+    {
+      "id": "RE_COMMERCIAL",
+      "canonical_id": "RE_COMMERCIAL",
+      "source_title": "Acquire Commercial Real Estate",
+      "title": "Acquire Commercial Real Estate",
+      "category": "Real Estate",
+      "price_cents": 200000000,
+      "source_price_cents": 200000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "property",
+      "profile": "property_bounded",
+      "launch_table_bps": [
+        -2500,
+        -1000,
+        2000,
+        3500,
+        5000,
+        7500
+      ],
+      "source_launch_table_percent": [
+        -25,
+        -10,
+        20,
+        35,
+        50,
+        75
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "property",
+        "rental_property"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {
+        "hasMultiUnit": true
+      },
+      "source": "Cards.txt / investmentCards / RE_COMMERCIAL"
+    },
+    {
+      "id": "RE_REIT",
+      "canonical_id": "RE_REIT",
+      "source_title": "Invest in REITs",
+      "title": "Invest in REITs",
+      "category": "Financial Instruments",
+      "price_cents": 5000000,
+      "source_price_cents": 5000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "market_position",
+      "profile": "fund",
+      "launch_table_bps": [
+        -500,
+        0,
+        800,
+        1200,
+        1800,
+        2500
+      ],
+      "source_launch_table_percent": [
+        -5,
+        0,
+        8,
+        12,
+        18,
+        25
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "real_estate_fund",
+        "tradable_equity"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / RE_REIT"
+    },
+    {
+      "id": "RE_HOLDCO",
+      "canonical_id": "RE_HOLDCO",
+      "source_title": "Form a Holding Company",
+      "title": "Form a Holding Company",
+      "category": "Legal / Structure",
+      "price_cents": 2500000,
+      "source_price_cents": 2500000,
+      "status": "deferred_not_enabled",
+      "implementation_enabled": false,
+      "economic_type": "deferred_legacy",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        0,
+        2,
+        5,
+        7,
+        10,
+        12
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Do not expose original ALL or audit immunity; no enabled replacement until exact scoped terms exist.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / RE_HOLDCO"
+    },
+    {
+      "id": "RE_INSURANCE",
+      "canonical_id": "RE_INSURANCE",
+      "source_title": "Insurance & Capital Reserves",
+      "title": "Insurance & Capital Reserves",
+      "category": "Risk Management",
+      "price_cents": 2000000,
+      "source_price_cents": 2000000,
+      "status": "deferred_not_enabled",
+      "implementation_enabled": false,
+      "economic_type": "deferred_legacy",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": [
+        0,
+        3,
+        5,
+        7,
+        10,
+        15
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Do not expose original ALL or audit immunity; no enabled replacement until exact scoped terms exist.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / RE_INSURANCE"
+    },
+    {
+      "id": "INV_LIFE_INSURANCE_TIER_A",
+      "canonical_id": "INV_LIFE_INSURANCE_TIER_A",
+      "source_title": "Cash-Value Life Insurance — Tier A",
+      "title": "Cash-Value Life Insurance — Tier A",
+      "category": "Life Insurance",
+      "price_cents": 2500000,
+      "source_price_cents": 2500000,
+      "status": "preserved_latest_contract",
+      "implementation_enabled": true,
+      "economic_type": "fixed_contract",
+      "profile": "fixed_contract",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "life_contract"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "central_contract_cancel",
+      "borrow_route": "central_policy_loan",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Use latest immutable central contract terms; source maturity/payout/growth/protection flags are archival.",
+        "Cash only; no purchase risk die.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / INV_LIFE_INSURANCE_TIER_A"
+    },
+    {
+      "id": "INV_LIFE_INSURANCE_TIER_B",
+      "canonical_id": "INV_LIFE_INSURANCE_TIER_B",
+      "source_title": "Cash-Value Life Insurance — Tier B",
+      "title": "Cash-Value Life Insurance — Tier B",
+      "category": "Life Insurance",
+      "price_cents": 7500000,
+      "source_price_cents": 7500000,
+      "status": "preserved_latest_contract",
+      "implementation_enabled": true,
+      "economic_type": "fixed_contract",
+      "profile": "fixed_contract",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "life_contract"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "central_contract_cancel",
+      "borrow_route": "central_policy_loan",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Use latest immutable central contract terms; source maturity/payout/growth/protection flags are archival.",
+        "Cash only; no purchase risk die.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / INV_LIFE_INSURANCE_TIER_B"
+    },
+    {
+      "id": "INV_LIFE_INSURANCE_TIER_C",
+      "canonical_id": "INV_LIFE_INSURANCE_TIER_C",
+      "source_title": "Cash-Value Life Insurance — Tier C",
+      "title": "Cash-Value Life Insurance — Tier C",
+      "category": "Life Insurance",
+      "price_cents": 10000000,
+      "source_price_cents": 10000000,
+      "status": "preserved_latest_contract",
+      "implementation_enabled": true,
+      "economic_type": "fixed_contract",
+      "profile": "fixed_contract",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "life_contract"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "central_contract_cancel",
+      "borrow_route": "central_policy_loan",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Use latest immutable central contract terms; source maturity/payout/growth/protection flags are archival.",
+        "Cash only; no purchase risk die.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / INV_LIFE_INSURANCE_TIER_C"
+    },
+    {
+      "id": "INV_LIFE_INSURANCE_TIER_D",
+      "canonical_id": "INV_LIFE_INSURANCE_TIER_D",
+      "source_title": "Cash-Value Life Insurance — Tier D",
+      "title": "Cash-Value Life Insurance — Tier D",
+      "category": "Life Insurance",
+      "price_cents": 25000000,
+      "source_price_cents": 25000000,
+      "status": "preserved_latest_contract",
+      "implementation_enabled": true,
+      "economic_type": "fixed_contract",
+      "profile": "fixed_contract",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "life_contract"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "central_contract_cancel",
+      "borrow_route": "central_policy_loan",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Use latest immutable central contract terms; source maturity/payout/growth/protection flags are archival.",
+        "Cash only; no purchase risk die.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / INV_LIFE_INSURANCE_TIER_D"
+    },
+    {
+      "id": "INV_ANNUITY_TIER_5Y",
+      "canonical_id": "INV_ANNUITY_TIER_5Y",
+      "source_title": "Deferred Income Annuity — 5 Year",
+      "title": "Fixed Income Annuity Tier A",
+      "category": "Annuities",
+      "price_cents": 5000000,
+      "source_price_cents": 5000000,
+      "status": "preserved_latest_contract",
+      "implementation_enabled": true,
+      "economic_type": "fixed_contract",
+      "profile": "fixed_contract",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "annuity_contract"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "central_contract_cancel",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Use latest immutable central contract terms; source maturity/payout/growth/protection flags are archival.",
+        "Cash only; no purchase risk die.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / INV_ANNUITY_TIER_5Y"
+    },
+    {
+      "id": "INV_ANNUITY_TIER_10Y",
+      "canonical_id": "INV_ANNUITY_TIER_10Y",
+      "source_title": "Deferred Income Annuity — 10 Year",
+      "title": "Fixed Income Annuity Tier B",
+      "category": "Annuities",
+      "price_cents": 10000000,
+      "source_price_cents": 10000000,
+      "status": "preserved_latest_contract",
+      "implementation_enabled": true,
+      "economic_type": "fixed_contract",
+      "profile": "fixed_contract",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "annuity_contract"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "central_contract_cancel",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Use latest immutable central contract terms; source maturity/payout/growth/protection flags are archival.",
+        "Cash only; no purchase risk die.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / INV_ANNUITY_TIER_10Y"
+    },
+    {
+      "id": "INV_ANNUITY_TIER_15Y",
+      "canonical_id": "INV_ANNUITY_TIER_15Y",
+      "source_title": "Deferred Income Annuity — 15 Year",
+      "title": "Fixed Income Annuity Tier C",
+      "category": "Annuities",
+      "price_cents": 15000000,
+      "source_price_cents": 15000000,
+      "status": "preserved_latest_contract",
+      "implementation_enabled": true,
+      "economic_type": "fixed_contract",
+      "profile": "fixed_contract",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "annuity_contract"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "central_contract_cancel",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Use latest immutable central contract terms; source maturity/payout/growth/protection flags are archival.",
+        "Cash only; no purchase risk die.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / INV_ANNUITY_TIER_15Y"
+    },
+    {
+      "id": "INV_ANNUITY_TIER_20Y",
+      "canonical_id": "INV_ANNUITY_TIER_20Y",
+      "source_title": "Deferred Income Annuity — 20 Year",
+      "title": "Fixed Income Annuity Tier D",
+      "category": "Annuities",
+      "price_cents": 20000000,
+      "source_price_cents": 20000000,
+      "status": "preserved_latest_contract",
+      "implementation_enabled": true,
+      "economic_type": "fixed_contract",
+      "profile": "fixed_contract",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "annuity_contract"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "central_contract_cancel",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Use latest immutable central contract terms; source maturity/payout/growth/protection flags are archival.",
+        "Cash only; no purchase risk die.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / INV_ANNUITY_TIER_20Y"
+    },
+    {
+      "id": "OFF_STOCKS",
+      "canonical_id": "OFF_STOCKS",
+      "source_title": "Invest in Stocks",
+      "title": "Invest in Stocks",
+      "category": "Offensive Planning",
+      "price_cents": 2000000,
+      "source_price_cents": 2000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "market_position",
+      "profile": "stocks",
+      "launch_table_bps": [
+        -2500,
+        -1000,
+        0,
+        2000,
+        3500,
+        5000
+      ],
+      "source_launch_table_percent": [
+        -25,
+        -10,
+        0,
+        20,
+        35,
+        50
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "tradable_equity"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / OFF_STOCKS"
+    },
+    {
+      "id": "OFF_ETFS",
+      "canonical_id": "OFF_ETFS",
+      "source_title": "Invest in ETFs",
+      "title": "Invest in ETFs",
+      "category": "Offensive Planning",
+      "price_cents": 2000000,
+      "source_price_cents": 2000000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "market_position",
+      "profile": "fund",
+      "launch_table_bps": [
+        -1000,
+        0,
+        1000,
+        1800,
+        2500,
+        3500
+      ],
+      "source_launch_table_percent": [
+        -10,
+        0,
+        10,
+        18,
+        25,
+        35
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "tradable_equity"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / OFF_ETFS"
+    },
+    {
+      "id": "OFF_BONDS",
+      "canonical_id": "OFF_BONDS",
+      "source_title": "Invest in Bonds",
+      "title": "Invest in Bonds",
+      "category": "Offensive Planning",
+      "price_cents": 1500000,
+      "source_price_cents": 1500000,
+      "status": "recommended_reconciled",
+      "implementation_enabled": true,
+      "economic_type": "market_position",
+      "profile": "bond",
+      "launch_table_bps": [
+        -500,
+        0,
+        500,
+        800,
+        1000,
+        1200
+      ],
+      "source_launch_table_percent": [
+        -5,
+        0,
+        5,
+        8,
+        10,
+        12
+      ],
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "bond"
+      ],
+      "cash_only": false,
+      "minimum_cash_bps": 5000,
+      "funding_route": "central_secured_acquisition",
+      "sale_route": "central_market_sale",
+      "borrow_route": "central_secured_50_percent_ltv",
+      "repeat_policy": "new_instance_one_per_green_opportunity",
+      "rules": [
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / OFF_BONDS"
+    },
+    {
+      "id": "DEF_HEALTH_BASIC",
+      "canonical_id": "DEF_HEALTH_BASIC",
+      "source_title": "Health & Disability Protection — Basic",
+      "title": "Health & Disability Protection — Basic",
+      "category": "Defensive Planning",
+      "price_cents": 500000,
+      "source_price_cents": 500000,
+      "status": "recommended_scoped_health_support",
+      "implementation_enabled": true,
+      "economic_type": "protection",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "protection"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Protection is a consumed support contract, not asset value; use scoped current protection registry.",
+        "Preserve $5000/$10000/$15000, 1/2/3 uses; proposed 80% eligible authored health/travel/support expense capped $20000 per incident, before incident purchase only; no healing or availability guarantee.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / DEF_HEALTH_BASIC"
+    },
+    {
+      "id": "DEF_HEALTH_STANDARD",
+      "canonical_id": "DEF_HEALTH_STANDARD",
+      "source_title": "Health & Disability Protection — Standard",
+      "title": "Health & Disability Protection — Standard",
+      "category": "Defensive Planning",
+      "price_cents": 1000000,
+      "source_price_cents": 1000000,
+      "status": "recommended_scoped_health_support",
+      "implementation_enabled": true,
+      "economic_type": "protection",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "protection"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Protection is a consumed support contract, not asset value; use scoped current protection registry.",
+        "Preserve $5000/$10000/$15000, 1/2/3 uses; proposed 80% eligible authored health/travel/support expense capped $20000 per incident, before incident purchase only; no healing or availability guarantee.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / DEF_HEALTH_STANDARD"
+    },
+    {
+      "id": "DEF_HEALTH_PREMIUM",
+      "canonical_id": "DEF_HEALTH_PREMIUM",
+      "source_title": "Health & Disability Protection — Premium",
+      "title": "Health & Disability Protection — Premium",
+      "category": "Defensive Planning",
+      "price_cents": 1500000,
+      "source_price_cents": 1500000,
+      "status": "recommended_scoped_health_support",
+      "implementation_enabled": true,
+      "economic_type": "protection",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "protection"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Protection is a consumed support contract, not asset value; use scoped current protection registry.",
+        "Preserve $5000/$10000/$15000, 1/2/3 uses; proposed 80% eligible authored health/travel/support expense capped $20000 per incident, before incident purchase only; no healing or availability guarantee.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / DEF_HEALTH_PREMIUM"
+    },
+    {
+      "id": "DEF_LEGAL_BASIC",
+      "canonical_id": "DEF_LEGAL_BASIC",
+      "source_title": "Legal Protection — Basic",
+      "title": "Legal Support — Basic",
+      "category": "Defensive Planning",
+      "price_cents": 750000,
+      "source_price_cents": 500000,
+      "status": "superseded_by_approved_legal_support",
+      "implementation_enabled": true,
+      "economic_type": "protection",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "protection"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Protection is a consumed support contract, not asset value; use scoped current protection registry.",
+        "Latest Legal Support prices $7500/$15000/$22500 and 80% assistance capped $25000 per matter; no blanket shield.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / DEF_LEGAL_BASIC"
+    },
+    {
+      "id": "DEF_LEGAL_STANDARD",
+      "canonical_id": "DEF_LEGAL_STANDARD",
+      "source_title": "Legal Protection — Standard",
+      "title": "Legal Support — Standard",
+      "category": "Defensive Planning",
+      "price_cents": 1500000,
+      "source_price_cents": 1000000,
+      "status": "superseded_by_approved_legal_support",
+      "implementation_enabled": true,
+      "economic_type": "protection",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "protection"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Protection is a consumed support contract, not asset value; use scoped current protection registry.",
+        "Latest Legal Support prices $7500/$15000/$22500 and 80% assistance capped $25000 per matter; no blanket shield.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / DEF_LEGAL_STANDARD"
+    },
+    {
+      "id": "DEF_LEGAL_PREMIUM",
+      "canonical_id": "DEF_LEGAL_PREMIUM",
+      "source_title": "Legal Protection — Premium",
+      "title": "Legal Support — Premium",
+      "category": "Defensive Planning",
+      "price_cents": 2250000,
+      "source_price_cents": 1500000,
+      "status": "superseded_by_approved_legal_support",
+      "implementation_enabled": true,
+      "economic_type": "protection",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [
+        "protection"
+      ],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Protection is a consumed support contract, not asset value; use scoped current protection registry.",
+        "Latest Legal Support prices $7500/$15000/$22500 and 80% assistance capped $25000 per matter; no blanket shield.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / DEF_LEGAL_PREMIUM"
+    },
+    {
+      "id": "DEF_UMBRELLA",
+      "canonical_id": "DEF_UMBRELLA",
+      "source_title": "Umbrella Liability Coverage",
+      "title": "Umbrella Liability Coverage",
+      "category": "Defensive Planning",
+      "price_cents": 10000000,
+      "source_price_cents": 10000000,
+      "status": "deferred_not_enabled",
+      "implementation_enabled": false,
+      "economic_type": "deferred_legacy",
+      "profile": "none",
+      "launch_table_bps": null,
+      "source_launch_table_percent": null,
+      "parent_any_of": [],
+      "parent_match_mode": "root_type_or_completed_stage_on_selected_root",
+      "exposure_tags": [],
+      "cash_only": true,
+      "minimum_cash_bps": 10000,
+      "funding_route": "cash",
+      "sale_route": "none",
+      "borrow_route": "none",
+      "repeat_policy": "current_contract_terms",
+      "rules": [
+        "Protection is a consumed support contract, not asset value; use scoped current protection registry.",
+        "Do not expose original ALL or audit immunity; no enabled replacement until exact scoped terms exist.",
+        "All prices and modeled returns are game parameters, not market forecasts."
+      ],
+      "source_requirements": {},
+      "source": "Cards.txt / investmentCards / DEF_UMBRELLA"
+    }
+  ],
+  "youth_sports_house": [
+    {
+      "id": "YSH_SPONSOR",
+      "title": "Sponsor a Youth Team",
+      "price_cents": 2000000,
+      "economic_type": "community_expense",
+      "source_ids": [
+        "I32",
+        "I42"
+      ],
+      "cash_only": true,
+      "rep": 4,
+      "career": 0,
+      "prerequisite": null,
+      "repeat": "once_per_game",
+      "launch_table_bps": null,
+      "profile": "none",
+      "asset_value": false,
+      "status": "preserved_approved",
+      "exposure_tags": [
+        "community_support"
+      ],
+      "rules": [
+        "One purchase uses one green investment opportunity.",
+        "Tax and scoring use central finance.",
+        "Source: Youth Sports House handoff pp3–7."
+      ]
+    },
+    {
+      "id": "YSH_CLINIC",
+      "title": "Host a Youth Skills Clinic",
+      "price_cents": 1000000,
+      "economic_type": "event",
+      "cash_only": true,
+      "rep": 1,
+      "career": 1,
+      "prerequisite": "YSH_SPONSOR",
+      "repeat": "once_per_game",
+      "launch_table_bps": [
+        0,
+        500,
+        1000,
+        1500,
+        2000,
+        3000
+      ],
+      "profile": "none",
+      "asset_value": false,
+      "status": "source_working_default_recommended",
+      "exposure_tags": [
+        "event"
+      ],
+      "rules": [
+        "One purchase uses one green investment opportunity.",
+        "Tax and scoring use central finance.",
+        "Source: Youth Sports House handoff pp3–7."
+      ]
+    },
+    {
+      "id": "YSH_TEAM",
+      "title": "Operate Team Elite",
+      "price_cents": 10000000,
+      "economic_type": "company",
+      "cash_only": true,
+      "rep": 0,
+      "career": 0,
+      "prerequisite": "YSH_CLINIC",
+      "entry_options_bps": [
+        3500,
+        10000
+      ],
+      "launch_table_bps": [
+        -2500,
+        -1000,
+        0,
+        2000,
+        3500,
+        5000
+      ],
+      "profile": "house_locked",
+      "asset_value": true,
+      "status": "price_direction_preserved_other_terms_recommended",
+      "exposure_tags": [
+        "operating_business"
+      ],
+      "rules": [
+        "One purchase uses one green investment opportunity.",
+        "Tax and scoring use central finance.",
+        "Source: Youth Sports House handoff pp3–7."
+      ]
+    },
+    {
+      "id": "YSH_CENTER",
+      "title": "Open a Leased Training Center",
+      "price_cents": 15000000,
+      "economic_type": "company",
+      "cash_only": true,
+      "rep": 0,
+      "career": 0,
+      "prerequisite": "YSH_TEAM",
+      "minimum_parent_owned_bps": 3500,
+      "minimum_parent_held_circuits": 1,
+      "entry_options_bps": [
+        3500,
+        10000
+      ],
+      "launch_table_bps": [
+        -3000,
+        -1500,
+        0,
+        2500,
+        4000,
+        6000
+      ],
+      "profile": "house_locked",
+      "asset_value": true,
+      "status": "source_working_default_recommended",
+      "exposure_tags": [
+        "operating_business"
+      ],
+      "rules": [
+        "One purchase uses one green investment opportunity.",
+        "Tax and scoring use central finance.",
+        "Source: Youth Sports House handoff pp3–7."
+      ]
+    },
+    {
+      "id": "YSH_COMPLEX",
+      "title": "Buy a Sports Complex",
+      "price_cents": 100000000,
+      "economic_type": "company_property",
+      "cash_only": false,
+      "rep": 0,
+      "career": 0,
+      "prerequisite": "YSH_CENTER",
+      "minimum_parent_owned_bps": 3500,
+      "minimum_parent_held_circuits": 1,
+      "minimum_founder_cash_bps": 5000,
+      "entry_options_bps": [
+        10000
+      ],
+      "launch_table_bps": [
+        -10000,
+        -2500,
+        0,
+        2500,
+        5000,
+        7500
+      ],
+      "profile": "house_locked",
+      "asset_value": true,
+      "status": "price_financing_failure_continuation_preserved_table_other_faces_recommended",
+      "exposure_tags": [
+        "operating_business",
+        "rental_property"
+      ],
+      "rules": [
+        "One purchase uses one green investment opportunity.",
+        "Tax and scoring use central finance.",
+        "Source: Youth Sports House handoff pp3–7."
+      ]
+    }
+  ],
+  "return_profiles": {
+    "business_bounded": {
+      "description": "One stored launch face selects continuing valuation rate; independent scenario shocks can change value.",
+      "continuing_rate_by_launch_face_bps": [
+        -1000,
+        -500,
+        0,
+        500,
+        1000,
+        1500
+      ],
+      "valuation_only": true
+    },
+    "property_bounded": {
+      "description": "Property value including simplified reinvested operating performance; no additional rent credit.",
+      "continuing_rate_by_launch_face_bps": [
+        -500,
+        -200,
+        0,
+        300,
+        500,
+        800
+      ],
+      "valuation_only": true
+    },
+    "stocks": {
+      "description": "One committed fair d6 per holding at each full owned lap; new current value only.",
+      "per_lap_draw_bps": [
+        -1500,
+        -500,
+        0,
+        500,
+        1000,
+        2000
+      ],
+      "valuation_only": true
+    },
+    "fund": {
+      "description": "Diversified market position; excludes a separate cash dividend.",
+      "per_lap_draw_bps": [
+        -1000,
+        -300,
+        0,
+        400,
+        700,
+        1200
+      ],
+      "valuation_only": true
+    },
+    "bond": {
+      "description": "Simplified total-return bond position, not a promised bank deposit.",
+      "per_lap_draw_bps": [
+        -300,
+        0,
+        200,
+        300,
+        400,
+        500
+      ],
+      "valuation_only": true
+    },
+    "crypto": {
+      "description": "Speculative position; launch can fail; surviving position still fluctuates.",
+      "per_lap_draw_bps": [
+        -3000,
+        -1500,
+        -500,
+        0,
+        1500,
+        3000
+      ],
+      "valuation_only": true
+    },
+    "house_locked": {
+      "description": "Approved continuing launch rate on current value; separate deferred capped alternative is NOT applied.",
+      "rate_source": "stored_launch_rate_bps",
+      "valuation_only": true
+    },
+    "none": {
+      "description": "No recurring financial return."
+    },
+    "fixed_contract": {
+      "description": "Use immutable life/annuity contract registry in central finance, never generic green growth."
+    }
+  },
+  "timing": {
+    "owned_clock": "Monotonic owner board progress; first full owned-circuit return after acquisition for ordinary market positions.",
+    "fixed_rate_clock": "Accrue elapsed owned board progress using V*(1+r)^(elapsed/board_size); settle at lap/transfer/final boundaries.",
+    "market_draw": "Stored fair d6 once per position per full owned circuit; no terminal partial-circuit redraw.",
+    "rounding": "integer cents HALF_UP at each committed event",
+    "launch": "Commit funding then immutable fair d6 once. Closed failure value0 never rerolls or grows."
+  },
+  "support_services": {
+    "I36": {
+      "benefit": "operating_remediation_discount",
+      "rate_bps": 2000,
+      "cap_cents": 1000000,
+      "uses": 1,
+      "target": "selected owned venture",
+      "excluded": [
+        "tax",
+        "debt",
+        "market_value_loss",
+        "legal_fees",
+        "ordinary_acquisition"
+      ]
+    },
+    "I37": {
+      "benefit": "website_remediation_discount",
+      "rate_bps": 2000,
+      "cap_cents": 500000,
+      "uses": 1,
+      "target": "selected owned venture website/platform expense",
+      "excluded": [
+        "tax",
+        "debt",
+        "market_value_loss",
+        "legal_fees",
+        "ordinary_acquisition"
+      ]
+    }
+  },
+  "support_nonstacking": "After cover, select one relevant service or mentor discount on residual eligible invoice; no duplicate reimbursement.",
+  "event_parents": {
+    "I5": [
+      "I4",
+      "I6",
+      "I28",
+      "I29"
+    ],
+    "I12": [
+      "I10",
+      "I11",
+      "I34"
+    ],
+    "I30": [
+      "I28",
+      "I29"
+    ]
+  },
+  "specific_eligibility": {
+    "I2": "Select owned vacant-property parent without this upgrade.",
+    "I3": "Selected owned property must have completed I2 renovation; then becomes rental exposure.",
+    "RE_TRIPLEX": "Own at least one active rental-property exposure.",
+    "RE_COMMERCIAL": "Own at least one active direct multi-unit property of 2+ units; REIT holdings do not qualify.",
+    "RE_SHORT_TERM_RENTAL": "Select one owned active rental-property parent; replaces long-term strategy, never duplicates the property."
+  },
+  "superseded_source_flags": [
+    "ALL immunity",
+    "blocks_federal_tax_audit",
+    "blocks_unexpected_lawsuit",
+    "lower_exit_tax",
+    "improves_exit_tax",
+    "impenetrable_wealth_component",
+    "original annuity perLapPayout"
+  ],
+  "deferred_expansions": [
+    "Agriculture ownership",
+    "Energy ownership",
+    "Medical/life sciences ownership",
+    "New sports-tech ownership house",
+    "L111–L113 equity migration; never duplicate approved luxury menu"
+  ],
+  "new_recommendation_notice": "Ordinary ongoing returns, service remapping, repeat controls, clock proration and upgrade accounting are recommendations. Youth House approved continuing rates remain intact. All fair draws are server stored; AI never calculates or chooses returns."
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/cashAnimations.css';
+import { formatCents, toCents } from '../rules/money';
 
 /** Shared prompts so dashboard hero and tracker stay in sync without duplicating logic */
 export function promptAddCashAmount(setCash) {
@@ -83,7 +84,7 @@ function CashTracker({ cash, setCash, variant = 'card' }) {
         variant === 'amountOnly' ? 'text-4xl sm:text-5xl mb-0' : 'text-xl font-bold mb-4'
       }`}
     >
-      ${cash.toLocaleString()}
+      {formatCents(toCents(cash))}
     </p>
   );
 

@@ -1,0 +1,69 @@
+{
+  "ruleset_id": "BOB-DIGITAL-ASSEMBLY-20261013-v1",
+  "status": "approved direction and prices; component integration preserved",
+  "bundles": [
+    {
+      "id": "DEF_LEGAL_BASIC",
+      "name": "Basic",
+      "price_cents": 750000,
+      "uses": 1
+    },
+    {
+      "id": "DEF_LEGAL_STANDARD",
+      "name": "Standard",
+      "price_cents": 1500000,
+      "uses": 2
+    },
+    {
+      "id": "DEF_LEGAL_PREMIUM",
+      "name": "Premium",
+      "price_cents": 2250000,
+      "uses": 3
+    }
+  ],
+  "cash_only": true,
+  "dice": false,
+  "max_unused_uses": 3,
+  "topup_price_cents": 750000,
+  "per_matter_assistance_bps": 8000,
+  "per_matter_cap_cents": 2500000,
+  "term": "until individual finish",
+  "asset_value": 0,
+  "rep": 0,
+  "career": 0,
+  "eligibility": "use purchased before matter first disclosed; first positive committed service consumes one use; followups keep same matter and cap; already paid fees excluded",
+  "covered": [
+    "professional_tax_response_fee",
+    "personal_contract_negotiation_fee",
+    "personal_legal_representation_fee",
+    "formal_collection_fee",
+    "personal_recovery_service_fee"
+  ],
+  "excluded": [
+    "tax",
+    "loan_principal",
+    "interest",
+    "settlement",
+    "damages",
+    "contractual_income_share",
+    "market_loss",
+    "business_shortfall",
+    "company_level_fee",
+    "medical_expense",
+    "lost_sales"
+  ],
+  "benefit_order": "valid other coverage first, cumulative80%of residualeligiblefees capped25k, less alreadyapplied; never exceedfee",
+  "contract_check": {
+    "price_cents": 250000,
+    "scope": "one unsignedoffer version and first amendmentrequest",
+    "repeat": "cached sameversion no newfee",
+    "terms_visible_free": true,
+    "known_trap_reversal": false,
+    "implementation": "enabled offer must author revised terms and acceptance/refusal; unsupported review omitted"
+  },
+  "refund": "reverse original payer allocations; restore use only wholly voided service beforework with all entries reversed",
+  "future_plan_cannot_cover_known_case": true,
+  "broad_umbrella": "disabled undefined ALL immunity",
+  "tax": "planpurchasepersonalnondeductible; actualnetdirectbusinessfee only ifauthored",
+  "no_cash_response": "every enabled scenario has a disclosed no-immediate-cash response or remainsineligible"
+}

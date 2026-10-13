@@ -1,0 +1,199 @@
+{
+  "ruleset_id": "BOB-DIGITAL-ASSEMBLY-20261013-v1",
+  "release_status": "implementation recommendation, not deployed or balance-certified",
+  "currency": "USD_GAME",
+  "money_storage": "integer_cents",
+  "rounding": "HALF_UP",
+  "rate_storage": "integer_basis_points",
+  "board_size": 40,
+  "game_lengths": [
+    5,
+    10
+  ],
+  "player_count": {
+    "min": 1,
+    "max": 6
+  },
+  "opening_die": 1,
+  "opening_grant_once": true,
+  "movement": {
+    "dice_options": [
+      1,
+      2
+    ],
+    "default_dice_count": 1,
+    "selection": "room host selects before first grant; same for all participants; no midgame change",
+    "status": "recommended room rule; legacy printed instructions permit choosing one or two dice",
+    "rng": "server fair independent d6, persisted once per semantic roll ID; animation replays result",
+    "overshoot": "clamp at final cutoff; discard surplus steps; no final landing offer",
+    "backward": "position may change but financial progress never reverses; no backward movement in baseline catalog"
+  },
+  "timeline": {
+    "mode": "compressed athlete simulation",
+    "college_eligibility": "scenario tag and authored status, never inferred from lap number alone",
+    "five_laps": "college-experience length metaphor",
+    "ten_laps": "extended planning horizon, not ten seasons of NCAA eligibility",
+    "default_profile": "college_sim",
+    "real_rules_claim": false,
+    "athletic_horizon_laps": 5,
+    "horizon_status": "recommended game duration cap, not real eligibility determination",
+    "extended_phase": "after5completedlaps college-dependentdraws excluded; generalprofessional/lifestyle scenarios remain"
+  },
+  "turn_states": [
+    "ready",
+    "movement_committed",
+    "settling_due_events",
+    "landing_scene",
+    "choice",
+    "quote",
+    "outcome_committed",
+    "recap",
+    "turn_ended"
+  ],
+  "final_states": [
+    "final_finance",
+    "finished"
+  ],
+  "landing_consumption": "one committed category purchase/response consumes opportunity; browsing/declining consumes no funds; decline ends turn",
+  "deadline": "before next own movement roll; final deadline Finish and Reveal",
+  "choice_timeout": "none; reading or disconnection never selects for player",
+  "group_disconnect": "retain active turn and resume; host may pause or explicitly remove unfinished player, never submit choices or finish them; no timed autoplay",
+  "finance": {
+    "manual": true,
+    "autopay": false,
+    "reminders": false,
+    "available_between_own_turns": true,
+    "mutations": "lock player and affected company; freeze after finish"
+  },
+  "coach": {
+    "initial_credits": 3,
+    "free_rules_help": true,
+    "debit": "only once after usable advice delivered, cached per decision revision",
+    "failure": "no debit; curated authored guidance fallback",
+    "scope": "visible committed facts and tradeoffs only, no hidden outcome access or guaranteed escape"
+  },
+  "voice": {
+    "optional": true,
+    "core_input": "tap choice cards",
+    "voice_confirm": "transcribe optional response; map only to allowed authored action; show selected action and require tap confirmation",
+    "voice_financial_authority": false,
+    "store_recording_default": false
+  },
+  "ui": {
+    "primary_tabs": [
+      "Board",
+      "Assets",
+      "Finance",
+      "Portfolio"
+    ],
+    "minimum_touch_target_css_px": 44,
+    "captions": true,
+    "reduced_motion": true,
+    "no_required_typed_reflection": true,
+    "color_plus_symbol_labels": true,
+    "audio_autoplay": "respect device consent",
+    "result": "short receipt plus Show details"
+  },
+  "finish": {
+    "individual": true,
+    "winner": false,
+    "lock_snapshot": true,
+    "public_summary": [
+      "display_name",
+      "finished",
+      "financial_wealth",
+      "game_value"
+    ],
+    "private": [
+      "mentor_conversation",
+      "voice_recording",
+      "personal_reflection"
+    ],
+    "archetype_sharing": "player opt-in",
+    "portfolio_pie": "nonnegative asset holdings only; debt separate; no death benefit or points in asset pie"
+  },
+  "commands": [
+    "start_game",
+    "roll_movement",
+    "choose_offer",
+    "confirm_purchase",
+    "resolve_risk_roll",
+    "choose_scenario",
+    "consult_coach",
+    "pay_debt",
+    "reserve_tax",
+    "release_tax_reserve",
+    "pay_tax",
+    "sell_asset",
+    "borrow_asset",
+    "repay_policy",
+    "cancel_contract",
+    "list_shares",
+    "buy_shares",
+    "complete_activity",
+    "finish_player"
+  ],
+  "request_contract": {
+    "required": [
+      "game_id",
+      "player_id",
+      "ruleset_id",
+      "operation_id",
+      "action",
+      "payload",
+      "expected_revision"
+    ],
+    "money_source": "server quote, never client submitted amount as authority",
+    "auth": "authenticated player may mutate own player only; host can configure room but cannot spend participant money"
+  },
+  "event_contract": {
+    "required": [
+      "event_id",
+      "semantic_key",
+      "sequence",
+      "game_id",
+      "player_id",
+      "ruleset_id",
+      "type",
+      "progress_units",
+      "caused_by",
+      "postings",
+      "before_revision",
+      "after_revision"
+    ],
+    "exactly_once": "natural key unique independently of operation_id; same key different payload rejects; outbox after committed receipt"
+  },
+  "phase_plan": [
+    {
+      "phase": 1,
+      "name": "Current Sidekick compatibility inventory",
+      "scope": "export settings and schemas; compare card IDs and saved records; no guessed migration",
+      "gate": "mapping reviewed by developer"
+    },
+    {
+      "phase": 2,
+      "name": "Central ledger and catalog increments",
+      "scope": "cash/debt/tax/quote/sale/fixed contracts and supported new catalogs",
+      "gate": "actual persistence tests match reference fixtures"
+    },
+    {
+      "phase": 3,
+      "name": "Connected scenario vertical slice",
+      "scope": "one complete flow of each color, coach,pressure,career,luxury and reveal",
+      "gate": "five-lap touch-only student playtest"
+    },
+    {
+      "phase": 4,
+      "name": "Standalone live digital board",
+      "scope": "authoritative movement, six players, shared company offers and reconnection",
+      "gate": "ten-lap and six-player concurrency tests"
+    },
+    {
+      "phase": 5,
+      "name": "Content and balance expansion",
+      "scope": "enable full reviewed libraries, tune pacing, later industries and tournament presentation",
+      "gate": "six starting tiers and both lengths evaluated; no wealth winner by default"
+    }
+  ],
+  "ai_boundary": "narrates committed facts only; no balances, rates, odds, eligibility, scores or class thresholds authored live"
+}

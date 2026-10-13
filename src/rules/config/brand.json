@@ -1,0 +1,36 @@
+{
+  "name": "Bag or Broke: NIL Money Moves",
+  "logo_wordmark": "THE BAG OR BROKE",
+  "coach_display": "Coach J-Bo",
+  "coach_aliases": [
+    "Coach JBo",
+    "Coach Jabo"
+  ],
+  "tagline": "Next Move on You.",
+  "tagline_authority": "latest direct preference; guide also contains Next Move Is On You.",
+  "colors": {
+    "brand_blue": "#1C51A2",
+    "logo_gold": "#F9B90E",
+    "background_center": "#A9CCFF",
+    "background_edge": "#498EDF",
+    "green": "#7FBE4B",
+    "red": "#FF3131",
+    "blue": "#2A96C4",
+    "purple": "#7D4DE0",
+    "yellow": "#FFD706",
+    "diamond_aqua": "#A6F1FE",
+    "diamond_light": "#E4FFCF",
+    "white": "#FFFFFF"
+  },
+  "logo_clearspace_fraction": 0.1,
+  "official_fonts": {
+    "headline": "Copperplate Gothic",
+    "body": "Century Gothic",
+    "cards": "Josefin Sans",
+    "board": "Montserrat"
+  },
+  "document_fallback": "URW Gothic; source font files unavailable; supplied logo art unchanged",
+  "vehicle_names": "generic classes, no manufacturer names",
+  "artwork": "original square board and supplied gold logo; no redraw of logo",
+  "board_change": "retain40space topology, category colors, diamond symbol; digital red/blue tiles select contextual catalogs rather than legacy printed fixed penalty"
+}

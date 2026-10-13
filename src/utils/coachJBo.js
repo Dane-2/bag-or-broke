@@ -4,6 +4,8 @@
  * Only ONE player per group gets Coach JBo - the closest match to the conservative playstyle.
  * @see updates/Coach JBo.pdf
  */
+import { rowGameValue } from '../rules/portfolio';
+
 
 // Map investment to Coach JBo categoryTag
 function getInvestmentCategoryTag(inv) {
@@ -215,19 +217,11 @@ export function selectCoachJBoWinner(roomPlayers) {
     scores[playerId] = { score, reasons };
 
     const inv = player.investments || [];
-    const lux = player.luxuries || [];
     const protectionInFirst3 = (inv.slice(0, 3) || []).filter((i) =>
       getInvestmentCategoryTag(i) === 'PROTECTION'
     ).length;
     const firstRE = (inv || []).findIndex((i) => getInvestmentCategoryTag(i) === 'REAL_ESTATE');
-    const netWorth =
-      (player.cash || 0) +
-      (Array.isArray(inv) ? inv.reduce((s, i) => s + (i.newValue || 0), 0) : 0) +
-      (Array.isArray(lux) ? lux.reduce((s, l) => s + (l.resale || 0), 0) : 0) -
-      (player.debt || 0) -
-      (player.shadyDebt || 0) +
-      (player.rep || 0) * 5000 +
-      (player.career || 0) * 10000;
+    const netWorth = rowGameValue(player) / 100;
 
     scores[playerId].protectionInFirst3 = protectionInFirst3;
     scores[playerId].firstRealEstateIndex = firstRE >= 0 ? firstRE : 999;

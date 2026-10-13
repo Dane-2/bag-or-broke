@@ -1,0 +1,458 @@
+{
+  "schema_version": "1.0",
+  "module": "endgame_archetypes",
+  "decision_id": "R_REVEAL_001",
+  "status": "new_recommended_classifier_for_existing_eight_profiles",
+  "profile_source": "Bag or Broke NIL Money Moves Avatar Personas & Character Arcs.pdf",
+  "codes_are_opaque": true,
+  "source_boundaries": [
+    "Names and persona codes preserved.",
+    "Illustrated character names are optional companion examples, not the player’s identity.",
+    "No gender, race, starting wealth, starting tier, or forced life history assignment.",
+    "Old winner, diagnostic and predetermined failure copy is superseded by event-grounded playstyle wording."
+  ],
+  "dimensions": {
+    "investment": {
+      "acquire": 1,
+      "decline": 0
+    },
+    "planning": {
+      "review_or_prepare": 1,
+      "proceed_without_optional_preparation": 0
+    },
+    "development": {
+      "complete": 1,
+      "decline": 0
+    },
+    "community": {
+      "participate": 1,
+      "decline": 0
+    },
+    "follow_through": {
+      "complete": 1,
+      "agreed_reschedule": 1,
+      "communicated_withdrawal": 0.5,
+      "ignore": 0
+    },
+    "risk_appetite": {
+      "choose_high": 1,
+      "choose_moderate": 0.5,
+      "choose_low": 0
+    },
+    "luxury": {
+      "purchase": 1,
+      "decline": 0
+    },
+    "purposeful_promotion": {
+      "apply_relevant_use": 1,
+      "leave_unused": 0
+    },
+    "recovery": {
+      "complete_recovery": 1,
+      "choose_feasible_recovery": 0.5,
+      "decline_feasible_recovery": 0
+    },
+    "avoidable_overextension": {
+      "commit_despite_displaced_due_obligation": 1,
+      "preserve_due_obligation": 0
+    },
+    "avoidable_nonpayment": {
+      "leave_unpaid_with_sufficient_available_cash": 1,
+      "pay_required_amount": 0
+    }
+  },
+  "minimum_unique_choice_events": 12,
+  "minimum_observed_dimensions": 4,
+  "minimum_candidate_fit": 0.65,
+  "mixed_margin": 0.08,
+  "high_confidence_unique_events": 24,
+  "tie_order": "opaque code alphabetical for serialization only, never assert an arbitrary single winner",
+  "observation_contract": {
+    "required": [
+      "event_id",
+      "opportunity_id",
+      "dimension",
+      "outcome",
+      "actionable",
+      "choice_exposed",
+      "forced",
+      "reversed"
+    ],
+    "optional": [
+      "in_game_order",
+      "cause",
+      "source_ids"
+    ],
+    "actionable_means": "Actually eligible, affordable with available cash or approved funding, feasible under restrictions and workload, and presented to this player.",
+    "choice_exposed": "A genuine optional choice was presented, or a game-wide manual obligation rule was taught and Finance was accessible. No debt/tax reminder is required or added.",
+    "dedup_key": "opportunity_id + dimension; only final committed resolution of a single opportunity may be supplied. Conflicting observations are rejected.",
+    "chance_only_excluded": true,
+    "reversed_excluded": true,
+    "automatic_rewards_excluded": true
+  },
+  "financial_boundary": "Use frozen final snapshot and committed evidence; no bonus, penalty, revaluation, new liability, or score change is caused by assigning a profile.",
+  "profiles": [
+    {
+      "code": "I-L-A-R",
+      "name": "The Architect",
+      "illustrative_character": "Malik “Blueprint” Carter",
+      "target_weights": {
+        "investment": {
+          "target": 0.8,
+          "weight": 3
+        },
+        "planning": {
+          "target": 0.9,
+          "weight": 3
+        },
+        "follow_through": {
+          "target": 0.9,
+          "weight": 3
+        }
+      },
+      "gates": [
+        {
+          "dimension": "investment",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "planning",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "follow_through",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        }
+      ],
+      "min_external_setbacks": 0
+    },
+    {
+      "code": "I-L-C-R",
+      "name": "The Legacy Maker",
+      "illustrative_character": "Jada “Ms. Longevity” Thompson",
+      "target_weights": {
+        "community": {
+          "target": 0.9,
+          "weight": 3
+        },
+        "development": {
+          "target": 0.9,
+          "weight": 3
+        },
+        "follow_through": {
+          "target": 0.9,
+          "weight": 2
+        },
+        "planning": {
+          "target": 0.7,
+          "weight": 1
+        }
+      },
+      "gates": [
+        {
+          "dimension": "community",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "development",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "follow_through",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        }
+      ],
+      "min_external_setbacks": 0
+    },
+    {
+      "code": "S-N-A-R",
+      "name": "The Hot Shot",
+      "illustrative_character": "Ava “Prime Time” Taylor",
+      "target_weights": {
+        "luxury": {
+          "target": 0.9,
+          "weight": 3
+        },
+        "planning": {
+          "target": 0.2,
+          "weight": 3
+        },
+        "follow_through": {
+          "target": 0.3,
+          "weight": 3
+        }
+      },
+      "gates": [
+        {
+          "dimension": "luxury",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "planning",
+          "operator": "lte",
+          "threshold": 0.5,
+          "min_observations": 3
+        },
+        {
+          "dimension": "follow_through",
+          "operator": "lte",
+          "threshold": 0.5,
+          "min_observations": 3
+        }
+      ],
+      "min_external_setbacks": 0
+    },
+    {
+      "code": "I-N-A-V",
+      "name": "The Hustler",
+      "illustrative_character": "Tiana “T-Mo” Morales",
+      "target_weights": {
+        "investment": {
+          "target": 0.9,
+          "weight": 3
+        },
+        "risk_appetite": {
+          "target": 0.9,
+          "weight": 3
+        },
+        "follow_through": {
+          "target": 0.7,
+          "weight": 2
+        },
+        "recovery": {
+          "target": 0.8,
+          "weight": 1
+        }
+      },
+      "gates": [
+        {
+          "dimension": "investment",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "risk_appetite",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "follow_through",
+          "operator": "gte",
+          "threshold": 0.5,
+          "min_observations": 3
+        }
+      ],
+      "min_external_setbacks": 0
+    },
+    {
+      "code": "S-L-C-V",
+      "name": "The Survivor",
+      "illustrative_character": "Dre “Grit” Johnson",
+      "target_weights": {
+        "recovery": {
+          "target": 0.9,
+          "weight": 4
+        },
+        "follow_through": {
+          "target": 0.9,
+          "weight": 3
+        },
+        "planning": {
+          "target": 0.7,
+          "weight": 1
+        }
+      },
+      "gates": [
+        {
+          "dimension": "recovery",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "follow_through",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "planning",
+          "operator": "gte",
+          "threshold": 0.5,
+          "min_observations": 2
+        }
+      ],
+      "min_external_setbacks": 2
+    },
+    {
+      "code": "I-L-A-C",
+      "name": "The CEO in Training",
+      "illustrative_character": "Preston “The Protégé” Lee",
+      "target_weights": {
+        "investment": {
+          "target": 0.7,
+          "weight": 2
+        },
+        "development": {
+          "target": 0.7,
+          "weight": 2
+        },
+        "planning": {
+          "target": 0.9,
+          "weight": 3
+        },
+        "follow_through": {
+          "target": 0.9,
+          "weight": 3
+        },
+        "purposeful_promotion": {
+          "target": 0.8,
+          "weight": 1
+        }
+      },
+      "gates": [
+        {
+          "dimension": "investment",
+          "operator": "gte",
+          "threshold": 0.5,
+          "min_observations": 3
+        },
+        {
+          "dimension": "development",
+          "operator": "gte",
+          "threshold": 0.5,
+          "min_observations": 3
+        },
+        {
+          "dimension": "planning",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "follow_through",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        }
+      ],
+      "min_external_setbacks": 0
+    },
+    {
+      "code": "S-N-C-V",
+      "name": "The Flexer",
+      "illustrative_character": "Nia “Big Drip” Banks",
+      "target_weights": {
+        "luxury": {
+          "target": 0.9,
+          "weight": 4
+        },
+        "investment": {
+          "target": 0.2,
+          "weight": 2
+        },
+        "development": {
+          "target": 0.2,
+          "weight": 2
+        }
+      },
+      "gates": [
+        {
+          "dimension": "luxury",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "investment",
+          "operator": "lte",
+          "threshold": 0.3333333333333333,
+          "min_observations": 3
+        },
+        {
+          "dimension": "development",
+          "operator": "lte",
+          "threshold": 0.3333333333333333,
+          "min_observations": 3
+        }
+      ],
+      "min_external_setbacks": 0
+    },
+    {
+      "code": "S-N-A-V",
+      "name": "The Flameout",
+      "illustrative_character": "Trey “Lights Out” Douglas",
+      "target_weights": {
+        "avoidable_overextension": {
+          "target": 0.9,
+          "weight": 4
+        },
+        "avoidable_nonpayment": {
+          "target": 0.9,
+          "weight": 4
+        },
+        "recovery": {
+          "target": 0.1,
+          "weight": 3
+        }
+      },
+      "gates": [
+        {
+          "dimension": "avoidable_overextension",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "avoidable_nonpayment",
+          "operator": "gte",
+          "threshold": 0.6666666666666666,
+          "min_observations": 3
+        },
+        {
+          "dimension": "recovery",
+          "operator": "lte",
+          "threshold": 0.3333333333333333,
+          "min_observations": 3
+        }
+      ],
+      "min_external_setbacks": 0
+    }
+  ],
+  "fit_formula": "For observed dimensions only: sum(weight * (1 - abs(observed opportunity-normalized mean - target))) / sum(observed weights). Every eligibility gate must pass with its own minimum evidence. Missing data are not zero.",
+  "result_states": {
+    "insufficient_evidence": "Fewer than 12 unique eligible choice events or fewer than 4 observed dimensions: no assigned archetype; show factual choices and portfolio.",
+    "mixed": "Two or more eligible profiles are within 0.08 fit of the best: show up to two with equal visual emphasis and explain differing dimensions.",
+    "single": "Best qualifying fit >=0.65 and separated from second by at least0.08: primary profile, evidence strength emerging or supported.",
+    "unclassified": "Enough observations, but no profile satisfies gates: Mixed approach, no new ninth persona code; show measured dimensions."
+  },
+  "narration_contract": {
+    "headline": "Your playstyle in this game",
+    "required_sections": [
+      "What you chose",
+      "What happened outside your control",
+      "How you adjusted",
+      "One option to explore next time"
+    ],
+    "evidence_event_ids_required": true,
+    "character_claims": "Describe actions, not permanent traits, diagnoses, intelligence, morality, creditworthiness or future success.",
+    "negative_profile_copy": "Use the preserved archetype label as a game pattern only; explain avoidable actions and feasible recovery without insult.",
+    "early_late_arc": "Compare first and last thirds of eligible choice events only when each segment has at least3 observations of the same dimension; otherwise say not enough comparison evidence."
+  }
+}

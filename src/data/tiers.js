@@ -1,10 +1,9 @@
-const tiers = {
-  1: { label: 'Walk-On', amount: 10000 },
-  2: { label: 'D1 Reserve', amount: 25000 },
-  3: { label: 'D1 Starter', amount: 50000 },
-  4: { label: '3-Star Recruit', amount: 75000 },
-  5: { label: '4-Star Recruit', amount: 100000 },
-  6: { label: '5-Star Recruit', amount: 150000 }
-};
+import { STARTING_TIERS } from '../rules/finance';
+
+// Opening die -> NIL tier and base capital, from rules/config/finance.json.
+// The $2,500 scholarship is added on top once at the start and is not taxable income.
+const tiers = Object.fromEntries(
+  STARTING_TIERS.map(t => [t.die, { label: t.name, amount: t.capital_cents / 100 }])
+);
 
 export default tiers;

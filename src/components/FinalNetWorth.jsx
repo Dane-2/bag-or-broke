@@ -1,55 +1,19 @@
 import React from 'react';
+import { formatCents } from '../rules/money';
+import { assetValue, policyLoanQuote, isActive } from '../rules/holdings';
 
-function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, playerName, showFinal, shadyDebt, investments, lossAvoided = 0, protectionTier = { tier: 0, label: 'No Protection' }, empireStatus = false, isGeneratingSummary, balanceBonusAwarded = false }) {
-  const luxuryResale = luxuries.reduce((acc, item) => acc + item.resale, 0);
-  // Calculate Total Asset Value: sum of all investment current values (newValue)
-  const totalAssetValue = investments.reduce((acc, inv) => acc + (inv.newValue || 0), 0);
-  
-  // Life Insurance aggregates
-  const lifeInsurancePolicies = investments.filter(inv => inv.investmentType === 'lifeInsurance');
-  const totalLifeInsuranceFaceAmount = lifeInsurancePolicies.reduce((acc, policy) => 
-    acc + (policy.currentFaceAmount || policy.faceAmount || 0), 0
-  );
-  const totalPolicyLiquidity = lifeInsurancePolicies.reduce((acc, policy) => {
-    const cashValue = policy.currentCashValue || policy.maxCashValue || 0;
-    const loans = policy.outstandingLoans || 0;
-    return acc + (cashValue - loans);
-  }, 0);
-  
-  // Annuity aggregates
-  const annuities = investments.filter(inv => inv.investmentType === 'annuity');
-  const totalGuaranteedIncomePerLap = annuities
-    .filter(ann => ann.isMatured)
-    .reduce((acc, ann) => acc + (ann.perLapPayout || 0), 0);
-  const totalAnnuityIncomeEarned = annuities.reduce((acc, ann) => acc + (ann.totalIncomeEarned || 0), 0);
-  
-  // Offensive Planning aggregates
-  const offensiveInvestments = investments.filter(inv => inv.investmentType === 'offensivePlanning');
-  const hasStocks = offensiveInvestments.some(inv => inv.cardId === 'OFF_STOCKS');
-  const hasETFs = offensiveInvestments.some(inv => inv.cardId === 'OFF_ETFS');
-  const hasBonds = offensiveInvestments.some(inv => inv.cardId === 'OFF_BONDS');
-  const offensivePortfolioComplete = hasStocks && hasETFs && hasBonds;
-  const offensiveAssetsOwned = offensiveInvestments.length;
-  
-  // Defensive Planning aggregates (using already defined lifeInsurancePolicies and annuities)
-  const healthProtections = investments.filter(inv => inv.investmentType === 'healthDisabilityProtection');
-  const legalProtections = investments.filter(inv => inv.investmentType === 'legalProtection');
-  const hasUmbrella = investments.some(inv => inv.investmentType === 'umbrellaLiability');
-  
-  const healthUsesRemaining = healthProtections.reduce((acc, inv) => acc + (inv.usesRemaining > 0 ? inv.usesRemaining : 0), 0);
-  const legalUsesRemaining = legalProtections.reduce((acc, inv) => acc + (inv.usesRemaining > 0 ? inv.usesRemaining : 0), 0);
-  
-  const eventsBlocked = curveballs.filter(c => c.blocked).length;
-  const impenetrableWealthLayers = lifeInsurancePolicies.length + annuities.length;
-  
-  // Updated scoring formula per PDF: rep * 5000, career * 10000, balance bonus +250000
-  const repValue = rep * 5000;
-  const careerValue = career * 10000;
-  const creditBonus = credit >= 700 ? 10000 : credit >= 600 ? 5000 : credit >= 500 ? 2000 : 0;
-  const balanceBonusValue = balanceBonusAwarded ? 250000 : 0;
-  const netWorth = cash + totalAssetValue + luxuryResale + repValue + careerValue + creditBonus + balanceBonusValue - debt - (shadyDebt || 0);
+function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, showFinal, ledger, score, finalWindow = false, lossAvoided = 0, isGeneratingSummary }) {
+  const active = ledger.assets.filter(isActive);
+  const policies = active.filter(a => a.holding === 'life');
+  const annuities = ledger.assets.filter(a => a.holding === 'annuity');
+  const plans = active.filter(a => a.holding === 'plan');
+  const netProtection = policies.reduce((t, a) => t + policyLoanQuote(ledger, a).netProtection, 0);
+  const annuityCash = annuities.reduce((t, a) => t + (a.cashReceived || 0), 0);
+  const annuityRemaining = annuities.filter(isActive).reduce((t, a) => t + assetValue(ledger, a), 0);
+  const legalUses = plans.filter(a => a.plan === 'legal').reduce((t, a) => t + a.uses, 0);
+  const healthUses = plans.filter(a => a.plan === 'health').reduce((t, a) => t + a.uses, 0);
 
-  const curveballLoss = curveballs.filter(c => !c.blocked).reduce((acc, c) => acc + (c.amount || 0), 0);
+  const curveballLoss = curveballs.reduce((acc, c) => acc + (c.amount || 0), 0);
   const totalLuxuries = luxuries.length;
 
   let assignedProfile = 'The CEO in Training';
@@ -69,161 +33,53 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
     assignedProfile = 'The Hot Shot';
   }
 
-  // Add empire modifier to profile if applicable
-  if (empireStatus) {
-    assignedProfile = `${assignedProfile} (Empire Builder)`;
-  }
-
   return (
     <section className="bg-white rounded-xl shadow-md p-4">
       <h3 className="text-lg font-semibold text-indigo-700 mb-2 flex items-center gap-2">
-        📊 Final Net Worth
+        📊 Final Game Value
       </h3>
       <div className="space-y-1 text-sm text-gray-800">
+        {/* Central finance portfolio: financial wealth, then noncash points, shown separately */}
         <ul className="space-y-1">
-          <li>💵 <strong>Cash:</strong> ${cash.toLocaleString()}</li>
-          <li>📈 <strong>Total Asset Value:</strong> ${totalAssetValue.toLocaleString()}</li>
-          <li>💎 <strong>Luxury Resale:</strong> ${luxuryResale.toLocaleString()}</li>
-          <li>🌟 <strong>REP Value:</strong> ${repValue.toLocaleString()}</li>
-          <li>📚 <strong>Career Value:</strong> ${careerValue.toLocaleString()}</li>
-          <li>🧠 <strong>Credit Bonus:</strong> ${creditBonus.toLocaleString()}</li>
-          <li>💳 <strong>Debt:</strong> -${debt.toLocaleString()}</li>
-          {shadyDebt > 0 && <li>⚫ <strong>Shady Debt:</strong> -${shadyDebt.toLocaleString()}</li>}
+          <li>💵 <strong>Available Cash:</strong> {formatCents(score.cash)}</li>
+          <li>🧾 <strong>Tax Bucket:</strong> {formatCents(score.taxBucket)}</li>
+          <li>📈 <strong>Investments &amp; contracts:</strong> {formatCents(score.assetsValue)}</li>
+          <li>💎 <strong>Luxury resale:</strong> {formatCents(score.luxuryResale)}</li>
+          <li>💳 <strong>Borrowing:</strong> -{formatCents(score.ordinaryDebt)}</li>
+          {score.policyDebt > 0 && <li>🛡️ <strong>Policy loans:</strong> -{formatCents(score.policyDebt)}</li>}
+          {score.taxesOwed > 0 && <li>🏛️ <strong>Taxes owed:</strong> -{formatCents(score.taxesOwed)}</li>}
+          {score.otherLiabilities > 0 && <li>⚫ <strong>Shady Debt:</strong> -{formatCents(score.otherLiabilities)}</li>}
+          <li className="pt-1 font-semibold">= Financial wealth: {formatCents(score.financialWealth)}</li>
+          <li>🌟 <strong>REP ({rep} × $2,500):</strong> {formatCents(score.repValue)}</li>
+          <li>📚 <strong>Career ({career} × $5,000):</strong> {formatCents(score.careerValue)}</li>
+          <li>🧠 <strong>Credit bonus (score {credit}):</strong> {formatCents(score.creditBonus)}</li>
         </ul>
-        
-        {/* Loss Avoidance Display */}
+
         {lossAvoided > 0 && (
           <div className="mt-3 p-2 bg-green-50 rounded border border-green-200">
             <p className="text-sm font-semibold text-green-700">
-              🛡️ Losses Avoided Through Risk Management: ${lossAvoided.toLocaleString()}
+              🛡️ Paid by Legal or Health Support: ${lossAvoided.toLocaleString()}
             </p>
           </div>
         )}
-        
-        {/* Protection Tier Display */}
-        {protectionTier.tier > 0 && (
-          <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
-            <p className="text-sm font-semibold text-blue-700">
-              🛡️ Protection Tier: {protectionTier.label}
-            </p>
-          </div>
-        )}
-        
-        {/* Life Insurance Display */}
-        {lifeInsurancePolicies.length > 0 && (
-          <div className="mt-3 p-3 bg-blue-50 rounded border border-blue-200">
-            <p className="text-sm font-semibold text-blue-700 mb-2">🛡️ Life Insurance Summary</p>
-            <ul className="text-xs text-gray-700 space-y-1">
-              {lifeInsurancePolicies.map((policy, idx) => {
-                const faceAmount = policy.currentFaceAmount || policy.faceAmount || 0;
-                const cashValue = policy.currentCashValue || policy.maxCashValue || 0;
-                const loans = policy.outstandingLoans || 0;
-                const available = cashValue - loans;
-                return (
-                  <li key={idx} className="pl-2">
-                    <strong>{policy.cardTitle}:</strong> Face: ${faceAmount.toLocaleString()}, 
-                    Cash Value: ${cashValue.toLocaleString()}, 
-                    Loans: ${loans.toLocaleString()}, 
-                    Available: ${available.toLocaleString()}
-                  </li>
-                );
-              })}
-            </ul>
-            <p className="text-sm font-semibold text-blue-800 mt-2">
-              Total Face Amount: ${totalLifeInsuranceFaceAmount.toLocaleString()}
-            </p>
-            <p className="text-sm font-semibold text-blue-800">
-              Total Policy Liquidity: ${totalPolicyLiquidity.toLocaleString()}
-            </p>
-          </div>
-        )}
-        
-        {/* Annuity Display */}
-        {annuities.length > 0 && (
-          <div className="mt-3 p-3 bg-purple-50 rounded border border-purple-200">
-            <p className="text-sm font-semibold text-purple-700 mb-2">💰 Annuity Summary</p>
-            <ul className="text-xs text-gray-700 space-y-1">
-              {annuities.map((annuity, idx) => (
-                <li key={idx} className="pl-2">
-                  <strong>{annuity.cardTitle}:</strong> Cost: ${(annuity.cost || 0).toLocaleString()}, 
-                  {annuity.isMatured ? '✅ Matured' : '⏳ Not Matured'}, 
-                  Payout: ${(annuity.perLapPayout || 0).toLocaleString()}/lap, 
-                  Income Earned: ${(annuity.totalIncomeEarned || 0).toLocaleString()}
-                </li>
-              ))}
-            </ul>
-            {totalGuaranteedIncomePerLap > 0 && (
-              <p className="text-sm font-semibold text-purple-800 mt-2">
-                Total Guaranteed Income Per Lap: ${totalGuaranteedIncomePerLap.toLocaleString()}
-              </p>
-            )}
-            {totalAnnuityIncomeEarned > 0 && (
-              <p className="text-sm font-semibold text-purple-800">
-                Total Annuity Income Earned: ${totalAnnuityIncomeEarned.toLocaleString()}
-              </p>
-            )}
-          </div>
-        )}
-        
-        {/* Offensive Planning Portfolio Display */}
-        {offensiveAssetsOwned > 0 && (
-          <div className={`mt-3 p-3 rounded border ${offensivePortfolioComplete ? 'bg-green-50 border-green-300' : 'bg-orange-50 border-orange-200'}`}>
-            <p className="text-sm font-semibold mb-2" style={{ color: offensivePortfolioComplete ? '#065f46' : '#9a3412' }}>
-              📈 Offensive Planning Portfolio
-            </p>
-            <p className="text-xs text-gray-700 mb-1">
-              <strong>Status:</strong> {offensivePortfolioComplete ? '✅ COMPLETE' : '⏳ Incomplete'}
-            </p>
-            {offensivePortfolioComplete && (
-              <p className="text-xs text-green-700 mb-1">
-                <strong>Diversification Bonus:</strong> ACTIVE (+5% ROI to all offensive assets)
-              </p>
-            )}
-            <p className="text-xs text-gray-700">
-              <strong>Total Offensive Assets Owned:</strong> {offensiveAssetsOwned}/3
-            </p>
-            {offensiveInvestments.length > 0 && (
-              <ul className="text-xs text-gray-700 mt-2 space-y-1">
-                {offensiveInvestments.map((inv, idx) => (
-                  <li key={idx} className="pl-2">
-                    <strong>{inv.cardTitle}:</strong> Value: ${(inv.newValue || 0).toLocaleString()}, 
-                    Rolled ROI: {inv.rolledROI}%, 
-                    {inv.offensivePortfolioComplete && <span className="text-green-600"> Effective ROI: {inv.effectiveROI?.toFixed(1) || (inv.rolledROI + 5)}% (with bonus)</span>}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-        
-        {/* Defensive Planning Summary */}
-        {(lifeInsurancePolicies.length > 0 || annuities.length > 0 || healthProtections.length > 0 || legalProtections.length > 0 || hasUmbrella) && (
+
+        {(policies.length > 0 || annuities.length > 0 || plans.length > 0) && (
           <div className="mt-3 p-3 bg-indigo-50 rounded border border-indigo-200">
-            <p className="text-sm font-semibold text-indigo-700 mb-2">🛡️ Defensive Planning Overview</p>
+            <p className="text-sm font-semibold text-indigo-700 mb-2">🛡️ Protection &amp; contracts (not counted again in wealth)</p>
             <ul className="text-xs text-gray-700 space-y-1">
-              <li><strong>Life Insurance Policies Owned:</strong> {lifeInsurancePolicies.length}</li>
-              <li><strong>Annuities Owned:</strong> {annuities.length}</li>
-              {healthProtections.length > 0 && (
-                <li><strong>Health & Disability Uses Remaining:</strong> {healthUsesRemaining} {healthUsesRemaining === -1 ? '(Unlimited)' : ''}</li>
+              {policies.length > 0 && <li><strong>Life insurance net protection:</strong> {formatCents(netProtection)}</li>}
+              {annuities.length > 0 && (
+                <li>
+                  <strong>Annuities:</strong> {formatCents(annuityCash)} received, {formatCents(annuityRemaining)} still in contracts
+                </li>
               )}
-              {legalProtections.length > 0 && (
-                <li><strong>Legal Protection Uses Remaining:</strong> {legalUsesRemaining} {legalUsesRemaining === -1 ? '(Unlimited)' : ''}</li>
-              )}
-              <li><strong>Umbrella Liability Coverage:</strong> {hasUmbrella ? '✅ ACTIVE' : '❌ NOT OWNED'}</li>
-              {eventsBlocked > 0 && (
-                <li><strong>Total Curveball Events Blocked:</strong> {eventsBlocked}</li>
-              )}
-              {lossAvoided > 0 && (
-                <li className="text-green-700"><strong>Total Losses Avoided:</strong> ${lossAvoided.toLocaleString()}</li>
-              )}
-              {impenetrableWealthLayers > 0 && (
-                <li><strong>Impenetrable Wealth Layers Built:</strong> {impenetrableWealthLayers}</li>
-              )}
+              {plans.length > 0 && <li><strong>Support uses left:</strong> {legalUses} legal, {healthUses} health (no cash value)</li>}
             </ul>
           </div>
         )}
-        
-        <h4 className="text-xl font-bold mt-3">Net Worth: ${netWorth.toLocaleString()}</h4>
+
+        <h4 className="text-xl font-bold mt-3">Final game value: {formatCents(score.gameValue)}</h4>
+        <p className="text-xs text-gray-500">The credit bonus and point values count only in this final score; they are not spendable cash.</p>
         <p className="text-sm text-gray-600 mt-1">Profile: {assignedProfile}</p>
         <button
           onClick={() => {
@@ -235,7 +91,7 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
           className="w-full bg-indigo-600 text-white font-semibold py-2 mt-4 rounded hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={!showFinal || isGeneratingSummary}
         >
-          {isGeneratingSummary ? 'Generating Summary...' : 'End Game & View Scoreboard'}
+          {isGeneratingSummary ? 'Generating Summary...' : finalWindow ? 'Finish & Reveal' : 'Finish Early & Reveal'}
         </button>
       </div>
     </section>

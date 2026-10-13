@@ -1,0 +1,178 @@
+{
+  "board_id": "BOB-ORIGINAL-40-DIGITAL-v1",
+  "source": "BOB_BOARD FINAL_12_22.png",
+  "status": "geometry and colors preserved; zero-based indices assigned for implementation",
+  "direction": "start bottom left, up left edge, right top, down right edge, left bottom",
+  "spaces": [
+    {
+      "index": 0,
+      "category": "start"
+    },
+    {
+      "index": 1,
+      "category": "green"
+    },
+    {
+      "index": 2,
+      "category": "yellow"
+    },
+    {
+      "index": 3,
+      "category": "diamond"
+    },
+    {
+      "index": 4,
+      "category": "red"
+    },
+    {
+      "index": 5,
+      "category": "green"
+    },
+    {
+      "index": 6,
+      "category": "blue"
+    },
+    {
+      "index": 7,
+      "category": "purple"
+    },
+    {
+      "index": 8,
+      "category": "yellow"
+    },
+    {
+      "index": 9,
+      "category": "diamond"
+    },
+    {
+      "index": 10,
+      "category": "yellow"
+    },
+    {
+      "index": 11,
+      "category": "diamond"
+    },
+    {
+      "index": 12,
+      "category": "green"
+    },
+    {
+      "index": 13,
+      "category": "red"
+    },
+    {
+      "index": 14,
+      "category": "purple"
+    },
+    {
+      "index": 15,
+      "category": "green"
+    },
+    {
+      "index": 16,
+      "category": "blue"
+    },
+    {
+      "index": 17,
+      "category": "green"
+    },
+    {
+      "index": 18,
+      "category": "diamond"
+    },
+    {
+      "index": 19,
+      "category": "purple"
+    },
+    {
+      "index": 20,
+      "category": "red"
+    },
+    {
+      "index": 21,
+      "category": "yellow"
+    },
+    {
+      "index": 22,
+      "category": "red"
+    },
+    {
+      "index": 23,
+      "category": "purple"
+    },
+    {
+      "index": 24,
+      "category": "green"
+    },
+    {
+      "index": 25,
+      "category": "diamond"
+    },
+    {
+      "index": 26,
+      "category": "blue"
+    },
+    {
+      "index": 27,
+      "category": "yellow"
+    },
+    {
+      "index": 28,
+      "category": "green"
+    },
+    {
+      "index": 29,
+      "category": "diamond"
+    },
+    {
+      "index": 30,
+      "category": "red"
+    },
+    {
+      "index": 31,
+      "category": "blue"
+    },
+    {
+      "index": 32,
+      "category": "red"
+    },
+    {
+      "index": 33,
+      "category": "purple"
+    },
+    {
+      "index": 34,
+      "category": "green"
+    },
+    {
+      "index": 35,
+      "category": "yellow"
+    },
+    {
+      "index": 36,
+      "category": "diamond"
+    },
+    {
+      "index": 37,
+      "category": "purple"
+    },
+    {
+      "index": 38,
+      "category": "red"
+    },
+    {
+      "index": 39,
+      "category": "green"
+    }
+  ],
+  "categories": {
+    "green": "Investments",
+    "diamond": "Lifestyle and Luxury",
+    "red": "Financial Curveballs",
+    "blue": "Lifestyle and Sport Curveballs",
+    "purple": "Career and Professional Development",
+    "yellow": "NIL Opportunities"
+  },
+  "start_rule": "crossing triggers close; exact nonfinal landing on0 gives receipt only and ends turn; no second opportunity",
+  "physical_board_adapter": "use physical space index; printed legacy penalty remains authoritative only in legacy pinned mode"
+}

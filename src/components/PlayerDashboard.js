@@ -1,22 +1,20 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { 
-  FaTrophy, FaUser, FaBolt, FaChartBar, 
-  FaCreditCard, FaGem, FaChartLine, FaShieldAlt, FaMoneyBillWave, 
+  FaTrophy, FaUser, FaBolt,
+  FaCreditCard, FaGem, FaChartLine,
   FaStar, FaIdCard, FaTh, FaHome
 } from 'react-icons/fa';
-import CardSelector from './CardSelector';
+import CatalogMenu from './CatalogMenu';
+import HoldingsPanel from './HoldingsPanel';
+import LuxuryHoldings from './LuxuryHoldings';
 
-import LapTracker from './LapTracker';
-import CashTracker, { promptAddCashAmount, promptSubtractCashAmount } from './CashTracker';
-import InvestmentLog from './InvestmentLog';
-import LuxuryLog from './LuxuryLog';
-import DebtCreditTracker from './DebtCreditTracker';
-import DrawFromAsset from './DrawFromAsset';
+import TurnTracker from './TurnTracker';
+import CashTracker from './CashTracker';
+import CashEntry from './CashEntry';
+import FinancePanel from './FinancePanel';
 import CurveballSection from './CurveballSection';
 import RepCareerPoints from './RepCareerPoints';
 import FinalNetWorth from './FinalNetWorth';
-import LifeInsuranceManager from './LifeInsuranceManager';
-import AnnuityManager from './AnnuityManager';
 import PurpleTab from './PurpleTab';
 
 import { fetchAiSummary } from '../utils/fetchAiSummary';
@@ -25,6 +23,16 @@ import { selectCoachJBoWinner } from '../utils/coachJBo';
 import RoomHUD from "./RoomHUD";
 import ToastContainer from "./ToastContainer";
 import { leaveRoom as leaveRoomRequest } from '../utils/roomApi';
+import { rollDice } from '../utils/dice';
+import useLedger from '../hooks/useLedger';
+import {
+  createLedger, completedLaps, totalBorrowing, taxesOwed, inFinalWindow, newOpId,
+} from '../rules/ledger';
+import { scoreBreakdown } from '../rules/portfolio';
+import { holdingsValue, unusedPlanUses } from '../rules/holdings';
+import { investmentsView, luxuriesView } from '../rules/views';
+import { formatCents, fromCents, toCents } from '../rules/money';
+import { RULESET_ID, SAVE_PREFIX } from '../rules';
 
 function PlayerDashboard({
   playerName,
@@ -38,105 +46,37 @@ function PlayerDashboard({
   // =====================================================
   // LOCAL GAME STATE
   // =====================================================
-  const [cash, setCash] = useState(startingCash || 0);
+  const totalLaps = initialTotalLaps || 5;
+
+  // Cash, Tax Bucket, loans, taxes, credit and the lap clock live in the finance ledger.
+  // `cash`, `debt`, `credit` and `laps` below are read-only views of it.
+  const { ledger, run, replace: replaceLedger, setCash, current: ledgerRef } = useLedger(() =>
+    createLedger({ openingCash: toCents(startingCash || 0), totalLaps })
+  );
+  const cash = fromCents(ledger.cash);
+  const credit = ledger.creditScore;
+  const laps = completedLaps(ledger);
+  const debt = fromCents(totalBorrowing(ledger));
   const [rep, setRep] = useState(0);
   const [career, setCareer] = useState(0);
-  const [luxuries, setLuxuries] = useState([]);
   const [curveballs, setCurveballs] = useState([]);
-  const [debt, setDebt] = useState(0);
-  const [credit, setCredit] = useState(500);
-  const [investments, setInvestments] = useState([]);
-  const [laps, setLaps] = useState(0);
+  // Read-only views of ledger holdings for room sync, Coach J-Bo and the AI summary.
+  const investments = useMemo(() => investmentsView(ledger), [ledger]);
+  const luxuries = useMemo(() => luxuriesView(ledger), [ledger]);
   const [shadyDebt, setShadyDebt] = useState(0);
   const [redCurveballLoss, setRedCurveballLoss] = useState(0); // Financial curveball losses
   const [blueCurveballLoss, setBlueCurveballLoss] = useState(0); // Life curveball losses
   const [lossAvoided, setLossAvoided] = useState(0); // Total losses avoided through protection
-  const totalLaps = initialTotalLaps || 5;
   
   // REP & Career System State
   const [balanceBonusAwarded, setBalanceBonusAwarded] = useState(false);
   const [careerThresholdsUnlocked, setCareerThresholdsUnlocked] = useState([]);
   const [repThresholdsUnlocked, setRepThresholdsUnlocked] = useState([]);
-  const [investmentSetsAwarded, setInvestmentSetsAwarded] = useState([]);
 
   // =====================================================
   // REP & CAREER SYSTEM FUNCTIONS
   // =====================================================
   
-  // Get REP award from luxury cost (based on cost tier)
-  const getRepFromCost = (cost) => {
-    if (cost >= 250000) return 8;
-    if (cost >= 150000) return 7;
-    if (cost >= 80000) return 6;
-    if (cost >= 50000) return 5;
-    if (cost >= 25000) return 4;
-    if (cost >= 12000) return 3;
-    if (cost >= 6000) return 2;
-    if (cost >= 3500) return 1;
-    return 0;
-  };
-
-  // Check investment set completions for Career points
-  const checkInvestmentSets = () => {
-    const sets = {
-      offensive: {
-        required: ['OFF_STOCKS', 'OFF_ETFS', 'OFF_BONDS'],
-        bonus: 10,
-        id: 'offensive'
-      },
-      realEstate: {
-        required: ['I1'], // Vacant Property
-        bonus: 10,
-        id: 'realEstate',
-        // Also need Renovated Property and any Rental Strategy
-        check: (inv) => {
-          const hasVacant = inv.some(i => i.cardId === 'I1');
-          const hasRenovated = inv.some(i => i.cardId === 'I2');
-          const hasRental = inv.some(i => 
-            i.cardId === 'RE_SHORT_TERM_RENTAL' || 
-            i.cardId === 'RE_DUPLEX' || 
-            i.cardId === 'RE_TRIPLEX' || 
-            i.cardId === 'RE_FOURPLEX' ||
-            (i.cardTitle && i.cardTitle.includes('Rent'))
-          );
-          return hasVacant && hasRenovated && hasRental;
-        }
-      },
-      defensive: {
-        bonus: 15,
-        id: 'defensive',
-        check: (inv) => {
-          const hasLifeInsurance = inv.some(i => i.cardId && i.cardId.startsWith('INV_LIFE_INSURANCE'));
-          const hasAnnuity = inv.some(i => i.cardId && i.cardId.startsWith('INV_ANNUITY'));
-          const hasHealth = inv.some(i => i.cardId && i.cardId.startsWith('DEF_HEALTH'));
-          const hasLegal = inv.some(i => i.cardId && i.cardId.startsWith('DEF_LEGAL'));
-          const hasUmbrella = inv.some(i => i.cardId === 'DEF_UMBRELLA_LIABILITY');
-          return hasLifeInsurance && hasAnnuity && (hasHealth || hasLegal || hasUmbrella);
-        }
-      }
-    };
-
-    Object.values(sets).forEach(set => {
-      if (set.id && !investmentSetsAwarded.includes(set.id)) {
-        let completed = false;
-        
-        if (set.id === 'offensive') {
-          completed = set.required.every(cardId => 
-            investments.some(inv => inv.cardId === cardId)
-          );
-        } else if (set.check) {
-          completed = set.check(investments);
-        }
-        
-        if (completed) {
-          setCareer(prev => prev + set.bonus);
-          setInvestmentSetsAwarded(prev => [...prev, set.id]);
-          addToast(`🎯 Investment Set Complete! +${set.bonus} Career Points`, 'success', 4000);
-        }
-      }
-    });
-  };
-
   // Check Career thresholds
   const checkCareerThresholds = () => {
     const thresholds = [
@@ -178,7 +118,7 @@ function PlayerDashboard({
     const repCareerDiff = Math.abs(rep - career);
     if (repCareerDiff <= 10 && rep >= 20 && career >= 20) {
       setBalanceBonusAwarded(true);
-      setCash(prev => prev + 250000);
+      setCash(prev => prev + 250000, 'Balance Bonus');
       addToast('⚖️ Balance Bonus! +$250,000 + 5% ROI boost to one investment!', 'success', 5000);
     }
   };
@@ -189,7 +129,6 @@ function PlayerDashboard({
     checkCareerThresholds();
     checkRepThresholds();
     checkBalanceBonus();
-    checkInvestmentSets();
   };
 
   // Handle purple tab event selection
@@ -236,53 +175,6 @@ function PlayerDashboard({
     addToast(`🛡️ Protection activated! Loss avoided: $${amount.toLocaleString()}`, 'success', 4000);
   };
 
-  // Calculate protection tier
-  const calculateProtectionTier = () => {
-    const hasHoldingCompany = investments.some(inv => inv.cardId === 'RE_HOLDCO');
-    const hasInsurance = investments.some(inv => inv.cardId === 'RE_INSURANCE');
-    
-    if (hasHoldingCompany && hasInsurance) {
-      return { tier: 2, label: 'Tier 2 – Institutionally Protected' };
-    } else if (hasHoldingCompany || hasInsurance) {
-      return { tier: 1, label: 'Tier 1 – Risk Aware' };
-    }
-    return { tier: 0, label: 'No Protection' };
-  };
-
-  // Calculate empire status
-  const calculateEmpireStatus = () => {
-    const hasRealEstateAssets = investments.filter(inv => 
-      inv.cardTitle && (
-        inv.cardTitle.includes('Duplex') ||
-        inv.cardTitle.includes('Triplex') ||
-        inv.cardTitle.includes('Fourplex') ||
-        inv.cardTitle.includes('Commercial') ||
-        inv.cardTitle.includes('Property') ||
-        inv.cardTitle.includes('Rent')
-      )
-    ).length >= 2;
-
-    const hasMultiUnit = investments.some(inv => 
-      inv.cardTitle && (
-        inv.cardTitle.includes('Duplex') ||
-        inv.cardTitle.includes('Triplex') ||
-        inv.cardTitle.includes('Fourplex')
-      )
-    );
-
-    const hasCommercial = investments.some(inv => 
-      inv.cardTitle && inv.cardTitle.includes('Commercial')
-    );
-
-    const hasProtection = investments.some(inv => 
-      inv.cardId === 'RE_HOLDCO' || inv.cardId === 'RE_INSURANCE'
-    );
-
-    const qualifiesEmpire = (hasRealEstateAssets || hasMultiUnit || hasCommercial) && hasProtection;
-    
-    return qualifiesEmpire;
-  };
-
   // Reconnection tracking (no UI shown to user)
   const [reconnectTrigger, setReconnectTrigger] = useState(0);
   const reconnectAttemptsRef = useRef(0);
@@ -293,7 +185,7 @@ function PlayerDashboard({
   // AUTOSAVE / AUTOLOAD
   // =====================================================
   const restoringRef = useRef(false);
-  const saveKey = `bagorbroke_save_${playerName || 'Player'}`;
+  const saveKey = `${SAVE_PREFIX}${playerName || 'Player'}`;
 
   useEffect(() => {
     const saved = localStorage.getItem(saveKey);
@@ -303,15 +195,10 @@ function PlayerDashboard({
       const s = JSON.parse(saved);
       restoringRef.current = true;
 
-      if (typeof s.cash === 'number') setCash(s.cash);
+      if (s.finance && s.finance.rulesetId === RULESET_ID) replaceLedger(s.finance);
       if (typeof s.rep === 'number') setRep(s.rep);
       if (typeof s.career === 'number') setCareer(s.career);
-      if (Array.isArray(s.luxuries)) setLuxuries(s.luxuries);
       if (Array.isArray(s.curveballs)) setCurveballs(s.curveballs);
-      if (typeof s.debt === 'number') setDebt(s.debt);
-      if (typeof s.credit === 'number') setCredit(s.credit);
-      if (Array.isArray(s.investments)) setInvestments(s.investments);
-      if (typeof s.laps === 'number') setLaps(s.laps);
       if (typeof s.shadyDebt === 'number') setShadyDebt(s.shadyDebt);
       if (typeof s.redCurveballLoss === 'number') setRedCurveballLoss(s.redCurveballLoss);
       if (typeof s.blueCurveballLoss === 'number') setBlueCurveballLoss(s.blueCurveballLoss);
@@ -319,7 +206,6 @@ function PlayerDashboard({
       if (typeof s.balanceBonusAwarded === 'boolean') setBalanceBonusAwarded(s.balanceBonusAwarded);
       if (Array.isArray(s.careerThresholdsUnlocked)) setCareerThresholdsUnlocked(s.careerThresholdsUnlocked);
       if (Array.isArray(s.repThresholdsUnlocked)) setRepThresholdsUnlocked(s.repThresholdsUnlocked);
-      if (Array.isArray(s.investmentSetsAwarded)) setInvestmentSetsAwarded(s.investmentSetsAwarded);
 
     } catch (e) {
       console.error('Failed to parse saved game:', e);
@@ -328,22 +214,20 @@ function PlayerDashboard({
         restoringRef.current = false;
       }, 0);
     }
-  }, [saveKey]);
+  }, [saveKey, replaceLedger]);
 
   useEffect(() => {
     if (restoringRef.current) return;
 
     const snapshot = {
+      rulesetId: RULESET_ID,
       playerName,
+      avatar,
       cash,
+      finance: ledger,
       rep,
       career,
-      luxuries,
       curveballs,
-      debt,
-      credit,
-      investments,
-      laps,
       shadyDebt,
       redCurveballLoss,
       blueCurveballLoss,
@@ -351,7 +235,6 @@ function PlayerDashboard({
       balanceBonusAwarded,
       careerThresholdsUnlocked,
       repThresholdsUnlocked,
-      investmentSetsAwarded,
       totalLaps,
     };
 
@@ -363,15 +246,12 @@ function PlayerDashboard({
   }, [
     saveKey,
     playerName,
+    avatar,
     cash,
+    ledger,
     rep,
     career,
-    luxuries,
     curveballs,
-    debt,
-    credit,
-    investments,
-    laps,
     shadyDebt,
     redCurveballLoss,
     blueCurveballLoss,
@@ -379,7 +259,6 @@ function PlayerDashboard({
     balanceBonusAwarded,
     careerThresholdsUnlocked,
     repThresholdsUnlocked,
-    investmentSetsAwarded,
     totalLaps,
   ]);
 
@@ -786,25 +665,31 @@ function PlayerDashboard({
   }, [syncToRoomInternal]);
   
 
-  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ cash }); }, [cash, roomId, currentPlayerId, syncToRoom]);
-  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ debt }); }, [debt, roomId, currentPlayerId, syncToRoom]);
+  // Room rows carry whole dollars: cash = Available Cash + Tax Bucket, debt = borrowing + unpaid taxes.
+  const syncedCash = Math.round(fromCents(ledger.cash + ledger.taxBucket));
+  const syncedDebt = Math.round(fromCents(totalBorrowing(ledger) + taxesOwed(ledger)));
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ cash: syncedCash }); }, [syncedCash, roomId, currentPlayerId, syncToRoom]);
+  useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ debt: syncedDebt }); }, [syncedDebt, roomId, currentPlayerId, syncToRoom]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ credit }); }, [credit, roomId, currentPlayerId, syncToRoom]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ rep }); }, [rep, roomId, currentPlayerId, syncToRoom]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ laps }); }, [laps, roomId, currentPlayerId, syncToRoom]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ redCurveballLoss }); }, [redCurveballLoss, roomId, currentPlayerId, syncToRoom]);
   useEffect(() => { if (roomId && currentPlayerId) syncToRoom({ blueCurveballLoss }); }, [blueCurveballLoss, roomId, currentPlayerId, syncToRoom]);
 
+  // Views are rebuilt on every ledger change; sync only when their content changes.
+  const luxuriesJson = JSON.stringify(luxuries);
+  const investmentsJson = JSON.stringify(investments);
   useEffect(() => {
     if (roomId && currentPlayerId) {
-      syncToRoom({ luxuries });
+      syncToRoom({ luxuries: JSON.parse(luxuriesJson) });
     }
-  }, [luxuries, roomId, currentPlayerId, syncToRoom]);
+  }, [luxuriesJson, roomId, currentPlayerId, syncToRoom]);
 
   useEffect(() => {
     if (roomId && currentPlayerId) {
-      syncToRoom({ investments });
+      syncToRoom({ investments: JSON.parse(investmentsJson) });
     }
-  }, [investments, roomId, currentPlayerId, syncToRoom]);
+  }, [investmentsJson, roomId, currentPlayerId, syncToRoom]);
 
   // =====================================================
   // HEARTBEAT: Keep player active status updated
@@ -855,155 +740,159 @@ function PlayerDashboard({
     }
   }, [laps, totalLaps]);
 
-  // Check thresholds when REP, Career, or investments change
+  // Check thresholds when REP or Career change
   useEffect(() => {
     checkAllThresholds();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rep, career, investments]);
+  }, [rep, career]);
 
   // Rate limiting: Track last purchase time
   const lastPurchaseTimeRef = useRef(0);
   const RATE_LIMIT_MS = 2000; // 2 seconds between purchases
 
-  const handleCardSelection = (cardResult) => {
-    // Rate limiting check
-    const now = Date.now();
-    const timeSinceLastPurchase = now - lastPurchaseTimeRef.current;
-    
-    if (timeSinceLastPurchase < RATE_LIMIT_MS) {
-      const waitTime = ((RATE_LIMIT_MS - timeSinceLastPurchase) / 1000).toFixed(1);
-      addToast(`Please wait ${waitTime} seconds before making another purchase.`, 'warning', 3000);
-      return;
-    }
+  /** Apply REP / Career that a ledger result awarded (luxury families, Youth Sports, events). */
+  const applyPoints = (result) => {
+    if (result && result.rep > 0) setRep(prev => prev + result.rep);
+    if (result && result.career > 0) setCareer(prev => prev + result.career);
+  };
 
-    // Validation: Check if player has sufficient funds
-    if (cardResult.type === 'investment') {
-      const { cost, borrowed } = cardResult;
-      
-      if (!borrowed && cash < cost) {
-        addToast('Insufficient funds for this purchase.', 'error', 3000);
-        return;
-      }
-      
-      // Check credit if financing
-      if (borrowed && credit < 20) {
-        addToast('Insufficient credit for financing. Credit score too low.', 'error', 3000);
-        return;
-      }
-
-      // Check if player already owns Umbrella (non-repeatable)
-      if (cardResult.cardId === 'DEF_UMBRELLA' && investments.some(inv => inv.cardId === 'DEF_UMBRELLA')) {
-        addToast('You can only own one Umbrella Liability Coverage policy.', 'error', 3000);
-        return;
-      }
-
-      const { cost: finalCost, interest } = cardResult;
-      if (borrowed) {
-        setDebt(prev => prev + finalCost + interest);
-        setCredit(prev => prev - 20);
-      } else {
-        setCash(prev => prev - finalCost);
-      }
-      
-      // Set purchase lap for annuities
-      const investmentData = { ...cardResult };
-      if (cardResult.investmentType === 'annuity') {
-        investmentData.purchaseLap = laps;
-      }
-      
-      // Check for offensive portfolio completion after adding investment
-      setInvestments(prev => {
-        // Check if portfolio was already complete before this purchase
-        const prevHasStocks = prev.some(inv => inv.cardId === 'OFF_STOCKS');
-        const prevHasETFs = prev.some(inv => inv.cardId === 'OFF_ETFS');
-        const prevHasBonds = prev.some(inv => inv.cardId === 'OFF_BONDS');
-        const wasAlreadyComplete = prevHasStocks && prevHasETFs && prevHasBonds;
-        
-        const updated = [...prev, investmentData];
-        
-        // Check if player now owns all three offensive planning cards
-        const hasStocks = updated.some(inv => inv.cardId === 'OFF_STOCKS');
-        const hasETFs = updated.some(inv => inv.cardId === 'OFF_ETFS');
-        const hasBonds = updated.some(inv => inv.cardId === 'OFF_BONDS');
-        const portfolioComplete = hasStocks && hasETFs && hasBonds;
-        
-        // Apply portfolio completion bonuses
-        if (portfolioComplete) {
-          // Check if this is the first time completing (one-time bonus)
-          if (!wasAlreadyComplete) {
-            // One-time $100,000 cash bonus
-            setCash(prevCash => prevCash + 100000);
-            addToast('🎉 Offensive Portfolio Complete! +$100,000 bonus and +5% ROI to all offensive assets!', 'success', 5000);
-          }
-          
-          // Mark all offensive planning investments with portfolio bonus
-          return updated.map(inv => {
-            if (inv.investmentType === 'offensivePlanning') {
-              return {
-                ...inv,
-                offensivePortfolioComplete: true
-              };
-            }
-            return inv;
-          });
-        }
-        
-        return updated;
-      });
-      lastPurchaseTimeRef.current = now;
-      
-      addToast(
-        `Investment purchased for $${finalCost.toLocaleString()}${borrowed ? " (Financed with 25% interest)" : ""}`,
-        'success',
-        3000
-      );
-    }
-
-    if (cardResult.type === 'luxury') {
-      const { cardTitle, cost, resale, borrowed, interest } = cardResult;
-      
-      if (!borrowed && cash < cost) {
-        addToast('Insufficient funds for this purchase.', 'error', 3000);
-        return;
-      }
-      
-      // Check credit if financing
-      if (borrowed && credit < 20) {
-        addToast('Insufficient credit for financing. Credit score too low.', 'error', 3000);
-        return;
-      }
-
-      if (borrowed) {
-        setDebt(prev => prev + cost + interest);
-        setCredit(prev => prev - 20);
-      } else {
-        setCash(prev => prev - cost);
-      }
-      
-      // Calculate REP from cost tier (automatic award)
-      const repGain = getRepFromCost(cost);
-      setRep(prev => prev + repGain);
-      
-      setLuxuries(prev => [...prev, {
-        name: cardTitle,
-        cost,
-        resale,
-        rep: repGain,
-        borrowed,
-        interest,
-      }]);
-      lastPurchaseTimeRef.current = now;
-      
-      addToast(
-        `Purchased ${cardTitle}! +${repGain} REP${borrowed ? " (Financed with 25% interest)" : ""}`,
-        'success',
-        3000
-      );
-      
-      // Check thresholds after REP gain
-      setTimeout(() => checkAllThresholds(), 100);
+  /**
+   * Run a ledger operation from a button; toast the outcome. Returns true on success.
+   * `format` builds the success message from the result when it depends on it.
+   */
+  const act = (type, payload, successMessage, format) => {
+    try {
+      const result = run(type, payload);
+      applyPoints(result);
+      const message = format ? format(result) : successMessage;
+      if (message) addToast(message, 'success', 3500);
+      return true;
+    } catch (e) {
+      addToast(e.message, 'error', 4000);
+      return false;
     }
   };
+
+  /** Buy from the green or diamond menu; the receipt explains exactly what happened. */
+  const handleAcquire = (payload) => {
+    const now = Date.now();
+    if (now - lastPurchaseTimeRef.current < RATE_LIMIT_MS) {
+      addToast('Please wait a moment before making another purchase.', 'warning', 2500);
+      return false;
+    }
+    let r;
+    try {
+      r = run('acquire', { ...payload, assetId: newOpId('asset') });
+    } catch (e) {
+      addToast(e.message, 'error', 4000);
+      return false;
+    }
+    lastPurchaseTimeRef.current = now;
+    applyPoints(r);
+    const title = ledgerRef.current.purchases[ledgerRef.current.purchases.length - 1]?.title || 'Purchase';
+    const parts = [];
+    if (r.receipts !== undefined) parts.push(`receipts ${formatCents(r.receipts)} (${r.profit >= 0 ? 'profit' : 'loss'} ${formatCents(Math.abs(r.profit))})`);
+    if (r.value !== undefined) parts.push(r.failed ? 'launch failed: value $0' : `value ${formatCents(r.value)}`);
+    if (r.borrowed > 0) parts.push(`${formatCents(r.borrowed)} financed`);
+    if (r.rep > 0) parts.push(`+${r.rep} REP`);
+    if (r.career > 0) parts.push(`+${r.career} Career`);
+    addToast(`${title}${r.face ? ` (rolled ${r.face})` : ''}${parts.length ? `: ${parts.join(' · ')}` : ''}`, r.failed ? 'warning' : 'success', 5000);
+    return true;
+  };
+
+  /** The player's own roll: settles the last deadline, moves, and closes any crossed lap. */
+  const handleRoll = (steps, diceCount) => {
+    let r;
+    try {
+      // Market positions get one fair roll per full owned lap; the app rolls and stores them.
+      r = run('roll', { steps, diceCount, draws: rollDice(60) });
+    } catch (e) {
+      addToast(e.message, 'error', 4000);
+      return;
+    }
+    if (r.checkpoint && r.checkpoint.before !== r.checkpoint.after) {
+      const change = r.checkpoint.after - r.checkpoint.before;
+      addToast(
+        `Lap ${r.checkpoint.lap} payments ${r.checkpoint.current ? 'on time' : 'missed'}: credit ${change > 0 ? '+' : ''}${change} → ${r.checkpoint.after}`,
+        r.checkpoint.current ? 'success' : 'warning',
+        4000
+      );
+    }
+    if (r.checkpoint && r.checkpoint.taxLate > 0) {
+      addToast(`Lap ${r.checkpoint.lap} tax unpaid: late charge ${formatCents(r.checkpoint.taxLate)}`, 'warning', 4000);
+    }
+    r.events.forEach(ev => {
+      if (ev.type === 'annuity_payment') {
+        addToast(`Annuity payment received: ${formatCents(ev.payment)} (${formatCents(ev.earnings)} earnings)`, 'success', 4000);
+      } else if (ev.type === 'market_draw') {
+        addToast(`${ev.title}: market roll ${ev.face} (${ev.bps > 0 ? '+' : ''}${ev.bps / 100}%) → ${formatCents(ev.after)}`, ev.bps < 0 ? 'warning' : 'info', 4000);
+      } else if (ev.type === 'policy_lapsed') {
+        addToast(`${ev.title} lapsed: its loan used up the cash value.`, 'warning', 5000);
+      }
+    });
+    r.closedLaps.forEach(closed => {
+      const parts = [`+${formatCents(closed.award)} lap award`];
+      const due = closed.interestPosted + closed.principalDue;
+      if (due > 0) parts.push(`${formatCents(due)} debt payment posted`);
+      if (closed.taxBill > 0) parts.push(`${formatCents(closed.taxBill)} tax bill`);
+      if (closed.careDue > 0) parts.push('companion care due');
+      addToast(`Lap ${closed.lap} complete: ${parts.join(' · ')}`, 'success', 5000);
+    });
+    if (r.final) addToast('Final lap reached. Settle up in Finance, then Finish & Reveal.', 'info', 5000);
+  };
+
+  /**
+   * A legacy curveball cash expense. If the player holds an eligible Legal or Health Support
+   * use, offer it on the eligible component only (80%, capped); the rest is still paid.
+   */
+  const handleCurveballExpense = ({ amount, desc, legalFee = 0, healthFee = 0 }) => {
+    const s = ledgerRef.current;
+    const offer = (plan, fee, bps, cap) => {
+      const uses = unusedPlanUses(s, plan);
+      if (!(fee > 0) || uses === 0) return false;
+      const help = Math.min(cap, Math.round((Math.min(fee, amount) * bps) / 10000));
+      return window.confirm(
+        `Use ${plan === 'legal' ? 'Legal' : 'Health'} Support on "${desc}"?\n\n` +
+        `It pays ${formatCents(help)} of the ${formatCents(Math.min(fee, amount))} ${plan === 'legal' ? 'legal fees' : 'health expense'}. ` +
+        `You pay ${formatCents(amount - help)}. Uses left after: ${uses - 1}.\n\nCancel to pay it all and keep the use.`
+      );
+    };
+    const useLegal = offer('legal', legalFee, 8000, 2500000);
+    const useHealth = !useLegal && offer('health', healthFee, 8000, 2000000);
+    try {
+      return run('legacy_expense', { amount, label: desc, legalFee, healthFee, useLegal, useHealth });
+    } catch (e) {
+      addToast(e.message, 'error', 4000);
+      return null;
+    }
+  };
+
+  // Manual money entry (home screen)
+  const handleIncome = (amount, setAside, label) =>
+    act('income', { amount, taxClass: 'nil', setAside, label },
+      `+${formatCents(amount)} NIL income${setAside > 0 ? ` (${formatCents(setAside)} to Tax Bucket)` : ''}`);
+  const handleOtherIncome = (amount, label) =>
+    act('adjust_cash', { amount, label }, `+${formatCents(amount)} added`);
+  const handleSpend = (amount, label) => {
+    const ok = act('adjust_cash', { amount: -amount, label }, `-${formatCents(amount)} spent`);
+    if (ok && ledgerRef.current.cash < 0) {
+      addToast('Your Available Cash is below zero. Sell an asset or add income to recover.', 'warning', 4000);
+    }
+    return ok;
+  };
+
+  // Live portfolio and game value (frozen into the snapshot at Finish & Reveal)
+  const liveScore = scoreBreakdown({
+    cash: ledger.cash,
+    taxBucket: ledger.taxBucket,
+    ...holdingsValue(ledger),
+    ordinaryDebt: totalBorrowing(ledger),
+    taxesOwed: taxesOwed(ledger),
+    otherLiabilities: toCents(shadyDebt || 0),
+    rep,
+    career,
+    creditScore: ledger.creditScore,
+  });
 
   // Track if AI summary is being generated to prevent duplicate calls
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
@@ -1015,8 +904,66 @@ function PlayerDashboard({
       return;
     }
 
+    const early = !inFinalWindow(ledgerRef.current) && !ledgerRef.current.snapshot;
+    const warning = early
+      ? `You have not reached lap ${totalLaps} yet. Finish now? Your result will be locked and no more laps will count.`
+      : 'Finish & Reveal locks your result. Unpaid debt and taxes are counted against your final value. Continue?';
+    if (!ledgerRef.current.snapshot && !window.confirm(warning)) return;
+
+    // Freeze the financial result once; later calls return the same snapshot.
+    const snapshot = run('finish', {
+      external: {
+        otherLiabilities: toCents(shadyDebt || 0),
+        rep,
+        career,
+      },
+    });
+    const finalCash = fromCents(snapshot.cash);
+    const finalDebt = fromCents(snapshot.ordinaryDebt);
+    const finalCredit = snapshot.creditScore;
+
     setIsGeneratingSummary(true);
     addToast('Generating your AI summary...', 'info', 3000);
+
+    // Coach JBo: only in multiplayer with 4+ players
+    const coachJBoCheck = () => {
+      if (!(roomInfo && currentPlayerId && Object.keys(roomPlayers).length >= 4)) return false;
+      const merged = { ...roomPlayers };
+      merged[currentPlayerId] = {
+        ...merged[currentPlayerId],
+        player_id: currentPlayerId,
+        name: playerName,
+        cash: fromCents(snapshot.cash + snapshot.taxBucket),
+        luxuries,
+        rep,
+        career,
+        credit: finalCredit,
+        debt: fromCents(snapshot.ordinaryDebt + snapshot.taxesOwed),
+        shadyDebt,
+        investments,
+      };
+      const result = selectCoachJBoWinner(merged);
+      return Boolean(result && result.winnerPlayerId === currentPlayerId);
+    };
+
+    const basePayload = {
+      playerName,
+      avatar,
+      cash: finalCash,
+      taxBucket: fromCents(snapshot.taxBucket),
+      taxesOwed: fromCents(snapshot.taxesOwed),
+      luxuries,
+      rep,
+      career,
+      credit: finalCredit,
+      debt: finalDebt,
+      curveballs,
+      shadyDebt,
+      investments,
+      score: snapshot.score,
+      totalLaps,
+      balanceBonusAwarded,
+    };
 
     try {
       console.log('🎯 Generating AI summary for:', playerName);
@@ -1024,12 +971,12 @@ function PlayerDashboard({
       const { summary, archetype } = await fetchAiSummary({
         name: playerName,
         playerName,
-        cash,
+        cash: finalCash,
         luxuries,
         rep,
         career,
-        credit,
-        debt,
+        credit: finalCredit,
+        debt: finalDebt,
         curveballs,
         shadyDebt,
         investments,
@@ -1037,91 +984,24 @@ function PlayerDashboard({
 
       console.log('✅ AI summary received:', { summary: summary?.substring(0, 50) + '...', archetype });
 
-      // Coach JBo: only in multiplayer with 4+ players
-      let coachJBoUnlocked = false;
-      if (roomInfo && currentPlayerId && Object.keys(roomPlayers).length >= 4) {
-        const merged = { ...roomPlayers };
-        merged[currentPlayerId] = {
-          ...merged[currentPlayerId],
-          player_id: currentPlayerId,
-          name: playerName,
-          cash,
-          luxuries,
-          rep,
-          career,
-          debt,
-          shadyDebt,
-          investments,
-        };
-        const result = selectCoachJBoWinner(merged);
-        if (result && result.winnerPlayerId === currentPlayerId) {
-          coachJBoUnlocked = true;
-        }
-      }
-
-      const finalPayload = {
-        playerName,
-        avatar,
-        cash,
-        luxuries,
-        rep,
-        career,
-        credit,
-        debt,
-        curveballs,
-        shadyDebt,
-        investments,
+      clearSave();
+      showFinal({
+        ...basePayload,
         summary: summary || 'Summary generation failed. Your game data is still shown below.',
         archetype: archetype || 'The Hot Shot',
-        totalLaps,
-        balanceBonusAwarded,
-        coachJBoUnlocked,
-      };
-
-      clearSave();
-      showFinal(finalPayload);
+        coachJBoUnlocked: coachJBoCheck(),
+      });
       addToast('Summary generated successfully!', 'success', 2000);
     } catch (error) {
       console.error('❌ Error generating AI summary:', error);
       addToast('Failed to generate summary. Showing results without AI analysis.', 'warning', 4000);
 
-      let coachJBoUnlocked = false;
-      if (roomInfo && currentPlayerId && Object.keys(roomPlayers).length >= 4) {
-        const merged = { ...roomPlayers };
-        merged[currentPlayerId] = {
-          ...merged[currentPlayerId],
-          player_id: currentPlayerId,
-          name: playerName,
-          cash,
-          luxuries,
-          rep,
-          career,
-          debt,
-          shadyDebt,
-          investments,
-        };
-        const result = selectCoachJBoWinner(merged);
-        if (result && result.winnerPlayerId === currentPlayerId) coachJBoUnlocked = true;
-      }
-
       clearSave();
       showFinal({
-        playerName,
-        avatar,
-        cash,
-        luxuries,
-        rep,
-        career,
-        credit,
-        debt,
-        curveballs,
-        shadyDebt,
-        investments,
+        ...basePayload,
         summary: 'AI summary generation failed. Your game data is shown below.',
         archetype: 'The Hot Shot',
-        totalLaps,
-        balanceBonusAwarded,
-        coachJBoUnlocked,
+        coachJBoUnlocked: coachJBoCheck(),
       });
     } finally {
       setIsGeneratingSummary(false);
@@ -1140,7 +1020,7 @@ function PlayerDashboard({
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-sky-400 via-blue-500 to-cyan-400">
-      {roomInfo && <ToastContainer toasts={toasts} onRemove={removeToast} />}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
 
       <div className="max-w-md mx-auto min-h-[100dvh] px-4 pt-4 pb-28">
         {/* Top bar */}
@@ -1201,32 +1081,23 @@ function PlayerDashboard({
                   <div className="mb-4">
                     <CashTracker cash={cash} setCash={setCash} variant="amountOnly" />
                   </div>
-                  <div className="grid grid-cols-2 gap-3 mb-5 text-sm">
+                  <div className="grid grid-cols-3 gap-3 mb-5 text-sm">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">Credit score</p>
                       <p className="text-lg font-bold text-slate-900 tabular-nums">{credit}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-wide text-red-900/70">Total debt</p>
-                      <p className="text-lg font-bold text-red-900 tabular-nums">${debt.toLocaleString()}</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">Tax Bucket</p>
+                      <p className="text-lg font-bold text-slate-900 tabular-nums">{formatCents(ledger.taxBucket)}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-red-900/70">Borrowing</p>
+                      <p className="text-lg font-bold text-red-900 tabular-nums">{formatCents(totalBorrowing(ledger))}</p>
                     </div>
                   </div>
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => promptAddCashAmount(setCash)}
-                      className="flex-1 rounded-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-sm font-semibold shadow-lg shadow-emerald-500/30 hover:from-emerald-600 hover:to-green-700 transition"
-                    >
-                      + Add Cash
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => promptSubtractCashAmount(setCash)}
-                      className="flex-1 rounded-full py-3 px-4 bg-white/35 backdrop-blur-md border border-white/50 text-red-900 text-sm font-semibold shadow-lg hover:bg-white/45 transition"
-                    >
-                      − Spend Cash
-                    </button>
-                  </div>
+                  {!ledger.snapshot && (
+                    <CashEntry onIncome={handleIncome} onOther={handleOtherIncome} onSpend={handleSpend} />
+                  )}
                 </div>
               </div>
 
@@ -1246,16 +1117,7 @@ function PlayerDashboard({
 
               {/* Game progress */}
               <div className={glassSection}>
-                <LapTracker
-                  laps={laps}
-                  totalLaps={totalLaps}
-                  setLaps={setLaps}
-                  investments={investments}
-                  setInvestments={setInvestments}
-                  setCash={setCash}
-                  addToast={addToast}
-                  embedded
-                />
+                <TurnTracker ledger={ledger} onRoll={handleRoll} onOpenTab={setActiveTab} />
               </div>
 
               {/* Quick actions grid */}
@@ -1288,11 +1150,7 @@ function PlayerDashboard({
                   <FaTh className="text-xl text-slate-800" />
                   <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Investments</h3>
                 </div>
-                <CardSelector
-                  onSelect={handleCardSelection}
-                  investments={investments}
-                  forcedCardType="investment"
-                />
+                <CatalogMenu kind="investment" ledger={ledger} onAcquire={handleAcquire} />
               </div>
 
               <div className={glassSection}>
@@ -1300,51 +1158,7 @@ function PlayerDashboard({
                   <FaChartLine className="text-xl text-slate-800" />
                   <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Your portfolio</h3>
                 </div>
-                <InvestmentLog
-                  investments={investments}
-                  setInvestments={setInvestments}
-                  setCash={setCash}
-                />
-              </div>
-
-              <div className={glassSection}>
-                <div className="flex items-center gap-2 mb-4">
-                  <FaMoneyBillWave className="text-xl text-emerald-700" />
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Draw from assets</h3>
-                </div>
-                <DrawFromAsset
-                  investments={investments}
-                  setInvestments={setInvestments}
-                  cash={cash}
-                  setCash={setCash}
-                />
-              </div>
-
-              <div className={glassSection}>
-                <div className="flex items-center gap-2 mb-4">
-                  <FaShieldAlt className="text-xl text-slate-800" />
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Life insurance</h3>
-                </div>
-                <LifeInsuranceManager
-                  investments={investments}
-                  setInvestments={setInvestments}
-                  setCash={setCash}
-                  addToast={addToast}
-                />
-              </div>
-
-              <div className={glassSection}>
-                <div className="flex items-center gap-2 mb-4">
-                  <FaChartBar className="text-xl text-violet-700" />
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Annuities</h3>
-                </div>
-                <AnnuityManager
-                  investments={investments}
-                  setInvestments={setInvestments}
-                  setCash={setCash}
-                  laps={laps}
-                  addToast={addToast}
-                />
+                <HoldingsPanel ledger={ledger} act={act} />
               </div>
             </>
           )}
@@ -1354,26 +1168,17 @@ function PlayerDashboard({
               <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
                   <FaGem className="text-xl text-fuchsia-700" />
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Luxury picks</h3>
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Lifestyle &amp; Luxury</h3>
                 </div>
-                <CardSelector
-                  onSelect={handleCardSelection}
-                  investments={investments}
-                  forcedCardType="luxury"
-                />
+                <CatalogMenu kind="luxury" ledger={ledger} onAcquire={handleAcquire} />
               </div>
 
               <div className={glassSection}>
                 <div className="flex items-center gap-2 mb-4">
                   <FaGem className="text-xl text-violet-700" />
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Owned luxuries</h3>
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Your lifestyle</h3>
                 </div>
-                <LuxuryLog
-                  luxuries={luxuries}
-                  setLuxuries={setLuxuries}
-                  setCash={setCash}
-                  setRep={setRep}
-                />
+                <LuxuryHoldings ledger={ledger} act={act} />
               </div>
             </>
           )}
@@ -1382,16 +1187,9 @@ function PlayerDashboard({
             <div className={glassSection}>
               <div className="flex items-center gap-2 mb-4">
                 <FaCreditCard className="text-xl text-violet-700" />
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Debt &amp; credit</h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Finance</h3>
               </div>
-              <DebtCreditTracker
-                cash={cash}
-                setCash={setCash}
-                debt={debt}
-                setDebt={setDebt}
-                credit={credit}
-                setCredit={setCredit}
-              />
+              <FinancePanel ledger={ledger} act={act} />
             </div>
           )}
 
@@ -1410,8 +1208,7 @@ function PlayerDashboard({
                   setShadyDebt={setShadyDebt}
                   onCurveballLoss={handleCurveballLoss}
                   onLossAvoided={handleLossAvoided}
-                  investments={investments}
-                  setInvestments={setInvestments}
+                  onExpense={handleCurveballExpense}
                   redCurveballLoss={redCurveballLoss}
                   blueCurveballLoss={blueCurveballLoss}
                 />
@@ -1471,7 +1268,7 @@ function PlayerDashboard({
             <div className={glassSection}>
               <div className="flex items-center gap-2 mb-4">
                 <FaIdCard className="text-xl text-indigo-800" />
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Final net worth</h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Final game value</h3>
               </div>
               <FinalNetWorth
                 cash={cash}
@@ -1483,11 +1280,10 @@ function PlayerDashboard({
                 curveballs={curveballs}
                 playerName={playerName}
                 shadyDebt={shadyDebt}
-                investments={investments}
-                balanceBonusAwarded={balanceBonusAwarded}
+                ledger={ledger}
+                score={liveScore}
+                finalWindow={inFinalWindow(ledger)}
                 lossAvoided={lossAvoided}
-                protectionTier={calculateProtectionTier()}
-                empireStatus={calculateEmpireStatus()}
                 showFinal={handleEndGame}
                 isGeneratingSummary={isGeneratingSummary}
               />

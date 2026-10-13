@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { rowGameValue } from '../rules/portfolio';
 import useNetWorthHistory from "../hooks/useNetworthHistory";
 import PlayerDetailsModal from "./PlayerDetailsModal";
 
@@ -46,48 +47,8 @@ export default function RoomHUD({ roomPlayers, currentPlayerId, roomStatus }) {
 
   if (!roomPlayers || Object.keys(roomPlayers).length === 0) return null;
 
-  // Calculate net worth for each player (matching FinalScoreboard formula)
-  const calculateNetWorth = (player) => {
-    const cash = player.cash || 0;
-    const debt = player.debt || 0;
-    const shadyDebt = player.shadyDebt || 0;
-    const rep = player.rep || 0;
-    const career = player.career || 0;
-    const credit = player.credit || 500;
-    
-    // Parse investments and luxuries if they're strings
-    let investments = player.investments || [];
-    let luxuries = player.luxuries || [];
-    
-    if (typeof investments === 'string') {
-      try {
-        investments = JSON.parse(investments || "[]");
-      } catch (e) {
-        investments = [];
-      }
-    }
-    if (typeof luxuries === 'string') {
-      try {
-        luxuries = JSON.parse(luxuries || "[]");
-      } catch (e) {
-        luxuries = [];
-      }
-    }
-    
-    const investmentReturns = Array.isArray(investments)
-      ? investments.reduce((acc, i) => acc + (i.newValue || 0), 0)
-      : 0;
-    const luxuryResale = Array.isArray(luxuries)
-      ? luxuries.reduce((acc, item) => acc + (item.resale || 0), 0)
-      : 0;
-    // Updated scoring formula per PDF: rep * 5000, career * 10000, balance bonus +250000
-    const repValue = rep * 5000;
-    const careerValue = career * 10000;
-    const creditBonus = credit >= 700 ? 10000 : credit >= 600 ? 5000 : credit >= 500 ? 2000 : 0;
-    const balanceBonusValue = (player.balanceBonusAwarded || false) ? 250000 : 0;
-    
-    return cash + investmentReturns + luxuryResale + repValue + careerValue + creditBonus + balanceBonusValue - debt - shadyDebt;
-  };
+  // Live game value per player, from the shared portfolio formula (rules/portfolio.js)
+  const calculateNetWorth = (player) => rowGameValue(player) / 100;
 
   // Sort players by NET WORTH (top to bottom)
   const players = Object.values(roomPlayers).sort((a, b) => {
