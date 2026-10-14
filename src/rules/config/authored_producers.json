@@ -1,0 +1,69 @@
+{
+  "ruleset_id": "BOB-DIGITAL-ASSEMBLY-20261013-v1",
+  "status": "NEW_RECOMMENDATION_SIDEKICK_PRODUCERS_PENDING_FOUNDER_APPROVAL",
+  "note": "Record producers authored for the companion app so the ten held-back curveballs (and Business Coach I36) have real source records. None of these values appear in the bobupdates handoff; every number here needs founder approval.",
+  "receivables": {
+    "scenarios": ["R02", "Y02"],
+    "producer": "Player-labeled 'NIL income paid later' entry (the packet's separately labeled future-payment NIL option).",
+    "due_own_turns": 2,
+    "representative_due_own_turns": 1
+  },
+  "academic_risk": {
+    "scenarios": ["B07"],
+    "producer": "Missing the transfer academic-paperwork task sets academic risk (the packet's simulated academic review task).",
+    "clears_on": "completed academic repair task"
+  },
+  "inventory_orders": {
+    "scenarios": ["R06", "R07"],
+    "producer_entries": ["LX32"],
+    "inventory_value_bps_of_budget": 5000,
+    "poor_result_faces": [1, 2],
+    "record_open_own_turns": 4
+  },
+  "customer_prepayments": {
+    "scenarios": ["R12"],
+    "producer_entries": ["LX32", "LX33"],
+    "faces": [6],
+    "prepayment_bps_of_budget": 2500,
+    "fulfil_after_own_turns": 2
+  },
+  "event_bookings": {
+    "scenarios": ["R09"],
+    "producer_entries": ["LX45"],
+    "refundable_deposit_bps_of_price": 2000,
+    "customer_prepayments_cents": 0
+  },
+  "equipment_exposure": {
+    "scenarios": ["R08"],
+    "unlocks": ["I36"],
+    "cards": ["I16", "I17", "I18", "I22", "I38", "YSH_TEAM", "YSH_CENTER", "YSH_COMPLEX"]
+  },
+  "npc_partner": {
+    "scenarios": ["R05"],
+    "applies_to": ["YSH_TEAM", "YSH_CENTER"],
+    "when": "35% stake: the simulated partners' operating contribution for the lap after the first full owned lap is recorded overdue",
+    "operating_budget_bps_of_company_value": 500,
+    "overdue_for_own_turns": 3
+  },
+  "representative": {
+    "scenarios": ["R17"],
+    "card": {
+      "id": "RX01",
+      "title": "Hire an NIL Representative",
+      "group": "Support Services",
+      "price_cents": 250000,
+      "benefit": "Paid-later NIL invoices are collected one own turn sooner. No cash multiplier.",
+      "term": "until individual finish"
+    }
+  },
+  "sponsor_perk": {
+    "scenarios": ["R16"],
+    "producer": "Completing the Y10 renewal follow-up also delivers sponsor gear with a disclosed taxable value; tax is recognized later (R16) or at Finish.",
+    "taxable_value_cents": 500000
+  },
+  "business_coach": {
+    "card": "I36",
+    "components": ["operating_remediation", "equipment_repair"],
+    "target_exposure": "operating_business"
+  }
+}

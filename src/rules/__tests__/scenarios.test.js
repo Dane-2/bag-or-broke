@@ -19,9 +19,9 @@ function pending(cash, cardId, extra = {}) {
 }
 const buyPlan = (s, entryId) => exec(s, 'acquire', { entryId, assetId: `plan-${++n}`, cashPart: { DEF_LEGAL_BASIC: $(7500), DEF_HEALTH_BASIC: $(5000) }[entryId] });
 
-test('24 scenarios enabled, 10 held back for missing records', () => {
+test('all 34 scenarios enabled now that every record has a producer', () => {
   expect(CURVEBALLS).toHaveLength(34);
-  expect(Object.keys(DISABLED)).toHaveLength(10);
+  expect(Object.keys(DISABLED)).toHaveLength(0);
 });
 
 test('Example 1 — R03: one dispute, $23,000 with Legal Support, one use consumed', () => {
@@ -178,4 +178,125 @@ test('Web Developer service discount applies to R10 technical recovery', () => {
   expect(before - r.state.cash).toBe($(4000)); // $5,000 less 20%
   // The 2% write-down is fully restored by the paid recovery ($10,000 launch at +10% = $11,000).
   expect(assetValue(r.state, r.state.assets.find(a => a.id === 'ch'))).toBe($(11000));
+});
+
+describe('authored record producers (authored_producers.json)', () => {
+  const base = (cash = 100000) => ({ ...createLedger({ openingCash: $(cash), landingEvents: false }), requireLanding: false });
+  const RED = [4, 13, 20, 22, 30, 32, 38];
+  const BLUE = [6, 16, 26, 31];
+  /** Move forward (no landing events) to just before the next space of the card's color, then land there. */
+  const draw = (s, cardId) => {
+    const spaces = cardId[0] === 'R' ? RED : BLUE;
+    let st = { ...s, settings: { ...s.settings, landingEvents: false } };
+    const pos = () => st.progress % 40;
+    const nextSpace = () => spaces.find(i => i > pos()) ?? spaces[0] + 40;
+    while (nextSpace() - pos() > 6) st = exec(st, 'roll', { steps: Math.min(6, nextSpace() - pos() - 1) });
+    st = { ...st, settings: { ...st.settings, landingEvents: true } };
+    const steps = nextSpace() - pos();
+    // The draw happens after the start-of-turn step, so evaluate the pool on a dry run first.
+    const dry = run(st, 'roll', { steps, pick: 0 }).state;
+    const pool = eligibleCurveballs({ ...dry, scenario: null, scenarioStats: st.scenarioStats }, cardId[0] === 'R' ? 'red' : 'blue');
+    const pick = pool.findIndex(c => c.id === cardId);
+    if (pick < 0) throw new Error(`${cardId} not eligible`);
+    const out = run(st, 'roll', { steps, pick }).state;
+    expect(out.scenario.cardId).toBe(cardId);
+    return { ...out, settings: { ...out.settings, landingEvents: false } };
+  };
+
+  test('R02 / Y02: a paid-later invoice is collected and taxed on its due turn; R02 delays it', () => {
+    let s = exec(base(0), 'invoice', { amount: $(20000), label: 'Camp appearance' });
+    expect(s.cash).toBe(0);
+    expect(eligibleCurveballs({ ...s, turn: s.turn + 1 }, 'red').some(c => c.id === 'R02')).toBe(true);
+    s = draw(s, 'R02');
+    const dueBefore = s.receivables[0].dueTurn;
+    s = exec(s, 'scenario_respond', { choiceId: 'wait' });
+    expect(s.receivables[0].dueTurn).toBe(Math.max(dueBefore, s.turn) + 2);
+    while (s.receivables[0].amount > 0) s = exec(s, 'roll', { steps: 1 });
+    expect(s.cash).toBe($(20000));
+    expect(s.taxIncome[1].nil).toBe($(20000));
+  });
+
+  test('R06: a pop-up launch creates an inventory order; the replacement uses Business Coach', () => {
+    let s = base(200000);
+    s = exec(s, 'acquire', { entryId: 'I7', assetId: 'shop', cashPart: $(15000), face: 3 });
+    s = exec(s, 'acquire', { entryId: 'I36', assetId: 'coach', cashPart: $(30000), targetId: 'shop' });
+    s = exec(s, 'acquire', { entryId: 'LX32', assetId: 'popup', cashPart: $(15000), face: 1, targetId: 'shop' });
+    expect(s.inventoryOrders[0]).toEqual(expect.objectContaining({ targetId: 'shop', inventoryValue: $(7500), poor: true }));
+    s = draw(s, 'R06');
+    const before = s.cash;
+    const r = run(s, 'scenario_respond', { choiceId: 'replace', elect: { service: true } });
+    expect(r.result.assistance).toBeGreaterThan(0);
+    expect(before - r.state.cash).toBeLessThan(Math.round(assetValue(s, s.assets[0]) * 0.02) + 1);
+  });
+
+  test('R08: equipment-tagged businesses can break; the substitute restores half later', () => {
+    let s = exec(base(), 'acquire', { entryId: 'I16', assetId: 'truck', cashPart: $(25000), face: 3 });
+    expect(s.assets[0].exposure).toContain('equipment');
+    s = draw(s, 'R08');
+    s = exec(s, 'scenario_respond', { choiceId: 'substitute' });
+    expect(assetValue(s, s.assets[0])).toBe(Math.round($(27500) * 0.95));
+  });
+
+  test('R09: the hometown celebration books a venue deposit; cancelling refunds it and cancels delivery', () => {
+    let s = exec(base(), 'acquire', { entryId: 'LX45', assetId: 'party', cashPart: $(10000) });
+    expect(s.bookings[0].deposit).toBe($(2000));
+    s = draw(s, 'R09');
+    const before = s.cash;
+    s = exec(s, 'scenario_respond', { choiceId: 'cancel' });
+    expect(s.cash - before).toBe($(2000));
+    expect(s.assets.find(a => a.id === 'party').status).toBe('cancelled');
+  });
+
+  test('R12: a breakout launch holds customer prepayments as a liability until earned', () => {
+    let s = exec(base(), 'acquire', { entryId: 'I7', assetId: 'shop', cashPart: $(15000), face: 3 });
+    s = exec(s, 'acquire', { entryId: 'LX32', assetId: 'popup', cashPart: $(15000), face: 6, targetId: 'shop' });
+    expect(eventLiabilities(s)).toBe($(3750));
+    s = draw(s, 'R12');
+    s = exec(s, 'scenario_respond', { choiceId: 'limit' });
+    expect(eventLiabilities(s)).toBe(0);
+  });
+
+  test('R05: a 35% Team Elite stake records one overdue partner contribution', () => {
+    let s = base(200000);
+    s.milestones.push('YSH_SPONSOR', 'YSH_CLINIC');
+    s = exec(s, 'acquire', { entryId: 'YSH_TEAM', assetId: 'team', cashPart: $(35000), face: 3, optionBps: 3500 });
+    for (let i = 0; i < 7; i++) s = exec(s, 'roll', { steps: i < 6 ? 6 : 4 });
+    expect(s.npcContributions).toHaveLength(1);
+    s = draw(s, 'R05');
+    expect(s.scenario.cardId).toBe('R05');
+  });
+
+  test('R17: hiring a representative speeds invoices; the risk is real', () => {
+    let s = exec(base(), 'acquire', { entryId: 'RX01', assetId: 'rep', cashPart: $(2500) });
+    s = exec(s, 'invoice', { amount: $(5000) });
+    expect(s.receivables[0].dueTurn).toBe(s.turn + 1);
+    s = draw(s, 'R17');
+    s = exec(s, 'scenario_respond', { choiceId: 'restrict' });
+    expect(s.assets.find(a => a.id === 'rep').status).toBe('terminated');
+  });
+
+  test('R16: the Y10 follow-up delivers a taxable perk recognized once', () => {
+    let s = base(10000);
+    s.turn = 1;
+    s.tasks.push({ id: 't1', cardId: 'Y10', title: 'Brand Wants You Back', label: 'Story segment', slots: 1, dueTurn: 1, reward: $(5000), taxClass: 'nil', status: 'open' });
+    s = exec(s, 'task_complete', { taskId: 't1' });
+    expect(s.perks[0].taxRecorded).toBe(false);
+    s = draw(s, 'R16');
+    s = exec(s, 'scenario_respond', { choiceId: 'reserve' });
+    expect(s.perks[0].taxRecorded).toBe(true);
+    expect(s.taxBucket).toBe($(1000));
+  });
+
+  test('B07: missing the transfer paperwork sets academic risk; tutoring clears it', () => {
+    let s = base();
+    s.turn = 1;
+    s.tasks.push({ id: 'ta', cardId: 'B05', title: 'Transfer', label: 'Academic transfer paperwork', kind: 'transfer_academic', slots: 1, dueTurn: 1, reward: 0, status: 'open' });
+    s = exec(s, 'roll', { steps: 1 });
+    expect(s.academicRisk).toBe(true);
+    s = draw(s, 'B07');
+    s = exec(s, 'scenario_respond', { choiceId: 'tutor' });
+    s = exec(s, 'roll', { steps: 1 });
+    s = exec(s, 'task_complete', { taskId: s.tasks.find(t => t.kind === 'academic_repair' && t.status === 'open').id });
+    expect(s.academicRisk).toBe(false);
+  });
 });

@@ -8,9 +8,9 @@ const TAX_PCT = TAX_RATE_BPS / 100;
  * Manual money entry for the companion app. Taxable NIL income can be split between
  * Available Cash and the Tax Bucket at the moment it arrives.
  */
-export default function CashEntry({ onIncome, onOther, onSpend }) {
+export default function CashEntry({ onIncome, onOther, onSpend, onInvoice }) {
   const [mode, setMode] = useState(null); // 'in' | 'spend'
-  const [kind, setKind] = useState('nil'); // 'nil' | 'other'
+  const [kind, setKind] = useState('nil'); // 'nil' | 'later' | 'other'
   const [amount, setAmount] = useState('');
   const [label, setLabel] = useState('');
   const [setAside, setSetAside] = useState(true);
@@ -32,6 +32,7 @@ export default function CashEntry({ onIncome, onOther, onSpend }) {
     let ok;
     if (mode === 'spend') ok = onSpend(cents, label || 'Spent cash');
     else if (kind === 'nil') ok = onIncome(cents, reserve, label || 'NIL income');
+    else if (kind === 'later') ok = onInvoice(cents, label || 'NIL invoice');
     else ok = onOther(cents, label || 'Money in (not taxed)');
     if (ok !== false) reset();
   };
@@ -63,9 +64,10 @@ export default function CashEntry({ onIncome, onOther, onSpend }) {
     <form onSubmit={submit} className="space-y-3 rounded-2xl bg-white/30 border border-white/45 p-3">
       <p className="text-sm font-bold text-slate-900">{mode === 'spend' ? 'Spend cash' : 'Add cash'}</p>
       {mode === 'in' && (
-        <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
+        <div className="grid grid-cols-3 gap-2 text-xs font-semibold">
           {[
             ['nil', `NIL income (taxed ${TAX_PCT}%)`],
+            ['later', 'NIL paid later (invoice)'],
             ['other', 'Other (not taxed)'],
           ].map(([k, text]) => (
             <button
@@ -96,6 +98,9 @@ export default function CashEntry({ onIncome, onOther, onSpend }) {
         onChange={e => setLabel(e.target.value)}
         className={field}
       />
+      {mode === 'in' && kind === 'later' && (
+        <p className="text-xs text-slate-800">Work is done; the sponsor pays in 2 turns (1 with a representative). It is taxed when the money arrives.</p>
+      )}
       {mode === 'in' && kind === 'nil' && (
         <label className="flex items-start gap-2 text-sm text-slate-900">
           <input type="checkbox" checked={setAside} onChange={e => setSetAside(e.target.checked)} className="mt-1" />

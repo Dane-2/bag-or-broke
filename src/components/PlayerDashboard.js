@@ -743,6 +743,8 @@ function PlayerDashboard({
   const handleIncome = (amount, setAside, label) =>
     act('income', { amount, taxClass: 'nil', setAside, label },
       `+${formatCents(amount)} NIL income${setAside > 0 ? ` (${formatCents(setAside)} to Tax Bucket)` : ''}`);
+  const handleInvoice = (amount, label) =>
+    act('invoice', { amount, label }, null, r => `${label}: ${formatCents(amount)} due on turn ${r.dueTurn}`);
   const handleOtherIncome = (amount, label) =>
     act('adjust_cash', { amount, label }, `+${formatCents(amount)} added`);
   const handleSpend = (amount, label) => {
@@ -976,7 +978,7 @@ function PlayerDashboard({
                     </div>
                   </div>
                   {!ledger.snapshot && (
-                    <CashEntry onIncome={handleIncome} onOther={handleOtherIncome} onSpend={handleSpend} />
+                    <CashEntry onIncome={handleIncome} onOther={handleOtherIncome} onSpend={handleSpend} onInvoice={handleInvoice} />
                   )}
                 </div>
               </div>

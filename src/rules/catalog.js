@@ -6,6 +6,7 @@ import fixedContracts from './config/fixed_contracts.json';
 import legalConfig from './config/legal.json';
 import scenariosConfig from './config/scenarios.json';
 import luxuriesConfig from './config/luxuries.json';
+import authored from './config/authored_producers.json';
 
 export const RETURN_PROFILES = investmentsConfig.return_profiles;
 export const ACTIVATION = luxuriesConfig.activation;
@@ -33,7 +34,7 @@ export const INVESTMENT_GROUPS = [
   ['Food & Hospitality', ['I16', 'I17', 'I18']],
   ['Fitness / Health', ['I19', 'I20', 'I21', 'I22', 'I23', 'I24']],
   ['Fashion', ['I25', 'I26', 'I27']],
-  ['Support Services', ['I33']],
+  ['Support Services', ['I33', 'RX01']],
   ['Marketing / Ads', ['I35', 'I39']],
   ['Branding / Growth', ['I36', 'I40']],
   ['Developer Tools', ['I37']],
@@ -50,14 +51,45 @@ export const INVESTMENT_GROUPS = [
  * Cards whose promised follow-up action does not exist in the app yet. The spec requires
  * keeping these unavailable (with a reason) rather than selling an action nobody can use.
  */
-const UNAVAILABLE = {
-  I36: 'Its discount applies to operating and equipment repair bills, which no current curveball produces yet.',
-};
+const UNAVAILABLE = {};
 
 /** Scoped one-use discounts bought from the green menu (investments.json support_services). */
 export const SERVICE_SCOPES = {
   I37: { components: ['website_platform_remediation'], targetExposure: 'platform_dependency' },
+  // Authored (authored_producers.json): coaching covers replacement orders and equipment repairs.
+  I36: { components: authored.business_coach.components, targetExposure: authored.business_coach.target_exposure },
 };
+
+const EQUIPMENT_CARDS = new Set(authored.equipment_exposure.cards);
+
+/** Authored representative-management contract (R17's source record). */
+function representativeEntry() {
+  const c = authored.representative.card;
+  return {
+    id: c.id,
+    kind: 'investment',
+    title: c.title,
+    group: c.group,
+    type: 'representative',
+    typeLabel: 'Management contract',
+    profile: 'none',
+    price: c.price_cents,
+    cashOnly: true,
+    minCashBps: 10000,
+    launchTable: null,
+    repeat: 'once_per_game',
+    parentAnyOf: [],
+    parentMode: null,
+    exposure: [],
+    rules: [c.benefit, 'Authored for this app (pending founder approval).'],
+    saleRoute: 'none',
+    borrowRoute: 'none',
+    status: 'new_recommendation',
+    unavailable: null,
+    rep: 0,
+    career: 0,
+  };
+}
 
 /** Upgrades attach to one owned parent root; requirement cards only need one owned. */
 const ATTACH_TYPES = new Set(['upgrade']);
@@ -109,7 +141,7 @@ function fromCard(card, group) {
     repeat: card.repeat_policy,
     parentAnyOf: card.parent_any_of || [],
     parentMode: card.parent_any_of?.length ? (ATTACH_TYPES.has(card.economic_type) ? 'attach' : 'require') : null,
-    exposure: card.exposure_tags || [],
+    exposure: [...(card.exposure_tags || []), ...(EQUIPMENT_CARDS.has(card.id) ? ['equipment'] : [])],
     rules: (card.rules || []).filter(r => !r.startsWith('All prices')),
     saleRoute: card.sale_route,
     borrowRoute: card.borrow_route,
@@ -156,7 +188,7 @@ function fromYouth(stage) {
     repeat: stage.repeat || 'once_per_game',
     parentAnyOf: [],
     parentMode: null,
-    exposure: stage.exposure_tags || [],
+    exposure: [...(stage.exposure_tags || []), ...(EQUIPMENT_CARDS.has(stage.id) ? ['equipment'] : [])],
     rules: [],
     saleRoute: stage.asset_value ? 'central_market_sale' : 'none',
     borrowRoute: stage.asset_value && !stage.cash_only ? 'central_secured_50_percent_ltv' : 'none',
@@ -176,7 +208,7 @@ const cardsById = Object.fromEntries(investmentsConfig.cards.map(c => [c.id, c])
 const youthById = Object.fromEntries(investmentsConfig.youth_sports_house.map(y => [y.id, y]));
 
 export const INVESTMENT_CATALOG = INVESTMENT_GROUPS.flatMap(([group, ids]) =>
-  ids.map(id => (youthById[id] ? fromYouth(youthById[id]) : fromCard(cardsById[id], group)))
+  ids.map(id => (id === authored.representative.card.id ? representativeEntry() : youthById[id] ? fromYouth(youthById[id]) : fromCard(cardsById[id], group)))
 );
 
 const investmentIndex = Object.fromEntries(INVESTMENT_CATALOG.map(e => [e.id, e]));

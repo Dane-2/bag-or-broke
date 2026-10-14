@@ -176,6 +176,16 @@ export default function FinancePanel({ ledger, act }) {
         )}
       </section>
 
+      {ledger.receivables.some(r => r.amount > 0) && (
+        <section className={card}>
+          <h4 className={h4}>Money owed to you</h4>
+          <p className="text-xs text-slate-700">Earned NIL invoices. They pay automatically on their due turn and are taxed then.</p>
+          {ledger.receivables.filter(r => r.amount > 0).map(r => (
+            <Row key={r.id} label={`${r.label} (turn ${r.dueTurn})`} value={formatCents(r.amount)} />
+          ))}
+        </section>
+      )}
+
       {(ledger.payables.some(p => p.amount > 0) || ledger.incomeShare) && (
         <section className={card}>
           <h4 className={h4}>Event bills</h4>

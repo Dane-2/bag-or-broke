@@ -225,7 +225,9 @@ export function eligibility(s, entry, { targetId = null } = {}) {
     const targets = activeRoots(s).filter(a =>
       (a.exposure || []).includes('operating_business') && (a.exposure || []).includes(entry.service.targetExposure) &&
       !s.assets.some(x => isActive(x) && x.holding === 'service_credit' && x.cardId === entry.id && x.targetId === a.id && x.uses > 0));
-    if (!targets.length) return { ok: false, reason: 'Needs a creator, commerce or podcast business you own (one unused service per business).', targets };
+    if (!targets.length) {
+      return { ok: false, reason: entry.id === 'I36' ? 'Needs an operating business you own (one unused coaching benefit per business).' : 'Needs a creator, commerce or podcast business you own (one unused service per business).', targets };
+    }
     if (targetId && !targets.some(t => t.id === targetId)) return { ok: false, reason: 'Choose one of your eligible businesses.', targets };
     return { ok: true, targets };
   }

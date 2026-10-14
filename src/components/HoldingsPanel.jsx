@@ -221,6 +221,14 @@ export default function HoldingsPanel({ ledger, act }) {
       {section('Life insurance', active.filter(a => a.holding === 'life'), a => <LifeCard key={a.id} ledger={ledger} a={a} act={act} />)}
       {section('Annuities', active.filter(a => a.holding === 'annuity'), a => <AnnuityCard key={a.id} ledger={ledger} a={a} act={act} />)}
       {section('Protections', active.filter(a => a.holding === 'plan'), a => <PlanCard key={a.id} a={a} />)}
+      {section('Services & contracts', active.filter(a => ['service_credit', 'representative'].includes(a.holding)), a => (
+        <div key={a.id} className={card}>
+          <p className="text-sm font-bold text-slate-900">{a.title}</p>
+          <p className="text-xs text-slate-700">
+            {a.holding === 'representative' ? 'Collects paid-later NIL invoices one turn sooner.' : a.uses > 0 ? 'One discount ready for an eligible bill.' : 'Used.'}
+          </p>
+        </div>
+      ))}
       {closed.length > 0 && (
         <button type="button" className="text-xs font-semibold text-slate-900 underline" onClick={() => setShowClosed(v => !v)}>
           {showClosed ? 'Hide history' : `Show history (${closed.length})`}

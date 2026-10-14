@@ -26,8 +26,8 @@ const buy = (s, entryId, extra = {}) => {
 const asset = (s, cardId) => s.assets.find(a => a.cardId === cardId);
 
 describe('catalog', () => {
-  test('62 enabled source entries + 5 Youth Sports stages, no aliases on the menu', () => {
-    expect(INVESTMENT_CATALOG).toHaveLength(67);
+  test('62 enabled source entries + 5 Youth Sports stages + the authored representative, no aliases', () => {
+    expect(INVESTMENT_CATALOG).toHaveLength(68);
     expect(INVESTMENT_CATALOG.some(e => /^I4[1-9]$|^I50$|^I32$/.test(e.id))).toBe(false);
     expect(INVESTMENT_CATALOG.some(e => ['RE_HOLDCO', 'RE_INSURANCE', 'DEF_UMBRELLA'].includes(e.id))).toBe(false);
   });

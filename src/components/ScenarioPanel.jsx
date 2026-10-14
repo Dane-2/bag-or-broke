@@ -81,14 +81,16 @@ function Pending({ ledger, act }) {
   const plans = ledger.assets.filter(a => isActive(a) && a.uses > 0);
   const has = plan => plans.some(a => a.holding === 'plan' && a.plan === plan);
   const hasToken = plans.some(a => a.holding === 'token');
-  const hasService = plans.some(a => a.holding === 'service_credit' && a.targetId === sc.targetId);
+  const target0 = sc.targetId ? ledger.assets.find(a => a.id === sc.targetId) : null;
+  const hasService = plans.some(a => a.holding === 'service_credit' && a.targetId === sc.targetId) ||
+    (ledger.career.referral && !ledger.career.referral.used && target0 && ['YSH_TEAM', 'YSH_CENTER', 'YSH_COMPLEX'].includes(target0.cardId));
   const allEffects = [...(c.immediate || []), ...c.choices.flatMap(ch => ch.effects), ...Object.values(c.chance || {}).flatMap(t => Object.values(t.die_faces).flat())];
   const uses = comp => allEffects.some(e => e.op === 'expense' && e.component === comp);
   const [elect, setElect] = useState({ legal: false, health: false, token: false, service: false });
   const options = [
     has('legal') && uses('eligible_legal_fee') && ['legal', 'Use Legal Support (80% of legal fees)'],
     has('health') && uses('health_expense') && ['health', 'Use Health Support (80% of health expense)'],
-    hasService && uses('website_platform_remediation') && ['service', 'Use Web Developer discount'],
+    hasService && ['website_platform_remediation', 'operating_remediation', 'equipment_repair'].some(uses) && ['service', 'Use a service discount (Coach, Web Developer or sports referral)'],
     hasToken && (c.immediate || []).some(e => e.op === 'expense') && ['token', 'Use Emergency Fund on what remains'],
   ].filter(Boolean);
   const target = sc.targetId ? ledger.assets.find(a => a.id === sc.targetId) : null;

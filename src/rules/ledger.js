@@ -16,6 +16,7 @@ import {
 import { RULESET_ID, BOARD_SIZE, boardSpace } from './index';
 import { catalogEntry, isActivation, INVESTMENT_CATALOG, LUXURY_CATALOG } from './catalog';
 import { classify, RESPONSE_EVIDENCE, EXTERNAL_SETBACKS, riskOutcome } from './reveal';
+import authored from './config/authored_producers.json';
 import {
   launchValue, continuingRate, isMarketProfile, marketDrawBps, eventResult, activationResult,
   assetValue, policyBalance, policyLoanQuote, annuityCancelQuote, holdingsValue, eligibility,
@@ -30,7 +31,7 @@ import {
   familyRewardedThisLap, preparedFor, pathForGroup, referralSaving, REFERRAL,
 } from './career';
 import {
-  curveball, eligibleCurveballs, requirementMet, defaultResponse, scenarioTarget, optionalTasks,
+  curveball, eligibleCurveballs, requirementMet, defaultResponse, scenarioRecord, optionalTasks,
   COMPONENT_LABELS, BUSINESS_COMPONENTS, LOSS_COMPONENTS, PORTAL, athleteActive,
 } from './scenarios';
 
@@ -112,6 +113,14 @@ export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZ
     // Reveal evidence: one observation per decision and dimension; setbacks outside the player's control.
     observations: [],
     setbacks: [],
+    // Authored record producers (authored_producers.json)
+    receivables: [],
+    inventoryOrders: [],
+    prepayments: [],
+    bookings: [],
+    npcContributions: [],
+    perks: [],
+    academicRisk: false,
   };
 }
 
@@ -152,7 +161,8 @@ export function totalBorrowing(s) {
 export function eventLiabilities(s) {
   const bills = (s.payables || []).reduce((t, p) => t + p.amount, 0);
   const share = s.incomeShare ? Math.max(0, s.incomeShare.minTotal - s.incomeShare.paid) : 0;
-  return bills + share;
+  const prepaid = (s.prepayments || []).reduce((t, p) => t + p.unearned, 0);
+  return bills + share + prepaid;
 }
 
 export const displayRep = s => Math.max(0, s.points.rep);
@@ -450,6 +460,15 @@ function closeLap(d, lap) {
       a.resale = next;
     } else if (a.holding === 'companion' && lap < d.totalLaps && !a.pendingCare) {
       a.pendingCare = { lap: lap + 1, amount: a.renewalCare };
+    }
+    // Authored: simulated partners of a 35% Youth Sports stake miss one operating contribution.
+    const npc = authored.npc_partner;
+    if (a.holding === 'growth' && npc.applies_to.includes(a.cardId) && (a.ownershipBps ?? BPS) < BPS &&
+        !a.npcOverdueRecorded && d.progress - a.acquiredAt >= d.boardSize) {
+      const budget = divHalfUp(assetValue(d, a) * npc.operating_budget_bps_of_company_value, BPS);
+      const partnerShare = BPS - (a.ownershipBps ?? BPS);
+      d.npcContributions.push({ id: `NPC${d.nextId++}`, assetId: a.id, shortfall: divHalfUp(budget * partnerShare, BPS), overdueUntilTurn: d.turn + npc.overdue_for_own_turns, satisfied: false });
+      a.npcOverdueRecorded = true;
     }
   });
 
@@ -843,6 +862,14 @@ function drawYellow(d, pick) {
         uses: effect.uses,
       });
       base.token = true;
+    } else if (effect.op === 'collect_existing_receivable') {
+      const r = d.receivables.filter(x => x.amount >= effect.amount.fixed_cents).sort((a, b) => a.dueTurn - b.dueTurn)[0];
+      if (r) {
+        r.amount -= effect.amount.fixed_cents;
+        postCashIncome(d, effect.amount.fixed_cents, 'nil');
+        base.cash += effect.amount.fixed_cents;
+        base.income += effect.amount.fixed_cents;
+      }
     } else if (effect.op === 'refund_loss') {
       let amount = Math.min(effect.amount.cap_cents, unrecoveredLoss(d));
       base.recovered = amount;
@@ -926,7 +953,7 @@ function startOwnTurn(d, dice, events) {
   const due = d.scheduled.filter(x => x.dueTurn <= next);
   d.scheduled = d.scheduled.filter(x => x.dueTurn > next);
   due.forEach(item => {
-    const ctx = scenarioContext(d, { cardId: item.cardId, id: item.scenarioId, targetId: item.targetId, saved: item.saved }, { lossId: item.lossId });
+    const ctx = scenarioContext(d, { cardId: item.cardId, id: item.scenarioId, targetId: item.targetId, recordId: item.recordId, saved: item.saved }, { lossId: item.lossId });
     applyEffects(d, item.effects, ctx, true);
     if (ctx.lines.length) events.push({ type: 'scenario_followup', label: `${ctx.card.title}: follow-up`, lines: ctx.lines });
   });
@@ -939,11 +966,27 @@ function startOwnTurn(d, dice, events) {
       }
       t.status = 'missed';
       missed.push(t);
+      if (t.kind === 'transfer_academic' || t.kind === 'academic_repair') d.academicRisk = true;
       if (!t.mandatory) observe(d, { opportunity: `task-${t.id}`, dimension: 'follow_through', outcome: 'ignore', label: `Missed: ${t.label}` });
     }
   });
   d.payables.forEach(p => {
     if (p.amount > 0 && p.dueTurn <= next) p.overdue = true;
+  });
+  // Earned receivables pay on their due turn; prepaid customer orders are earned when fulfilled.
+  d.receivables.forEach(r => {
+    if (r.amount > 0 && r.dueTurn <= next) {
+      events.push({ type: 'receivable', label: `${r.label} paid: ${formatCents(r.amount)}` });
+      const x = r.amount;
+      r.amount = 0;
+      postCashIncome(d, x, 'nil');
+    }
+  });
+  d.prepayments.forEach(p => {
+    if (p.unearned > 0 && p.fulfilTurn <= next) {
+      recordIncome(d, 'business', p.unearned);
+      p.unearned = 0;
+    }
   });
   portalStep(d, next, dice, events);
   const internship = careerStartTurn(d, next);
@@ -1014,6 +1057,17 @@ function careerStartTurn(d, nextTurn) {
 
 const TOKEN_COMPONENT_EXCLUDED = ['settlement_tax', 'tax', 'advance_contract', 'contract_exit', 'income_share'];
 
+/** The scenario's source record (receivable, order, prepayment, booking, contribution, perk). */
+function scenarioRecordOf(d, ctx) {
+  if (!ctx.recordId) return null;
+  const lists = [d.receivables, d.inventoryOrders, d.prepayments, d.bookings, d.npcContributions, d.perks];
+  for (const list of lists) {
+    const r = (list || []).find(x => x.id === ctx.recordId);
+    if (r) return r;
+  }
+  return null;
+}
+
 function targetAsset(d, ctx) {
   return ctx.targetId ? d.assets.find(a => a.id === ctx.targetId) : null;
 }
@@ -1035,7 +1089,15 @@ function amountOf(d, amount, ctx) {
     company_value: targetAsset(d, ctx) ? assetValue(d, targetAsset(d, ctx)) : 0,
     company_value_before_event: ctx.targetValueBefore,
   };
-  const base = fields[amount.field] !== undefined ? fields[amount.field] : ctx.saved[amount.field] || 0;
+  const rec = scenarioRecordOf(d, ctx) || {};
+  Object.assign(fields, {
+    recorded_shortfall_cents: rec.shortfall,
+    inventory_unsold_value: rec.unsold,
+    unearned_customer_prepayments: rec.unearned,
+    refundable_venue_deposit: rec.deposit,
+    perk_disclosed_taxable_value: rec.value,
+  });
+  const base = fields[amount.field] !== undefined ? fields[amount.field] || 0 : ctx.saved[amount.field] || 0;
   const value = divHalfUp(Math.max(0, base) * (amount.basis_points ?? BPS), BPS);
   return amount.cap_cents !== undefined ? Math.min(value, amount.cap_cents) : value;
 }
@@ -1085,12 +1147,21 @@ function postExpense(d, e, ctx, mandatory) {
   if (e.component === 'health_expense' && ctx.elect.health) help += planHelp(d, ctx, 'health', gross);
   let discount = 0;
   if (ctx.elect.service) {
+    // One eligible service discount: a Coach/Web credit for this business, or the sports referral.
     const credit = d.assets.find(a => isActive(a) && a.holding === 'service_credit' && a.uses > 0 &&
       a.components.includes(e.component) && a.targetId === ctx.targetId);
-    if (credit) {
-      discount = Math.min(credit.cap, divHalfUp((gross - help) * credit.bps, BPS));
+    const creditSaving = credit ? Math.min(credit.cap, divHalfUp((gross - help) * credit.bps, BPS)) : 0;
+    const target = targetAsset(d, ctx);
+    const referralOk = e.component === 'equipment_repair' && target && ['YSH_TEAM', 'YSH_CENTER', 'YSH_COMPLEX'].includes(target.cardId) &&
+      d.career.referral && !d.career.referral.used;
+    const referralSaving = referralOk ? Math.min(250000, divHalfUp((gross - help) * 500, BPS)) : 0;
+    if (creditSaving >= referralSaving && creditSaving > 0) {
+      discount = creditSaving;
       credit.uses -= 1;
-      if (discount > 0) credit.status = 'used';
+      credit.status = 'used';
+    } else if (referralSaving > 0) {
+      discount = referralSaving;
+      d.career.referral.used = true;
     }
   }
   let token = 0;
@@ -1179,6 +1250,7 @@ function applyEffects(d, effects, ctx, mandatory) {
           reward: 0,
           onComplete: [],
           targetId: ctx.targetId,
+          recordId: ctx.recordId,
           saved: ctx.saved,
           status: 'open',
         };
@@ -1192,12 +1264,28 @@ function applyEffects(d, effects, ctx, mandatory) {
         break;
       case 'delay_one_eligible_task':
       case 'delay_task': {
+        const rec = scenarioRecordOf(d, ctx);
+        if (ctx.card.id === 'R09' && rec) {
+          const svc = d.assets.find(a => a.id === rec.serviceId);
+          if (svc) svc.blockedUntilTurn = d.turn + e.own_turns;
+          break;
+        }
+        if (ctx.card.id === 'R12' && rec) {
+          rec.fulfilTurn += e.own_turns;
+          break;
+        }
         const t = optionalTasks(d).sort((a, b) => a.dueTurn - b.dueTurn)[0];
         if (t) t.dueTurn += e.own_turns;
         break;
       }
       case 'cancel_one_optional_task':
       case 'cancel_task_without_reward': {
+        const rec = scenarioRecordOf(d, ctx);
+        if (ctx.card.id === 'R09' && rec) {
+          const svc = d.assets.find(a => a.id === rec.serviceId);
+          if (svc) svc.status = 'cancelled';
+          break;
+        }
         const t = optionalTasks(d).sort((a, b) => a.dueTurn - b.dueTurn)[0];
         if (t) t.status = 'released';
         break;
@@ -1306,6 +1394,107 @@ function applyEffects(d, effects, ctx, mandatory) {
         break;
       case 'link_existing_bill':
       case 'remove_unearned_projection':
+      case 'keep_original_event_schedule':
+        break;
+      // Receivables (R02 / Y02)
+      case 'delay_receivable': {
+        const r = scenarioRecordOf(d, ctx);
+        if (r) {
+          r.dueTurn = Math.max(r.dueTurn, d.turn) + e.turns;
+          ctx.lines.push({ kind: 'note', label: `${r.label} now due on turn ${r.dueTurn}` });
+        }
+        break;
+      }
+      case 'reschedule_receivable': {
+        const r = scenarioRecordOf(d, ctx);
+        if (r) {
+          r.dueTurn = d.turn + 1;
+          ctx.lines.push({ kind: 'note', label: `${r.label} now due on turn ${r.dueTurn}` });
+        }
+        break;
+      }
+      case 'collect_existing_receivable': {
+        const r = scenarioRecordOf(d, ctx);
+        if (r && r.amount > 0) {
+          const x = Math.min(r.amount, e.amount ? amountOf(d, e.amount, ctx) : r.amount);
+          r.amount -= x;
+          postCashIncome(d, x, 'nil');
+          ctx.lines.push({ kind: 'income', label: 'Collected', amount: x });
+        }
+        break;
+      }
+      // Bookings and customer prepayments (R09 / R12)
+      case 'refund_original': {
+        const b = scenarioRecordOf(d, ctx);
+        const x = Math.min(amountOf(d, e.amount, ctx), b ? b.deposit : 0);
+        if (x > 0) {
+          b.deposit -= x;
+          d.cash += x; // a refund, not income
+          ctx.lines.push({ kind: 'refund', label: 'Deposit refunded', amount: x });
+        }
+        break;
+      }
+      case 'refund_customer_prepayment': {
+        const p = scenarioRecordOf(d, ctx);
+        const x = Math.min(amountOf(d, e.amount, ctx), p && p.unearned !== undefined ? p.unearned : 0);
+        if (x > 0) {
+          p.unearned -= x;
+          const now = Math.max(0, Math.min(d.cash, x));
+          d.cash -= now;
+          if (x - now > 0) newPayable(d, ctx, { component: 'customer_refund', amount: x - now, due: 1 });
+          ctx.lines.push({ kind: 'paid', label: 'Customer refunds', amount: x });
+        }
+        break;
+      }
+      case 'earn_existing_customer_prepayments':
+      case 'earn_remaining_customer_prepayments': {
+        const p = scenarioRecordOf(d, ctx);
+        if (p && p.unearned > 0) {
+          recordIncome(d, 'business', p.unearned);
+          ctx.lines.push({ kind: 'income', label: 'Orders fulfilled (earned)', amount: p.unearned });
+          p.unearned = 0;
+        }
+        break;
+      }
+      // Partner contribution (R05)
+      case 'reduce_activity_budget':
+      case 'mark_contribution_satisfied': {
+        const c = scenarioRecordOf(d, ctx);
+        if (c) c.satisfied = true;
+        break;
+      }
+      // Perk tax (R16)
+      case 'recognize_noncash_income': {
+        const p = scenarioRecordOf(d, ctx);
+        if (p && !p.taxRecorded) {
+          recordIncome(d, 'nil', p.value);
+          p.taxRecorded = true;
+          ctx.lines.push({ kind: 'note', label: `${p.label}: ${formatCents(p.value)} counted as NIL income (no cash)` });
+        }
+        break;
+      }
+      case 'tax_bucket_transfer': {
+        const x = Math.min(amountOf(d, e.amount, ctx), Math.max(0, d.cash));
+        d.cash -= x;
+        d.taxBucket += x;
+        ctx.lines.push({ kind: 'note', label: `${formatCents(x)} moved to your Tax Bucket` });
+        break;
+      }
+      // Representative (R17)
+      case 'terminate_representative_access':
+        d.assets.forEach(a => {
+          if (isActive(a) && a.holding === 'representative') a.status = 'terminated';
+        });
+        break;
+      // Academic (B07)
+      case 'clear_academic_risk':
+        d.academicRisk = false;
+        break;
+      case 'schedule_academic_repair':
+        d.tasks.push({
+          id: `T${d.nextId++}`, cardId: ctx.card.id, title: ctx.card.title, label: 'Academic repair', kind: 'academic_repair',
+          slots: 1, createdTurn: d.turn, dueTurn: d.turn + e.own_turns, reward: 0, mandatory: false, onComplete: [{ op: 'clear_academic_risk' }], status: 'open',
+        });
         break;
       case 'cash_income': {
         const x = amountOf(d, e.amount, ctx);
@@ -1325,6 +1514,7 @@ function scenarioContext(d, sc, extra = {}) {
     card,
     eventId: sc.id,
     targetId: sc.targetId,
+    recordId: sc.recordId || null,
     cashBefore: sc.cashBefore,
     targetValueBefore: sc.targetValueBefore,
     saved: sc.saved || {},
@@ -1351,7 +1541,8 @@ function drawCurveball(d, color, pick, dice) {
     return d.scenario;
   }
   const card = pool[Math.floor(Math.abs(pick || 0)) % pool.length];
-  const target = scenarioTarget(d, card);
+  const record = scenarioRecord(d, card);
+  const target = record.targetId ? d.assets.find(a => a.id === record.targetId) : null;
   const faces = {};
   Object.keys(card.chance || {}).forEach(t => {
     faces[t] = nextDie(dice);
@@ -1368,6 +1559,7 @@ function drawCurveball(d, color, pick, dice) {
     targetTitle: target ? target.title : null,
     cashBefore: d.cash,
     targetValueBefore: target ? assetValue(d, target) : 0,
+    recordId: record.recordId || null,
     faces,
     saved: {},
   };
@@ -1391,9 +1583,10 @@ function respondScenario(d, choiceId, elect, preview = false, forced = false) {
   // An unanswered card's default response is applied like a mandatory bill: cash first, then an event bill.
   applyEffects(d, choice.effects, ctx, forced);
   (choice.scheduled || []).forEach(item => {
+    if (item.at) return; // e.g. R02 collection happens through the receivable's own collector
     const gated = item.effects.some(e => e.requires === 'task_completed');
     if (gated && ctx.newTask) ctx.newTask.onComplete = item.effects;
-    else if (!gated) d.scheduled.push({ dueTurn: d.turn + item.after_own_turns, effects: item.effects, scenarioId: sc.id, cardId: card.id, targetId: sc.targetId, saved: ctx.saved, lossId: ctx.lossId || null });
+    else if (!gated) d.scheduled.push({ dueTurn: d.turn + item.after_own_turns, effects: item.effects, scenarioId: sc.id, cardId: card.id, targetId: sc.targetId, recordId: sc.recordId || null, saved: ctx.saved, lossId: ctx.lossId || null });
   });
   sc.status = 'resolved';
   sc.choiceId = choiceId;
@@ -1507,6 +1700,18 @@ const handlers = {
     });
     log(d, { type: 'income', label, cashDelta: amount - setAside, bucketDelta: setAside, taxClass });
     return { cash: d.cash, taxBucket: d.taxBucket };
+  },
+
+  /** NIL work paid later: an earned receivable collected (and taxed) when it arrives. */
+  invoice(d, { amount, label = 'NIL invoice' }) {
+    assertActive(d);
+    if (!(amount > 0)) throw new LedgerError('Enter a positive amount.');
+    const rep = d.assets.some(a => isActive(a) && a.holding === 'representative');
+    const due = rep ? authored.receivables.representative_due_own_turns : authored.receivables.due_own_turns;
+    const r = { id: `RCV${d.nextId++}`, label, amount, dueTurn: d.turn + due, originalDue: d.turn + due };
+    d.receivables.push(r);
+    log(d, { type: 'invoice', label: `${label} (paid in ${due} turn${due > 1 ? 's' : ''})`, cashDelta: 0 });
+    return { receivableId: r.id, dueTurn: r.dueTurn };
   },
 
   reserve(d, { amount }) {
@@ -1743,6 +1948,24 @@ const handlers = {
       recordIncome(d, 'business', r.profit);
       d.activationLaps.push(lap);
       result.rep = awardFamily(d, 'activation', r.repCeiling);
+      // Authored producers: merchandising launches create inventory orders; breakouts create prepaid orders.
+      const inv = authored.inventory_orders;
+      if (inv.producer_entries.includes(entry.id) && (target.exposure || []).includes('inventory')) {
+        const stock = divHalfUp(price * inv.inventory_value_bps_of_budget, BPS);
+        const sold = Math.min(1, r.receipts / Math.max(1, price));
+        d.inventoryOrders.push({
+          id: `ORD${d.nextId++}`, targetId, inventoryValue: stock,
+          unsold: Math.min(assetValue(d, target), Math.round(stock * (1 - sold))),
+          poor: inv.poor_result_faces.includes(face), openUntil: d.turn + inv.record_open_own_turns,
+        });
+      }
+      const pre = authored.customer_prepayments;
+      if (pre.producer_entries.includes(entry.id) && pre.faces.includes(face)) {
+        const amount = divHalfUp(price * pre.prepayment_bps_of_budget, BPS);
+        d.cash += amount; // customer money held as a liability until earned
+        d.prepayments.push({ id: `PRE${d.nextId++}`, targetId, amount, unearned: amount, fulfilTurn: d.turn + pre.fulfil_after_own_turns });
+        result.prepayments = amount;
+      }
       Object.assign(result, { receipts: r.receipts, profit: r.profit, outcome: r.label, target: target.title });
     } else if (entry.kind === 'investment') {
       switch (entry.type) {
@@ -1804,6 +2027,9 @@ const handlers = {
         case 'service':
           add({ holding: 'service_credit', targetId, components: entry.service.components, bps: entry.service.bps, cap: entry.service.cap, uses: entry.service.uses });
           break;
+        case 'representative':
+          add({ holding: 'representative' });
+          break;
         default:
           throw new LedgerError('This card is not available yet.');
       }
@@ -1815,6 +2041,13 @@ const handlers = {
         case 'service':
         case 'community_event':
           add({ holding: 'lux_service', rewardFamily: entry.rewardFamily, repMax: entry.repMax, completedAt: null });
+          if (authored.event_bookings.producer_entries.includes(entry.id)) {
+            d.bookings.push({
+              id: `BK${d.nextId++}`, serviceId: assetId, price,
+              deposit: divHalfUp(price * authored.event_bookings.refundable_deposit_bps_of_price, BPS),
+              prepayments: authored.event_bookings.customer_prepayments_cents,
+            });
+          }
           break;
         case 'companion':
           add({ holding: 'companion', renewalCare: entry.renewalCare, pendingCare: null });
@@ -1932,6 +2165,7 @@ const handlers = {
     const a = d.assets.find(x => x.id === assetId && x.holding === 'lux_service' && isActive(x));
     if (!a) throw new LedgerError('That service is not open.');
     if (d.progress <= a.acquiredAt) throw new LedgerError('Delivery happens on a later turn. Roll first.');
+    if (a.blockedUntilTurn && d.turn <= a.blockedUntilTurn) throw new LedgerError(`Rescheduled: deliver it after turn ${a.blockedUntilTurn}.`);
     const entry = catalogEntry(a.cardId);
     if (entry.completion && entry.completion.choices && !choice) throw new LedgerError('Make a choice first.');
     const rep = a.repMax ? awardFamily(d, a.rewardFamily, a.repMax) : 0;
@@ -2122,9 +2356,12 @@ const handlers = {
     t.completedTurn = d.turn;
     observe(d, { opportunity: `task-${t.id}`, dimension: 'follow_through', outcome: 'complete', label: `Completed: ${t.label}` });
     if (t.reward > 0) postCashIncome(d, t.reward, t.taxClass);
+    if (t.cardId === 'Y10') {
+      d.perks.push({ id: `PERK${d.nextId++}`, label: 'Sponsor gear package', value: authored.sponsor_perk.taxable_value_cents, taxRecorded: false });
+    }
     let points = { rep: 0, career: 0 };
     if (t.onComplete && t.onComplete.length) {
-      const ctx = scenarioContext(d, { cardId: t.cardId, id: t.eventId, targetId: t.targetId, saved: t.saved }, { taskCompleted: true });
+      const ctx = scenarioContext(d, { cardId: t.cardId, id: t.eventId, targetId: t.targetId, recordId: t.recordId, saved: t.saved }, { taskCompleted: true });
       applyEffects(d, t.onComplete, ctx, true);
       points = ctx.points;
     }
@@ -2222,11 +2459,31 @@ const handlers = {
     if (d.scenario && d.scenario.status === 'pending') respondScenario(d, defaultResponse(curveball(d.scenario.cardId)), {}, false, true);
     // Committed follow-ups settle with their stored outcome; task-gated rewards are not earned.
     d.scheduled.forEach(item => {
-      const ctx = scenarioContext(d, { cardId: item.cardId, id: item.scenarioId, targetId: item.targetId, saved: item.saved }, { lossId: item.lossId });
+      const ctx = scenarioContext(d, { cardId: item.cardId, id: item.scenarioId, targetId: item.targetId, recordId: item.recordId, saved: item.saved }, { lossId: item.lossId });
       applyEffects(d, item.effects, ctx, true);
     });
     d.scheduled = [];
     d.portal = null;
+    // Earned receivables settle once; prepaid orders are fulfilled; delivered perks are taxed.
+    d.receivables.forEach(r => {
+      if (r.amount > 0) {
+        const x = r.amount;
+        r.amount = 0;
+        postCashIncome(d, x, 'nil');
+      }
+    });
+    d.prepayments.forEach(p => {
+      if (p.unearned > 0) {
+        recordIncome(d, 'business', p.unearned);
+        p.unearned = 0;
+      }
+    });
+    d.perks.forEach(p => {
+      if (!p.taxRecorded) {
+        recordIncome(d, 'nil', p.value);
+        p.taxRecorded = true;
+      }
+    });
     // Income in an unfinished lap still gets one provisional bill.
     const lap = incomeLap(d);
     if (!d.closedLaps.includes(lap) && d.taxIncome[lap]) rebill(d, lap);

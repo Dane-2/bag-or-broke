@@ -57,8 +57,10 @@ function laterText(entry, ledger) {
       return 'A one-time event: you pay the cost and receive the receipts once. Profit or loss is business income. Once per game.';
     case 'service':
       return entry.service
-        ? `One-time discount: ${entry.service.bps / 100}% (up to ${formatCents(entry.service.cap)}) off a later technical-recovery bill for the business you pick. No asset value.`
+        ? `One-time discount: ${entry.service.bps / 100}% (up to ${formatCents(entry.service.cap)}) off a later ${entry.id === 'I36' ? 'replacement-order or equipment-repair' : 'technical-recovery'} bill for the business you pick. No asset value.`
         : '';
+    case 'representative':
+      return 'A representative manages your NIL invoices: paid-later invoices arrive one turn sooner. They also get access to your accounts, which carries its own risk. No asset value.';
     case 'community_expense':
       return 'A community expense: +4 REP once per game. No asset value and no tax shield.';
     case 'protection': {

@@ -5,24 +5,17 @@ import scenariosConfig from './config/scenarios.json';
 import corePolicy from './config/core.json';
 import { isActive, assetValue } from './holdings';
 import { openTaskSlots, TASK_SLOTS } from './nil';
+import authored from './config/authored_producers.json';
 
 export const CURVEBALLS = scenariosConfig.scenarios.filter(s => s.color === 'red' || s.color === 'blue');
 export const PORTAL = scenariosConfig.portal;
 export const curveball = id => CURVEBALLS.find(c => c.id === id) || null;
 
-/** Scenarios whose source records this version cannot produce yet. */
-export const DISABLED = {
-  R02: 'needs unpaid sponsor invoices',
-  R05: 'needs shared ventures with partner contributions',
-  R06: 'needs merchandise order records',
-  R07: 'needs campaign inventory records',
-  R08: 'no business carries an equipment record',
-  R09: 'needs paid event bookings',
-  R12: 'needs customer prepayment records',
-  R16: 'needs a deferred-tax perk producer',
-  R17: 'needs a representative contract',
-  B07: 'needs an academic review task',
-};
+/** Scenarios whose source records this version cannot produce yet (none: see authored_producers.json). */
+export const DISABLED = {};
+
+export const AUTHORED = authored;
+export const AUTHORED_SCENARIOS = Object.values(authored).flatMap(x => (x && x.scenarios) || []);
 
 const ATHLETIC_HORIZON_LAPS = corePolicy.timeline.athletic_horizon_laps;
 const HOSTED = ['LX16', 'LX17', 'LX20', 'LX45', 'LX31', 'LX32', 'LX35', 'YSH_CLINIC', 'I12'];
@@ -45,13 +38,61 @@ const activeSponsor = s => s.sponsorRelations.some(r => r.expiresTurn >= s.turn)
 const openPayables = s => s.payables.filter(p => p.amount > 0);
 const healthIncidentOpen = s => s.healthIncidentUntil >= s.turn;
 
-/** Earliest acquired eligible holding for a company-targeted scenario. */
+const byAcquired = (a, b) => a.acquiredAt - b.acquiredAt || (a.id < b.id ? -1 : 1);
+const liveRoots = s => s.assets
+  .filter(a => isActive(a) && (a.holding === 'growth' || a.holding === 'market') && assetValue(s, a) > 0)
+  .sort(byAcquired);
+const openOrder = s => (s.inventoryOrders || []).find(o => o.openUntil >= s.turn && liveRoots(s).some(a => a.id === o.targetId));
+const openPrepay = s => (s.prepayments || []).find(p => p.unearned > 0 && liveRoots(s).some(a => a.id === p.targetId));
+const openBooking = s => (s.bookings || []).find(b => b.deposit > 0 && s.assets.some(a => a.id === b.serviceId && isActive(a)));
+const openContribution = s => (s.npcContributions || []).find(c => !c.satisfied && c.overdueUntilTurn >= s.turn && liveRoots(s).some(a => a.id === c.assetId));
+const dueReceivable = s => (s.receivables || []).filter(r => r.amount > 0).sort((a, b) => a.dueTurn - b.dueTurn)[0];
+const openPerk = s => (s.perks || []).find(p => !p.taxRecorded);
+
+/**
+ * The record a scenario acts on: { targetId, recordId }. Company scenarios use the earliest
+ * acquired eligible holding (or the holding tied to the record), never the costliest.
+ */
+export function scenarioRecord(s, card) {
+  const roots = liveRoots(s);
+  switch (card.id) {
+    case 'R10':
+      return { targetId: roots.find(a => (a.exposure || []).includes('platform_dependency'))?.id || null };
+    case 'R08':
+      return { targetId: roots.find(a => (a.exposure || []).includes('operating_business') && (a.exposure || []).includes('equipment'))?.id || null };
+    case 'R06':
+    case 'R07': {
+      const o = openOrder(s);
+      return o ? { targetId: o.targetId, recordId: o.id } : { targetId: null };
+    }
+    case 'R12': {
+      const p = openPrepay(s);
+      return p ? { targetId: p.targetId, recordId: p.id } : { targetId: null };
+    }
+    case 'R05': {
+      const c = openContribution(s);
+      return c ? { targetId: c.assetId, recordId: c.id } : { targetId: null };
+    }
+    case 'R09': {
+      const b = openBooking(s);
+      return b ? { targetId: null, recordId: b.id } : { targetId: null };
+    }
+    case 'R02': {
+      const r = dueReceivable(s);
+      return r ? { targetId: null, recordId: r.id } : { targetId: null };
+    }
+    case 'R16': {
+      const p = openPerk(s);
+      return p ? { targetId: null, recordId: p.id } : { targetId: null };
+    }
+    default:
+      return { targetId: null };
+  }
+}
+
 export function scenarioTarget(s, card) {
-  const roots = s.assets
-    .filter(a => isActive(a) && (a.holding === 'growth' || a.holding === 'market') && assetValue(s, a) > 0)
-    .sort((a, b) => a.acquiredAt - b.acquiredAt || (a.id < b.id ? -1 : 1));
-  if (card.id === 'R10') return roots.find(a => (a.exposure || []).includes('platform_dependency')) || null;
-  return null;
+  const id = scenarioRecord(s, card).targetId;
+  return id ? s.assets.find(a => a.id === id) : null;
 }
 
 export const optionalTasks = s => s.tasks.filter(t => t.status === 'open' && !t.mandatory);
@@ -116,7 +157,41 @@ export function predicate(s, name, card) {
       return openTaskSlots(s) > TASK_SLOTS;
     case 'platform_dependent_venture':
     case 'company_value_positive':
+    case 'operating_business':
+    case 'equipment_exposure':
       return Boolean(scenarioTarget(s, card));
+    // Authored record producers (config/authored_producers.json)
+    case 'earned_receivable_scheduled_within_two_turns':
+      return (s.receivables || []).some(r => r.amount > 0 && r.dueTurn <= s.turn + 2);
+    case 'unsettled_receivable':
+      return (s.receivables || []).some(r => r.amount > 0);
+    case 'recorded_academic_risk':
+      return Boolean(s.academicRisk);
+    case 'owned_merchandise_venture':
+    case 'recorded_inventory_order':
+      return Boolean(openOrder(s)) && Boolean(scenarioTarget(s, card)) && (scenarioTarget(s, card).exposure || []).includes('inventory');
+    case 'recorded_poor_promotion_result':
+      return Boolean(openOrder(s) && openOrder(s).poor);
+    case 'owned_inventory_venture':
+      return Boolean(scenarioTarget(s, card));
+    case 'inventory_unsold_value_positive':
+      return Boolean(openOrder(s) && openOrder(s).unsold > 0);
+    case 'recorded_successful_campaign':
+    case 'paid_orders_exceed_capacity':
+    case 'unearned_customer_prepayments_positive':
+      return Boolean(openPrepay(s));
+    case 'paid_event_booking':
+    case 'active_uncompleted_event':
+      return Boolean(openBooking(s));
+    case 'shared_operating_venture':
+    case 'recorded_partner_contribution_overdue':
+    case 'recorded_shortfall_positive':
+      return Boolean(openContribution(s));
+    case 'active_recorded_representative_relationship':
+      return s.assets.some(a => isActive(a) && a.holding === 'representative');
+    case 'received_authored_taxable_perk':
+    case 'perk_not_yet_tax_recorded':
+      return Boolean(openPerk(s));
     default:
       return false;
   }
@@ -150,6 +225,14 @@ export function requirementMet(s, name, target) {
       return s.cash >= 1000000;
     case 'can_afford_25000':
       return s.cash >= 2500000;
+    case 'can_afford_full_shortfall': {
+      const c = (s.npcContributions || []).find(x => !x.satisfied && x.overdueUntilTurn >= s.turn);
+      return Boolean(c) && s.cash >= c.shortfall;
+    }
+    case 'can_afford_perk_tax_estimate': {
+      const p = (s.perks || []).find(x => !x.taxRecorded);
+      return Boolean(p) && s.cash >= Math.round(p.value * 0.2);
+    }
     // Checked against the full quote at confirmation.
     case 'can_afford_net_quoted_service':
     case 'can_afford_net_quoted_total':
@@ -183,6 +266,13 @@ export const COMPONENT_LABELS = {
   website_platform_remediation: 'Technical recovery',
   contract_exit: 'Contract exit',
   advance_contract: 'Advance repayment',
+  operating_remediation: 'Replacement order',
+  equipment_repair: 'Equipment repair',
+  event_operating_cost: 'Replacement venue',
+  operating_expense: 'Operating cost',
+  unauthorized_transfer: 'Money moved without permission',
+  customer_refund: 'Customer refunds',
+  income_share: 'Advance minimum repayment',
   uncovered_living_support: 'Living support',
   transfer_move: 'Moving cost',
 };

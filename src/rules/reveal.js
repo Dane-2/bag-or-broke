@@ -47,6 +47,16 @@ export const RESPONSE_EVIDENCE = {
   R19: { keep: [['planning', 'proceed_without_optional_preparation']], buyout: [['recovery', 'complete_recovery']], review: [['recovery', 'choose_feasible_recovery']] },
   R20: { wait: [['planning', 'proceed_without_optional_preparation']], release: [['recovery', 'complete_recovery']], challenge: [['risk_appetite', 'choose_high']] },
   R21: { pay: [['planning', 'proceed_without_optional_preparation']], mediate: [['recovery', 'choose_feasible_recovery']], perform: [['recovery', 'choose_feasible_recovery']] },
+  R02: { wait: [['planning', 'proceed_without_optional_preparation']], expedite: [['recovery', 'complete_recovery']] },
+  R05: { reduce: [['recovery', 'choose_feasible_recovery']], cover: [['recovery', 'complete_recovery']], delay: [['planning', 'review_or_prepare']] },
+  R06: { correct: [['recovery', 'choose_feasible_recovery']], replace: [['recovery', 'complete_recovery']] },
+  R07: { test: [['recovery', 'choose_feasible_recovery']], pause: [['planning', 'review_or_prepare']] },
+  R08: { repair: [['recovery', 'complete_recovery']], substitute: [['recovery', 'choose_feasible_recovery']] },
+  R09: { replace: [['recovery', 'complete_recovery']], reschedule: [['follow_through', 'agreed_reschedule']], cancel: [['follow_through', 'communicated_withdrawal']] },
+  R12: { fulfill: [['follow_through', 'complete']], limit: [['follow_through', 'communicated_withdrawal']], extend: [['follow_through', 'agreed_reschedule']] },
+  R16: { reserve: [['planning', 'review_or_prepare']], later: [['planning', 'proceed_without_optional_preparation']] },
+  R17: { restrict: [['recovery', 'choose_feasible_recovery']], recover: [['recovery', 'complete_recovery']] },
+  B07: { tutor: [['recovery', 'complete_recovery']], restructure: [['recovery', 'complete_recovery']], keep: [['recovery', 'decline_feasible_recovery']] },
   B01: { feedback: [['recovery', 'choose_feasible_recovery']], prepare: [['planning', 'review_or_prepare']], post: [['recovery', 'decline_feasible_recovery']] },
   B02: { report: [['planning', 'review_or_prepare']], support: [['planning', 'review_or_prepare']], hide: [['planning', 'proceed_without_optional_preparation'], ['risk_appetite', 'choose_high']] },
   B03: { one: [['risk_appetite', 'choose_moderate']], bundle: [['risk_appetite', 'choose_high']], decline: [['risk_appetite', 'choose_low']] },
@@ -62,7 +72,7 @@ export const RESPONSE_EVIDENCE = {
 };
 
 /** Curveballs that are setbacks outside the player's control. */
-export const EXTERNAL_SETBACKS = ['R03', 'R04', 'R10', 'R11', 'R13', 'R14', 'R18', 'R19', 'R20', 'R21', 'B01', 'B02', 'B04', 'B05', 'B08', 'B10', 'B13'];
+export const EXTERNAL_SETBACKS = ['R02', 'R05', 'R06', 'R07', 'R08', 'R09', 'R12', 'R17', 'R03', 'R04', 'R10', 'R11', 'R13', 'R14', 'R18', 'R19', 'R20', 'R21', 'B01', 'B02', 'B04', 'B05', 'B08', 'B10', 'B13'];
 
 /** Risk level of an investment entry for risk_appetite. */
 export function riskOutcome(entry) {
