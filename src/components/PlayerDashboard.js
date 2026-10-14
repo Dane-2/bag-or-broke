@@ -1050,7 +1050,7 @@ function PlayerDashboard({
                   <FaTh className="text-xl text-slate-800" />
                   <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Investments</h3>
                 </div>
-                <CatalogMenu kind="investment" ledger={ledger} onAcquire={handleAcquire} />
+                <CatalogMenu kind="investment" ledger={ledger} onAcquire={handleAcquire} act={act} />
               </div>
 
               <div className={glassSection}>
@@ -1070,7 +1070,7 @@ function PlayerDashboard({
                   <FaGem className="text-xl text-fuchsia-700" />
                   <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Lifestyle &amp; Luxury</h3>
                 </div>
-                <CatalogMenu kind="luxury" ledger={ledger} onAcquire={handleAcquire} />
+                <CatalogMenu kind="luxury" ledger={ledger} onAcquire={handleAcquire} act={act} />
               </div>
 
               <div className={glassSection}>

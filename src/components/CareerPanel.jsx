@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { PATHS, family, path, familyChoices, familyScene, pathAllowed, INTERNSHIP } from '../rules/career';
+import { adviseCareer } from '../rules/coach';
+import CoachButton from './CoachButton';
 
 const card = 'rounded-xl bg-white/35 border border-white/50 p-3 space-y-2';
 const btn = 'rounded-full px-3 py-1.5 text-xs font-semibold border';
@@ -59,6 +61,7 @@ function Offer({ ledger, act }) {
           })}
         </div>
       )}
+      <CoachButton ledger={ledger} act={act} decisionId={offer.id} compute={() => adviseCareer(ledger)} />
       <button type="button" className={secondary} onClick={() => act('career_decline', {}, 'Opportunity declined (no penalty)')}>
         Decline
       </button>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { curveball, requirementMet, activeRestrictions, RESTRICTION_LABELS, COMPONENT_LABELS } from '../rules/scenarios';
-import { quoteScenario } from '../rules/ledger';
+import { quoteScenario, dueNow } from '../rules/ledger';
+import { adviseScenario } from '../rules/coach';
+import CoachButton from './CoachButton';
 import { isActive } from '../rules/holdings';
 import { formatCents } from '../rules/money';
 
@@ -152,6 +154,7 @@ function Pending({ ledger, act }) {
           );
         })}
       </div>
+      <CoachButton ledger={ledger} act={act} decisionId={sc.id} compute={() => adviseScenario(ledger, id => quoteScenario(ledger, id, elect), dueNow)} />
       <button
         type="button"
         className={`${primary} w-full py-2`}

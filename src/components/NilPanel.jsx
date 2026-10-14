@@ -3,6 +3,8 @@ import { yellowCard, yellowChoices, YELLOW_COPY, TASK_SLOTS, openTaskSlots } fro
 import { TAX_RATE_BPS } from '../rules/finance';
 import { isActive } from '../rules/holdings';
 import { formatCents } from '../rules/money';
+import { adviseYellow } from '../rules/coach';
+import CoachButton from './CoachButton';
 
 const card = 'rounded-xl bg-white/35 border border-white/50 p-3 space-y-2';
 const btn = 'rounded-full px-3 py-1.5 text-xs font-semibold border';
@@ -78,6 +80,7 @@ export default function NilPanel({ ledger, act }) {
           {baseLine(y) && <p className="text-sm font-semibold text-slate-900">{baseLine(y)}</p>}
           {y.status === 'pending' ? (
             <div className="space-y-2">
+              <CoachButton ledger={ledger} act={act} decisionId={y.id} compute={() => adviseYellow(ledger)} />
               {yellowChoices(ledger, current).map(choice => (
                 <ChoiceButton
                   key={choice.id}

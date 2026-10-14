@@ -17,6 +17,7 @@ import { RULESET_ID, BOARD_SIZE, boardSpace } from './index';
 import { catalogEntry, isActivation, INVESTMENT_CATALOG, LUXURY_CATALOG } from './catalog';
 import { classify, RESPONSE_EVIDENCE, EXTERNAL_SETBACKS, riskOutcome } from './reveal';
 import authored from './config/authored_producers.json';
+import { STARTING_CREDITS } from './coach';
 import {
   launchValue, continuingRate, isMarketProfile, marketDrawBps, eventResult, activationResult,
   assetValue, policyBalance, policyLoanQuote, annuityCancelQuote, holdingsValue, eligibility,
@@ -121,6 +122,7 @@ export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZ
     npcContributions: [],
     perks: [],
     academicRisk: false,
+    coach: { credits: STARTING_CREDITS, cache: {} },
   };
 }
 
@@ -773,7 +775,7 @@ function observe(d, { opportunity, dimension, outcome, label }) {
 }
 
 /** Obligations due before the next roll and still unpaid (debt, closed-lap tax, event bills). */
-function dueNow(d) {
+export function dueNow(d) {
   const tax = d.taxBills.filter(b => !b.provisional).reduce((t, b) => t + taxBillOwed(b), 0);
   const bills = d.payables.filter(p => p.amount > 0 && p.dueTurn <= d.turn + 1).reduce((t, p) => t + p.amount, 0);
   return requiredPayment(d).total + tax + bills;
@@ -2335,6 +2337,21 @@ const handlers = {
       return award;
     }
     throw new LedgerError('Unknown action.');
+  },
+
+  /**
+   * Coach J-Bo advice for one decision. The first delivery for a decision id spends one of the
+   * game's three credits; asking again for the same decision replays it for free.
+   */
+  coach_advice(d, { decisionId, advice }) {
+    assertActive(d);
+    if (d.coach.cache[decisionId]) return { ...d.coach.cache[decisionId], replay: true, credits: d.coach.credits };
+    if (!advice || !advice.recommendation) throw new LedgerError('Coach J-Bo has no advice for this yet. No credit was used.');
+    if (d.coach.credits <= 0) throw new LedgerError('No Coach J-Bo credits left this game.');
+    d.coach.credits -= 1;
+    d.coach.cache[decisionId] = advice;
+    log(d, { type: 'coach', label: 'Coach J-Bo advice', cashDelta: 0 });
+    return { ...advice, replay: false, credits: d.coach.credits };
   },
 
   /** Answer the drawn yellow card. Its base benefit has already posted. */

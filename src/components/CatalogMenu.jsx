@@ -4,7 +4,9 @@ import {
   INVESTMENT_CATALOG, LUXURY_CATALOG, RETURN_PROFILES, ACTIVATION, LIFE_TERMS, ANNUITY_TERMS,
   LEGAL_SUPPORT, HEALTH_SUPPORT, isActivation,
 } from '../rules/catalog';
-import { landingStatus, quoteAcquire, finalProgress } from '../rules/ledger';
+import { landingStatus, quoteAcquire, finalProgress, dueNow } from '../rules/ledger';
+import { adviseLanding } from '../rules/coach';
+import CoachButton from './CoachButton';
 import { eligibility, launchValue } from '../rules/holdings';
 import { buyAnnuity } from '../rules/finance';
 import { formatCents, toCents } from '../rules/money';
@@ -297,7 +299,7 @@ function Tile({ entry, ledger, selected, onSelect }) {
 }
 
 /** Green or diamond catalog with a quote-driven purchase panel. */
-export default function CatalogMenu({ kind, ledger, onAcquire }) {
+export default function CatalogMenu({ kind, ledger, onAcquire, act }) {
   const catalog = kind === 'investment' ? INVESTMENT_CATALOG : LUXURY_CATALOG;
   const groups = useMemo(() => ['All', ...new Set(catalog.map(e => e.group))], [catalog]);
   const [group, setGroup] = useState('All');
@@ -320,6 +322,9 @@ export default function CatalogMenu({ kind, ledger, onAcquire }) {
           ? `You landed on a ${kind === 'investment' ? 'green' : 'diamond'} space: you can make one purchase.`
           : `${landing.reason} You can still browse.`}
       </div>
+      {landing.ok && act && (
+        <CoachButton ledger={ledger} act={act} decisionId={`land-${ledger.turn}-${kind}`} compute={() => adviseLanding(ledger, kind, dueNow)} />
+      )}
 
       {picks.length > 0 && (
         <div>
