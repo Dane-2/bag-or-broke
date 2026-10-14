@@ -14,7 +14,8 @@ import {
   INVESTMENT_MIN_CASH_BPS, LAP_AWARD_CENTS, OPENING_CREDIT_SCORE, buyAnnuity, legalAssistance,
 } from './finance';
 import { RULESET_ID, BOARD_SIZE, boardSpace } from './index';
-import { catalogEntry, isActivation } from './catalog';
+import { catalogEntry, isActivation, INVESTMENT_CATALOG, LUXURY_CATALOG } from './catalog';
+import { classify, RESPONSE_EVIDENCE, EXTERNAL_SETBACKS, riskOutcome } from './reveal';
 import {
   launchValue, continuingRate, isMarketProfile, marketDrawBps, eventResult, activationResult,
   assetValue, policyBalance, policyLoanQuote, annuityCancelQuote, holdingsValue, eligibility,
@@ -108,6 +109,9 @@ export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZ
     creditChangedTurn: null,
     // landingEvents=false skips yellow/purple/red/blue draws (finance-only tests).
     settings: { familyExpansionContent: true, landingEvents },
+    // Reveal evidence: one observation per decision and dimension; setbacks outside the player's control.
+    observations: [],
+    setbacks: [],
   };
 }
 
@@ -486,8 +490,10 @@ function closeLap(d, lap) {
   const bill = d.taxBills.find(b => b.lap === lap) || null;
 
   d.closedLaps.push(lap);
+  const dueTax = bill ? taxBillOwed(bill) : 0;
   d.pendingDeadline = {
     lap,
+    dueAtClose: requiredPayment(d).total + (bill && !bill.provisional ? dueTax : 0),
     basis,
     newDraws: d.period.newDraws,
     principalRepaid: d.period.principalRepaid,
@@ -520,6 +526,14 @@ function evaluateDeadline(d) {
     });
   });
   const current = requiredPayment(d).overdue === 0;
+  // Evidence: required amounts at this deadline, counted only when the cash existed to pay them.
+  const unpaidDebt = requiredPayment(d).overdue;
+  const unpaidTax = d.taxBills.filter(b => b.lap === p.lap).reduce((t, b) => t + taxBillPrincipal(b), 0);
+  if (p.dueAtClose > 0) {
+    const unpaid = unpaidDebt + unpaidTax;
+    if (unpaid === 0) observe(d, { opportunity: `deadline-${p.lap}`, dimension: 'avoidable_nonpayment', outcome: 'pay_required_amount', label: `Paid lap ${p.lap} bills on time` });
+    else if (d.cash >= unpaid) observe(d, { opportunity: `deadline-${p.lap}`, dimension: 'avoidable_nonpayment', outcome: 'leave_unpaid_with_sufficient_available_cash', label: `Left lap ${p.lap} bills unpaid with cash available` });
+  }
   const debtFree = d.loans.every(l => loanBalance(d, l) === 0);
   const netReduction = nonneg(p.principalRepaid - p.newDraws);
   const before = d.creditScore;
@@ -720,6 +734,47 @@ function settleSale(d, { assetId, label, value, basis, residualExit }) {
 }
 
 // ---------------------------------------------------------------------------
+// Reveal evidence
+// ---------------------------------------------------------------------------
+
+function observe(d, { opportunity, dimension, outcome, label }) {
+  if (d.observations.some(o => o.opportunity_id === opportunity && o.dimension === dimension)) return;
+  d.observations.push({
+    event_id: `${opportunity}:${dimension}`,
+    opportunity_id: opportunity,
+    dimension,
+    outcome,
+    actionable: true,
+    choice_exposed: true,
+    forced: false,
+    reversed: false,
+    turn: d.turn,
+    label,
+  });
+}
+
+/** Obligations due before the next roll and still unpaid (debt, closed-lap tax, event bills). */
+function dueNow(d) {
+  const tax = d.taxBills.filter(b => !b.provisional).reduce((t, b) => t + taxBillOwed(b), 0);
+  const bills = d.payables.filter(p => p.amount > 0 && p.dueTurn <= d.turn + 1).reduce((t, p) => t + p.amount, 0);
+  return requiredPayment(d).total + tax + bills;
+}
+
+/** Was any purchase on this landing actually eligible and affordable? */
+function landingActionable(d, kind) {
+  const catalog = kind === 'luxury' ? LUXURY_CATALOG : INVESTMENT_CATALOG;
+  const h = holds(d);
+  return catalog.some(entry => {
+    if (!eligibility(d, entry).ok) return false;
+    const price = priceFor(d, entry).price;
+    if (price <= d.cash) return true;
+    if (entry.cashOnly || h.length) return false;
+    if (fundingKind(entry) === 'luxury') return availableUnsecured(d) >= price - Math.max(0, d.cash);
+    return d.cash >= Math.ceil((price * entry.minCashBps) / BPS);
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Yellow NIL opportunities
 // ---------------------------------------------------------------------------
 
@@ -856,6 +911,16 @@ function startOwnTurn(d, dice, events) {
     respondScenario(d, defaultResponse(card), {}, false, true);
     events.push({ type: 'scenario_default', label: `${card.title}: no response chosen, so the cost-free option applied` });
   }
+  // A green or diamond landing left unused, when something was affordable, is a decline.
+  const o = d.opportunity;
+  if (o && !o.used && (o.category === 'green' || o.category === 'diamond') && landingActionable(d, o.category === 'green' ? 'investment' : 'luxury')) {
+    observe(d, {
+      opportunity: `land-${d.turn}`,
+      dimension: o.category === 'green' ? 'investment' : 'luxury',
+      outcome: 'decline',
+      label: o.category === 'green' ? 'Passed on investing' : 'Passed on a lifestyle purchase',
+    });
+  }
   const next = d.turn + 1;
   // Due scenario checkpoints first.
   const due = d.scheduled.filter(x => x.dueTurn <= next);
@@ -874,6 +939,7 @@ function startOwnTurn(d, dice, events) {
       }
       t.status = 'missed';
       missed.push(t);
+      if (!t.mandatory) observe(d, { opportunity: `task-${t.id}`, dimension: 'follow_through', outcome: 'ignore', label: `Missed: ${t.label}` });
     }
   });
   d.payables.forEach(p => {
@@ -933,6 +999,7 @@ function careerStartTurn(d, nextTurn) {
   if (i.state === 'active' || i.state === 'extended') {
     i.state = 'repair';
     i.dueTurn = nextTurn;
+    observe(d, { opportunity: `intern-${i.id}`, dimension: 'follow_through', outcome: 'ignore', label: 'Missed an internship follow-up' });
     careerRecord(d, { family: 'internship', path: i.path, status: 'missed', rep: 0, career: 0 });
     return 'missed';
   }
@@ -1341,7 +1408,22 @@ function respondScenario(d, choiceId, elect, preview = false, forced = false) {
     assistance: ctx.assistance,
     lines: ctx.lines,
   };
-  if (!preview) d.scenarioHistory.push(entry);
+  if (!preview) {
+    d.scenarioHistory.push(entry);
+    if (EXTERNAL_SETBACKS.includes(card.id)) d.setbacks.push({ event_id: sc.id, external: true, adverse: true, committed: true, reversed: false, label: card.title });
+    if (!forced) {
+      (RESPONSE_EVIDENCE[card.id]?.[choiceId] || []).forEach(([dimension, outcome]) =>
+        observe(d, { opportunity: sc.id, dimension, outcome, label: `${card.title}: ${choice.label}` }));
+      // Support the player held that applied to this event: used or left unused.
+      const comps = new Set([...(card.immediate || []), ...choice.effects].filter(e => e.op === 'expense').map(e => e.component));
+      const held = plan => d.assets.some(a => a.holding === 'plan' && a.plan === plan && (a.uses > 0 || ctx.matter[plan].used));
+      const applicable = (comps.has('eligible_legal_fee') && held('legal')) || (comps.has('health_expense') && held('health'));
+      if (applicable) {
+        const used = ctx.matter.legal.used || ctx.matter.health.used;
+        observe(d, { opportunity: `${sc.id}-support`, dimension: 'purposeful_promotion', outcome: used ? 'apply_relevant_use' : 'leave_unused', label: used ? `Used support on ${card.title}` : `Kept support unused on ${card.title}` });
+      }
+    }
+  }
   return { ...entry, points: ctx.points, navigate: ctx.navigate || null, unknown: Boolean(ctx.unknown) };
 }
 
@@ -1417,6 +1499,12 @@ const handlers = {
     d.taxBucket += setAside;
     recordIncome(d, taxClass, amount);
     if (taxClass === 'nil') applyIncomeShare(d, amount);
+    observe(d, {
+      opportunity: `income-${d.seq + 1}`,
+      dimension: 'planning',
+      outcome: setAside > 0 ? 'review_or_prepare' : 'proceed_without_optional_preparation',
+      label: setAside > 0 ? 'Set aside tax from NIL income' : 'Kept all NIL income available',
+    });
     log(d, { type: 'income', label, cashDelta: amount - setAside, bucketDelta: setAside, taxClass });
     return { cash: d.cash, taxBucket: d.taxBucket };
   },
@@ -1593,8 +1681,26 @@ const handlers = {
       throw new LedgerError('Confirm suitable housing and a backup caregiver first.');
     }
 
+    const opportunityId = d.requireLanding ? `land-${d.turn}` : `buy-${assetId}`;
+    const due = dueNow(d);
     consumeLanding(d, entry);
     const lap = currentLapNumber(d);
+    if (entry.kind === 'investment' && !activation) {
+      observe(d, { opportunity: opportunityId, dimension: 'investment', outcome: 'acquire', label: `Invested: ${entry.title}` });
+      observe(d, { opportunity: opportunityId, dimension: 'risk_appetite', outcome: riskOutcome(entry), label: `Risk level of ${entry.title}` });
+    }
+    if (entry.kind === 'luxury' && !activation) observe(d, { opportunity: opportunityId, dimension: 'luxury', outcome: 'purchase', label: `Bought ${entry.title}` });
+    if (activation) observe(d, { opportunity: opportunityId, dimension: 'purposeful_promotion', outcome: 'apply_relevant_use', label: `Promoted a business with ${entry.title}` });
+    if (['YSH_SPONSOR', 'LX45'].includes(entry.id)) observe(d, { opportunity: `${opportunityId}-community`, dimension: 'community', outcome: 'participate', label: entry.title });
+    if (due > 0) {
+      const after = d.cash - q.funding.cashPart;
+      observe(d, {
+        opportunity: `${opportunityId}-due`,
+        dimension: 'avoidable_overextension',
+        outcome: after < due ? 'commit_despite_displaced_due_obligation' : 'preserve_due_obligation',
+        label: after < due ? `Bought ${entry.title} with bills still due` : `Bought ${entry.title} and kept cash for bills due`,
+      });
+    }
     const price = q.price;
     d.cash -= q.funding.cashPart;
     const borrowed = q.funding.borrow;
@@ -1919,13 +2025,16 @@ const handlers = {
 
     if (offer.family === 'internship') {
       if (c.internship) throw new LedgerError('You already have an internship in progress.');
-      c.internship = { path: pathId, assignment: choiceId, label: choice.label, competency: choice.competency, state: 'active', dueTurn: d.turn + 1, extended: false };
+      observe(d, { opportunity: offer.id, dimension: 'development', outcome: 'complete', label: `Accepted an internship: ${p.name}` });
+      c.internship = { id: offer.id, path: pathId, assignment: choiceId, label: choice.label, competency: choice.competency, state: 'active', dueTurn: d.turn + 1, extended: false };
       careerRecord(d, { family: 'internship', path: pathId, status: 'accepted', choice: choice.label, rep: 0, career: 0 });
       log(d, { type: 'career', label: `Internship accepted: ${p.name}`, cashDelta: 0 });
       return { accepted: true, rep: 0, career: 0 };
     }
 
     const award = awardCareer(d, offer.family, pathId);
+    observe(d, { opportunity: offer.id, dimension: 'development', outcome: 'complete', label: `${careerFamily(offer.family).name}: ${p.name}` });
+    if (offer.family === 'community_service') observe(d, { opportunity: offer.id, dimension: 'community', outcome: 'participate', label: 'Community service' });
     if (choice.competency) c.competencies.push(choice.competency);
     if (choice.contact) c.contacts.push(`${choice.contact}:${pathId}`);
     if (offer.family === 'graduation') c.graduated = true;
@@ -1948,6 +2057,8 @@ const handlers = {
     if (!offer || offer.status !== 'offered') throw new LedgerError('There is no career opportunity waiting.');
     offer.status = 'declined';
     careerRecord(d, { family: offer.family, path: null, status: 'declined', rep: 0, career: 0 });
+    observe(d, { opportunity: offer.id, dimension: 'development', outcome: 'decline', label: `Declined ${careerFamily(offer.family).name}` });
+    if (offer.family === 'community_service') observe(d, { opportunity: offer.id, dimension: 'community', outcome: 'decline', label: 'Declined community service' });
     return { rep: 0, career: 0 };
   },
 
@@ -1962,6 +2073,9 @@ const handlers = {
       careerRecord(d, { family: 'internship', path: i.path, status, choice: i.label, rep: 0, career: 0 });
       c.internship = null;
     };
+    const opp = `intern-${i.id}`;
+    if (action === 'withdraw') observe(d, { opportunity: opp, dimension: 'follow_through', outcome: 'communicated_withdrawal', label: 'Withdrew from an internship with notice' });
+    if (action === 'decline_repair') observe(d, { opportunity: opp, dimension: 'recovery', outcome: 'decline_feasible_recovery', label: 'Closed an internship repair' });
     if (action === 'withdraw' || action === 'decline_repair') {
       finish(action === 'withdraw' ? 'withdrawn' : 'closed_unfinished');
       return { rep: 0, career: 0 };
@@ -1978,6 +2092,8 @@ const handlers = {
       if (action === 'repair' && i.state !== 'repair') throw new LedgerError('No repair is open.');
       if (action === 'complete' && i.state === 'repair') throw new LedgerError('Use the repair option.');
       const award = awardCareer(d, 'internship', i.path);
+      if (action === 'repair') observe(d, { opportunity: opp, dimension: 'recovery', outcome: 'complete_recovery', label: 'Repaired a missed internship follow-up' });
+      else observe(d, { opportunity: opp, dimension: 'follow_through', outcome: 'complete', label: 'Completed an internship' });
       c.competencies.push(`internship:${i.path}:${i.competency}`);
       careerRecord(d, { family: 'internship', path: i.path, status: 'completed', choice: i.label, rep: award.rep, career: award.career });
       c.internship = null;
@@ -2004,6 +2120,7 @@ const handlers = {
     if (t.mandatory) throw new LedgerError('This commitment ends on its own.');
     t.status = 'completed';
     t.completedTurn = d.turn;
+    observe(d, { opportunity: `task-${t.id}`, dimension: 'follow_through', outcome: 'complete', label: `Completed: ${t.label}` });
     if (t.reward > 0) postCashIncome(d, t.reward, t.taxClass);
     let points = { rep: 0, career: 0 };
     if (t.onComplete && t.onComplete.length) {
@@ -2080,6 +2197,7 @@ const handlers = {
     const t = d.tasks.find(x => x.id === taskId);
     if (!t || t.status !== 'open') throw new LedgerError('That task is not open.');
     t.status = 'released';
+    observe(d, { opportunity: `task-${t.id}`, dimension: 'follow_through', outcome: 'communicated_withdrawal', label: `Released: ${t.label}` });
     log(d, { type: 'task_release', label: `Released: ${t.title}`, cashDelta: 0 });
     return { released: true };
   },
@@ -2130,6 +2248,8 @@ const handlers = {
       creditBonus: band(d.creditScore).creditBonus,
       ledgerSequence: d.seq,
       eventLiabilities: eventLiabilities(d),
+      reveal: classify(d.observations, d.setbacks),
+      evidence: { observations: clone(d.observations), setbacks: clone(d.setbacks) },
       points: { rep: displayRep(d), career: d.points.career },
       external: clone(external),
       holdings: d.assets

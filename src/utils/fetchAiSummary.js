@@ -22,10 +22,11 @@ export async function fetchAiSummary(playerData) {
     // Return the whole object!
     return {
       summary: data.summary || '',
-      archetype: data.archetype || '',
+      // True only when the server narrated the rules-assigned pattern instead of choosing one.
+      grounded: data.grounded === true,
     };
   } catch (error) {
     console.error('❌ Error fetching AI summary:', error);
-    return { summary: '', archetype: '' };
+    return { summary: '', grounded: false };
   }
 }

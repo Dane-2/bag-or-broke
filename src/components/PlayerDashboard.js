@@ -33,6 +33,7 @@ import { scoreBreakdown } from '../rules/portfolio';
 import { holdingsValue } from '../rules/holdings';
 import { investmentsView, luxuriesView } from '../rules/views';
 import { YELLOW_COPY, unusedTokens } from '../rules/nil';
+import { revealTitle, nextTimeSuggestion, PROFILE_COPY } from '../rules/reveal';
 import { formatCents, fromCents, toCents } from '../rules/money';
 import { RULESET_ID, SAVE_PREFIX } from '../rules';
 
@@ -828,13 +829,25 @@ function PlayerDashboard({
       shadyDebt: 0,
       investments,
       score: snapshot.score,
+      reveal: snapshot.reveal,
+      evidence: snapshot.evidence,
       totalLaps,
     };
 
     try {
       console.log('🎯 Generating AI summary for:', playerName);
       
-      const { summary, archetype } = await fetchAiSummary({
+      // The rules engine chose the pattern; the AI may only explain it from these facts.
+      const revealFacts = {
+        assignedPattern: revealTitle(snapshot.reveal),
+        patternState: snapshot.reveal.state,
+        patternDescription: snapshot.reveal.profiles.map(p => PROFILE_COPY[p.code]).join(' '),
+        decisions: snapshot.evidence.observations.slice(-12).map(o => o.label),
+        setbacks: snapshot.evidence.setbacks.map(x => x.label),
+        nextTime: nextTimeSuggestion(snapshot.reveal),
+      };
+      const { summary, grounded } = await fetchAiSummary({
+        reveal: revealFacts,
         name: playerName,
         playerName,
         cash: finalCash,
@@ -848,13 +861,14 @@ function PlayerDashboard({
         investments,
       });
 
-      console.log('✅ AI summary received:', { summary: summary?.substring(0, 50) + '...', archetype });
+      console.log('✅ AI summary received:', { summary: summary?.substring(0, 50) + '...', grounded });
 
       clearSave();
       showFinal({
         ...basePayload,
-        summary: summary || 'Summary generation failed. Your game data is still shown below.',
-        archetype: archetype || 'The Hot Shot',
+        // Show AI text only when it narrated the assigned pattern; otherwise the reveal speaks alone.
+        summary: grounded ? summary : '',
+        archetype: revealTitle(snapshot.reveal),
         coachJBoUnlocked: coachJBoCheck(),
       });
       addToast('Summary generated successfully!', 'success', 2000);
@@ -865,8 +879,8 @@ function PlayerDashboard({
       clearSave();
       showFinal({
         ...basePayload,
-        summary: 'AI summary generation failed. Your game data is shown below.',
-        archetype: 'The Hot Shot',
+        summary: '',
+        archetype: revealTitle(snapshot.reveal),
         coachJBoUnlocked: coachJBoCheck(),
       });
     } finally {

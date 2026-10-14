@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import BOBReflectionForm from './BOBReflectionForm';
 import { holdingsTotals, scoreBreakdown } from '../rules/portfolio';
 import { fromCents, toCents } from '../rules/money';
+import { DIMENSION_LABELS, PROFILE_COPY, revealTitle, nextTimeSuggestion } from '../rules/reveal';
 
 const shellClass =
   'min-h-[100dvh] bg-cover bg-center bg-no-repeat flex items-center justify-center p-4 py-8';
@@ -14,18 +15,6 @@ const insetPanelClass =
   'rounded-2xl border border-white/50 bg-white/35 backdrop-blur-md p-4 md:p-5 shadow-inner';
 
 const statRowClass = 'flex justify-between gap-3 text-sm text-slate-800 py-2.5';
-
-// Archetype descriptions
-const archetypeDescriptions = {
-  'The Architect': 'Strategic, analytical, methodical planner; builds value quietly.',
-  'The Legacy Maker': 'Impact-first, community-driven, cautious and consistent.',
-  'The Hot Shot': 'Flashy, impulsive, starts strong but often struggles late-game.',
-  'The Hustler': 'Relentless, street-smart, flips every loss, aggressive investor.',
-  'The Survivor': 'Quiet underdog, faces many setbacks but shows resilience.',
-  'The CEO in Training': 'Balanced, polished, invests wisely for the long-term.',
-  'The Flexer': 'Status-driven, trendsetter, spends on luxury, weak financial discipline.',
-  'The Flameout': 'High-risk, ego-driven, impulsive, often crashes out.',
-};
 
 // Archetype image map (match this to your /public/archetypes folder)
 const archetypeImageMap = {
@@ -96,8 +85,14 @@ function FinalScoreboard({ data }) {
 
   const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#6366f1', '#14b8a6'];
 
-  const actualArchetype = archetype && archetype.trim() !== '' ? archetype : 'The Hot Shot';
-  const imageUrl = archetypeImageMap[actualArchetype] || null;
+  // The rules engine picks the pattern from recorded choices; AI text never overrides it.
+  const reveal = data.reveal || null;
+  const evidence = data.evidence || { observations: [], setbacks: [] };
+  const actualArchetype = reveal ? revealTitle(reveal) : archetype || 'Not enough evidence for a clear pattern';
+  const revealProfiles = reveal ? reveal.profiles : [];
+  const imageUrl = revealProfiles[0] ? archetypeImageMap[revealProfiles[0].name] || null : null;
+  const chosen = evidence.observations.filter(o => !['recovery'].includes(o.dimension)).slice(-3).reverse();
+  const adjusted = evidence.observations.filter(o => o.dimension === 'recovery' || o.dimension === 'purposeful_promotion').slice(-3).reverse();
 
   const gameDataForPDF = {
     playerName,
@@ -201,38 +196,83 @@ function FinalScoreboard({ data }) {
           </div>
         )}
 
+        <div className={`${insetPanelClass} border-l-4 border-l-violet-500 border border-white/50 space-y-3`}>
+          <p className="text-xs font-semibold uppercase tracking-wide text-violet-900">Your playstyle in this game</p>
+          <div className="flex items-center gap-4">
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                alt={actualArchetype}
+                className="w-20 h-20 object-contain rounded-2xl border border-white/50 bg-white/50 shrink-0"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            )}
+            <div className="min-w-0">
+              <h4 className="text-base font-bold text-violet-900">{actualArchetype}</h4>
+              {revealProfiles.map(p => (
+                <p key={p.code} className="text-slate-800 text-sm leading-snug">{PROFILE_COPY[p.code]}</p>
+              ))}
+              {reveal && reveal.state === 'mixed' && <p className="text-xs text-slate-700 mt-1">Two patterns fit your choices almost equally.</p>}
+              {reveal && reveal.state === 'unclassified' && <p className="text-xs text-slate-700">Your choices did not match one of the eight patterns closely.</p>}
+              {reveal && reveal.state === 'insufficient_evidence' && (
+                <p className="text-xs text-slate-700">A pattern needs at least 12 real decisions across 4 areas. You made {reveal.uniqueChoiceEvents}.</p>
+              )}
+              {reveal && reveal.state !== 'insufficient_evidence' && (
+                <p className="text-[11px] text-slate-600 mt-1">
+                  Evidence: {reveal.evidenceStrength === 'supported' ? 'supported' : 'emerging'} ({reveal.uniqueChoiceEvents} decisions). A description of this game's choices, not of you.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {reveal && Object.keys(reveal.metrics).length > 0 && (
+            <div className="space-y-1">
+              {Object.entries(reveal.metrics).map(([dim, m]) => (
+                <div key={dim} className="text-xs text-slate-800">
+                  <div className="flex justify-between">
+                    <span>{DIMENSION_LABELS[dim] || dim}</span>
+                    <span className="tabular-nums">{Math.round(m.mean * 100)}% of {m.n}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/50 overflow-hidden">
+                    <div className="h-full bg-violet-500" style={{ width: `${Math.round(m.mean * 100)}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="grid gap-2 text-sm text-slate-800">
+            <div>
+              <p className="font-semibold text-slate-900">What you chose</p>
+              {chosen.length ? chosen.map(o => <p key={o.event_id} className="text-xs">• {o.label}</p>) : <p className="text-xs">No recorded decisions yet.</p>}
+            </div>
+            <div>
+              <p className="font-semibold text-slate-900">What happened outside your control</p>
+              {evidence.setbacks.length ? evidence.setbacks.slice(-3).map(x => <p key={x.event_id} className="text-xs">• {x.label}</p>) : <p className="text-xs">No major setbacks.</p>}
+            </div>
+            <div>
+              <p className="font-semibold text-slate-900">How you adjusted</p>
+              {adjusted.length ? adjusted.map(o => <p key={o.event_id} className="text-xs">• {o.label}</p>) : <p className="text-xs">No recovery choices were needed or recorded.</p>}
+            </div>
+            {reveal && (
+              <div>
+                <p className="font-semibold text-slate-900">One option to explore next time</p>
+                <p className="text-xs">{nextTimeSuggestion(reveal)}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
         {summary && (
           <div
             className={`${insetPanelClass} border-violet-200/50 bg-gradient-to-br from-violet-100/35 to-white/25`}
           >
-            <h3 className="text-sm font-bold uppercase tracking-wide text-violet-900 mb-2">How did you play?</h3>
+            <h3 className="text-sm font-bold uppercase tracking-wide text-violet-900 mb-2">Coach's recap</h3>
             <p className="text-slate-800 text-sm leading-relaxed whitespace-pre-line">{summary}</p>
           </div>
         )}
-
-        <div
-          className={`${insetPanelClass} flex items-center gap-4 border-l-4 border-l-violet-500 border border-white/50`}
-        >
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt={actualArchetype}
-              className="w-24 h-24 object-contain rounded-2xl border border-white/50 bg-white/50 shrink-0"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
-          )}
-          <div className="min-w-0">
-            <h4 className="text-sm font-bold text-slate-900 mb-1">
-              Your archetype:{' '}
-              <span className="text-violet-800 underline decoration-violet-300">{actualArchetype}</span>
-            </h4>
-            <p className="text-slate-700 text-sm leading-snug">
-              {archetypeDescriptions[actualArchetype] || 'Unique player style!'}
-            </p>
-          </div>
-        </div>
 
         <div className={`${insetPanelClass} border-indigo-200/50 bg-white/30`}>
           {!showBOBForm ? (

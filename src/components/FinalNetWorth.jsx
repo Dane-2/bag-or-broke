@@ -1,8 +1,9 @@
 import React from 'react';
 import { formatCents } from '../rules/money';
 import { assetValue, policyLoanQuote, isActive } from '../rules/holdings';
+import { classify, revealTitle } from '../rules/reveal';
 
-function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, showFinal, ledger, score, finalWindow = false, lossAvoided = 0, isGeneratingSummary }) {
+function FinalNetWorth({ rep, career, credit, showFinal, ledger, score, finalWindow = false, lossAvoided = 0, isGeneratingSummary }) {
   const active = ledger.assets.filter(isActive);
   const policies = active.filter(a => a.holding === 'life');
   const annuities = ledger.assets.filter(a => a.holding === 'annuity');
@@ -14,25 +15,9 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
   const healthUses = plans.filter(a => a.plan === 'health').reduce((t, a) => t + a.uses, 0);
   const tokens = active.filter(a => a.holding === 'token' && a.uses > 0).length;
 
-  const curveballLoss = curveballs.reduce((acc, c) => acc + (c.amount || 0), 0);
-  const totalLuxuries = luxuries.length;
-
-  let assignedProfile = 'The CEO in Training';
-  if (rep >= 10 && totalLuxuries <= 2 && debt <= 20000) {
-    assignedProfile = 'The Architect';
-  } else if (cash < 10000 && debt > 50000) {
-    assignedProfile = 'The Flameout';
-  } else if (career >= 8 && debt === 0) {
-    assignedProfile = 'The Legacy Maker';
-  } else if (debt >= 60000 && cash > 25000) {
-    assignedProfile = 'The Hustler';
-  } else if (totalLuxuries >= 6 && rep <= 2) {
-    assignedProfile = 'The Flexer';
-  } else if (curveballLoss >= 50000 && rep >= 5 && cash < 20000) {
-    assignedProfile = 'The Survivor';
-  } else if (cash > 100000 && totalLuxuries >= 4 && curveballLoss < 20000) {
-    assignedProfile = 'The Hot Shot';
-  }
+  // Live pattern from recorded decisions (the final one is frozen at Finish & Reveal).
+  const pattern = classify(ledger.observations, ledger.setbacks);
+  const assignedProfile = revealTitle(pattern);
 
   return (
     <section className="bg-white rounded-xl shadow-md p-4">
@@ -83,7 +68,9 @@ function FinalNetWorth({ cash, luxuries, rep, career, credit, debt, curveballs, 
 
         <h4 className="text-xl font-bold mt-3">Final game value: {formatCents(score.gameValue)}</h4>
         <p className="text-xs text-gray-500">The credit bonus and point values count only in this final score; they are not spendable cash.</p>
-        <p className="text-sm text-gray-600 mt-1">Profile: {assignedProfile}</p>
+        <p className="text-sm text-gray-600 mt-1">
+          Pattern so far: {assignedProfile} ({pattern.uniqueChoiceEvents} decisions recorded)
+        </p>
         <button
           onClick={() => {
             // Call handleEndGame (passed as showFinal prop) which will generate AI summary
