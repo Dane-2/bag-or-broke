@@ -71,11 +71,22 @@ const POLICY_WAIT_LAPS = LIFE_TERMS.policy_loan.wait_owned_laps; // 1
 export const isActive = a => a.status === 'active';
 
 /** Current value of a holding at the ledger's progress (cents). */
+/** Whole-company value of a growth holding (before scaling a founder's shared units). */
+export function companyValueOf(s, a) {
+  if (a.holding !== 'growth') return assetValue(s, a);
+  return a.anchorValue === 0 ? 0 : accrue(a.anchorValue, a.rateBps, s.progress - a.anchorProgress, s.boardSize);
+}
+
 export function assetValue(s, a) {
   if (!isActive(a)) return 0;
   switch (a.holding) {
-    case 'growth':
-      return a.anchorValue === 0 ? 0 : accrue(a.anchorValue, a.rateBps, s.progress - a.anchorProgress, s.boardSize);
+    case 'growth': {
+      const v = companyValueOf(s, a);
+      // A shared company's founder owns `units` of 10,000.
+      return a.units !== undefined ? divHalfUp(v * a.units, 10000) : v;
+    }
+    case 'venture_stake':
+      return divHalfUp((a.companyValue || 0) * a.units, 10000);
     case 'market':
       return a.value;
     case 'life':

@@ -76,7 +76,8 @@ test('landing on yellow draws an NIL card and posts its base benefit', () => {
   render(<PlayerDashboard playerName="Star" avatar="Walk On" startingCash={12500} totalLaps={5} showFinal={jest.fn()} />);
   roll(2); // space 2 is yellow
   expect(screen.getByText(/NIL opportunities/)).toBeInTheDocument();
-  expect(screen.getByText(/added to your cash|Emergency Fund added|Optional service offered/)).toBeInTheDocument();
+  // The drawn card is random; its benefit line (or the toast) names the kind of benefit.
+  expect(screen.getAllByText(/added to your cash|Emergency Fund added|Optional service offered/).length).toBeGreaterThan(0);
 });
 
 test('landing on purple offers a career activity that awards points on completion', () => {

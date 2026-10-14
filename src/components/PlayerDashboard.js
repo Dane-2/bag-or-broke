@@ -8,6 +8,7 @@ import CatalogMenu from './CatalogMenu';
 import HoldingsPanel from './HoldingsPanel';
 import LuxuryHoldings from './LuxuryHoldings';
 import NilPanel from './NilPanel';
+import VenturePanel from './VenturePanel';
 import CareerPanel, { CareerRecord } from './CareerPanel';
 
 import TurnTracker from './TurnTracker';
@@ -28,7 +29,12 @@ import { rollDice, randomPick } from '../utils/dice';
 import useLedger from '../hooks/useLedger';
 import {
   createLedger, completedLaps, totalBorrowing, taxesOwed, inFinalWindow, newOpId, eventLiabilities, displayRep,
+  founderVenture, ventureBuyStatus,
 } from '../rules/ledger';
+import {
+  publishVenture, listUnits, buyUnits, markApplied, freezeStake, loadRoomVentures, subscribeRoomVentures,
+} from '../utils/ventureApi';
+import { assetValue as holdingValue } from '../rules/holdings';
 import { scoreBreakdown } from '../rules/portfolio';
 import { holdingsValue } from '../rules/holdings';
 import { investmentsView, luxuriesView } from '../rules/views';
@@ -590,6 +596,105 @@ function PlayerDashboard({
   }, [investmentsJson, roomId, currentPlayerId, syncToRoom]);
 
   // =====================================================
+  // SHARED SPORTS COMPLEX: cap table, listings and transfers (multiplayer)
+  // =====================================================
+  const [ventures, setVentures] = useState([]);
+  const [ventureTransfers, setVentureTransfers] = useState([]);
+  const reloadVentures = useCallback(async () => {
+    if (!roomId) return;
+    const r = await loadRoomVentures(roomId);
+    setVentures(r.ventures);
+    setVentureTransfers(r.transfers);
+  }, [roomId]);
+  useEffect(() => {
+    if (!roomId || !isSupabaseConfigured) return undefined;
+    reloadVentures();
+    return subscribeRoomVentures(roomId, reloadVentures);
+  }, [roomId, reloadVentures]);
+
+  // The founder's ledger is the company's clock and value; publish whenever they change.
+  const founderPub = founderVenture(ledger);
+  const founderPubKey = JSON.stringify(founderPub);
+  useEffect(() => {
+    if (!roomId || !currentPlayerId || !founderPubKey || founderPubKey === 'null') return;
+    publishVenture(roomId, currentPlayerId, playerName, JSON.parse(founderPubKey)).then(r => {
+      if (r.error) console.warn('venture publish:', r.error);
+    });
+  }, [founderPubKey, roomId, currentPlayerId, playerName]);
+
+  // Apply my side of committed transfers exactly once (op id = transfer id).
+  useEffect(() => {
+    if (!currentPlayerId || ledgerRef.current.snapshot) return;
+    const me = String(currentPlayerId);
+    ventureTransfers.forEach(t => {
+      if (t.seller_id === me && !t.seller_applied) {
+        try {
+          const r = run('venture_settle_sale', { ventureId: t.venture_id, units: t.units, gross: t.gross_cents }, `sale-${t.id}`);
+          addToast(`Sold ${t.units / 100}% of the complex to ${t.buyer_name || 'a player'}: +${formatCents(r.net)} after tax and loan payoff`, 'success', 5000);
+          markApplied(t.id, me);
+        } catch (e) {
+          console.warn('venture sale apply:', e.message);
+        }
+      }
+      if (t.buyer_id === me && !t.buyer_applied) {
+        const v = ventures.find(x => x.id === t.venture_id);
+        try {
+          run('venture_buy', { ventureId: t.venture_id, units: t.units, gross: t.gross_cents, companyValue: t.company_value_cents, title: v ? v.title : 'Sports Complex' }, `buy-${t.id}`);
+          markApplied(t.id, me);
+        } catch (e) {
+          console.warn('venture buy apply:', e.message);
+        }
+      }
+    });
+  }, [ventureTransfers, ventures, currentPlayerId, run, ledgerRef]);
+
+  // Partners follow the founder's published company value.
+  useEffect(() => {
+    if (ledgerRef.current.snapshot) return;
+    ventures.forEach(v => {
+      const stake = ledgerRef.current.assets.find(a => a.holding === 'venture_stake' && a.ventureId === v.id && a.status === 'active');
+      if (stake && (stake.companyValue !== Number(v.value_cents) || Boolean(stake.companyStopped) !== v.stopped)) {
+        try {
+          run('venture_sync', { ventureId: v.id, companyValue: Number(v.value_cents), stopped: v.stopped, failed: v.failed }, `vsync-${v.id}-${v.revision}`);
+        } catch (e) {
+          console.warn('venture sync:', e.message);
+        }
+      }
+    });
+  }, [ventures, run, ledgerRef]);
+
+  const handleVentureBuy = async (v, sellerId, units) => {
+    const gross = Math.round((Number(v.value_cents) * units) / 10000);
+    const status = ventureBuyStatus(ledgerRef.current, { gross, sellerId, selfId: String(currentPlayerId), founderStopped: v.stopped });
+    if (!status.ok) {
+      addToast(status.reason, 'error', 4000);
+      return;
+    }
+    const transferId = newOpId('vt');
+    const r = await buyUnits({ ventureId: v.id, transferId, buyerId: currentPlayerId, buyerName: playerName, sellerId, units, revision: v.revision });
+    if (r.error) {
+      addToast(r.error === 'stale quote' ? 'The price changed. Check the new quote and try again.' : r.error, 'error', 4000);
+      reloadVentures();
+      return;
+    }
+    try {
+      run('venture_buy', { ventureId: v.id, units, gross: Number(r.data.gross_cents), companyValue: Number(r.data.company_value_cents), title: v.title }, `buy-${transferId}`);
+      markApplied(transferId, currentPlayerId);
+      addToast(`You now own ${units / 100}% of ${v.title} (${formatCents(Number(r.data.gross_cents))})`, 'success', 5000);
+    } catch (e) {
+      addToast(e.message, 'error', 4000);
+    }
+    reloadVentures();
+  };
+
+  const handleVentureList = async (ventureId, units) => {
+    const r = await listUnits(ventureId, currentPlayerId, units);
+    if (r.error) addToast(r.error, 'error', 4000);
+    else addToast(units ? `Offered ${units / 100}% of the company` : 'Offer withdrawn', 'success', 3000);
+    reloadVentures();
+  };
+
+  // =====================================================
   // HEARTBEAT: Keep player active status updated
   // =====================================================
   useEffect(() => {
@@ -788,6 +893,12 @@ function PlayerDashboard({
     const snapshot = run('finish', {
       external: {},
     });
+    // A finished player's stake freezes in the shared cap table (the founder's stops the company).
+    if (roomId && currentPlayerId) {
+      ledgerRef.current.assets
+        .filter(a => a.ventureId && (a.holding === 'growth' || a.holding === 'venture_stake'))
+        .forEach(a => freezeStake(a.ventureId, currentPlayerId, holdingValue(ledgerRef.current, a)));
+    }
     const finalCash = fromCents(snapshot.cash);
     const finalDebt = fromCents(snapshot.ordinaryDebt);
     const finalCredit = snapshot.creditScore;
@@ -1060,6 +1171,23 @@ function PlayerDashboard({
                 </div>
                 <HoldingsPanel ledger={ledger} act={act} />
               </div>
+
+              {roomInfo && (
+                <div className={glassSection}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <FaChartLine className="text-xl text-slate-800" />
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-800">Sports complex shares</h3>
+                  </div>
+                  <VenturePanel
+                    ventures={ventures}
+                    ledger={ledger}
+                    selfId={String(currentPlayerId)}
+                    names={Object.fromEntries(Object.values(roomPlayers).map(p => [String(p.player_id), p.name]))}
+                    onBuy={handleVentureBuy}
+                    onList={handleVentureList}
+                  />
+                </div>
+              )}
             </>
           )}
 

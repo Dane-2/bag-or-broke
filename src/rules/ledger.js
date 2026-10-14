@@ -18,9 +18,10 @@ import { catalogEntry, isActivation, INVESTMENT_CATALOG, LUXURY_CATALOG } from '
 import { classify, RESPONSE_EVIDENCE, EXTERNAL_SETBACKS, riskOutcome } from './reveal';
 import authored from './config/authored_producers.json';
 import { STARTING_CREDITS } from './coach';
+import { ENABLED_VENTURES, PARTNER_REQUIREMENTS, GAIN_TAX_BPS } from './venture';
 import {
   launchValue, continuingRate, isMarketProfile, marketDrawBps, eventResult, activationResult,
-  assetValue, policyBalance, policyLoanQuote, annuityCancelQuote, holdingsValue, eligibility,
+  assetValue, companyValueOf, policyBalance, policyLoanQuote, annuityCancelQuote, holdingsValue, eligibility,
   productionDiscount, currentLapNumber, isActive, HEALTH_ASSIST_LIMITS,
 } from './holdings';
 import {
@@ -1088,7 +1089,7 @@ function amountOf(d, amount, ctx) {
   if (amount.fixed_cents !== undefined) return amount.fixed_cents;
   const fields = {
     available_cash_before_event: ctx.cashBefore,
-    company_value: targetAsset(d, ctx) ? assetValue(d, targetAsset(d, ctx)) : 0,
+    company_value: targetAsset(d, ctx) ? companyValueOf(d, targetAsset(d, ctx)) : 0,
     company_value_before_event: ctx.targetValueBefore,
   };
   const rec = scenarioRecordOf(d, ctx) || {};
@@ -1312,7 +1313,7 @@ function applyEffects(d, effects, ctx, mandatory) {
         const a = targetAsset(d, ctx);
         if (!a) break;
         const loss = amountOf(d, e.amount, ctx);
-        setAssetValue(d, a, assetValue(d, a) - loss);
+        setAssetValue(d, a, companyValueOf(d, a) - loss);
         if (e.save_as) ctx.saved[e.save_as] = loss;
         ctx.lines.push({ kind: 'value', label: a.title, amount: -loss });
         break;
@@ -1321,7 +1322,7 @@ function applyEffects(d, effects, ctx, mandatory) {
         const a = targetAsset(d, ctx);
         if (!a || !isActive(a)) break;
         const x = amountOf(d, e.amount, ctx);
-        setAssetValue(d, a, assetValue(d, a) + x);
+        setAssetValue(d, a, companyValueOf(d, a) + x);
         ctx.lines.push({ kind: 'value', label: a.title, amount: x });
         break;
       }
@@ -1987,7 +1988,7 @@ const handlers = {
                 anchorValue: value,
                 anchorProgress: d.progress,
               };
-          add({ ...holding, ownershipBps: optionBps, failed: value === 0 });
+          add({ ...holding, ownershipBps: optionBps, failed: value === 0, ...(ENABLED_VENTURES.includes(entry.id) ? { units: 10000, ventureId: assetId } : {}) });
           Object.assign(result, { value, failed: value === 0 });
           break;
         }
@@ -2354,6 +2355,74 @@ const handlers = {
     return { ...advice, replay: false, credits: d.coach.credits };
   },
 
+  /**
+   * Seller side of a committed share transfer (founder or partner): prorated basis, 20% gain
+   * tax, the proportional payoff of loans linked to this holding, then net cash. The company
+   * receives nothing and the buyer takes on no debt.
+   */
+  venture_settle_sale(d, { ventureId, units, gross }) {
+    assertActive(d);
+    const a = d.assets.find(x => isActive(x) && x.ventureId === ventureId && (x.holding === 'growth' || x.holding === 'venture_stake'));
+    if (!a) throw new LedgerError('You hold no shares in this company.');
+    const owned = a.units;
+    if (!(units > 0) || units > owned) throw new LedgerError('More units than you own.');
+    const basisSold = divHalfUp(a.basis * units, owned);
+    const tax = divHalfUp(Math.max(0, gross - basisSold) * GAIN_TAX_BPS, BPS);
+    const debt = linkedDebt(d, a.id);
+    const payoff = divHalfUp(debt * units, owned);
+    let left = payoff;
+    d.loans.filter(l => l.assetId === a.id).forEach(l => {
+      if (left > 0) left -= allocatePayment(d, Math.min(left, loanBalance(d, l)), l.id);
+    });
+    pruneLoans(d);
+    d.cash += gross - tax - payoff;
+    a.units -= units;
+    a.basis -= basisSold;
+    if (a.units === 0) {
+      a.status = 'sold';
+      a.closedValue = gross;
+    }
+    log(d, { type: 'venture_sale', label: `Sold ${units / 100}% of ${a.title}`, cashDelta: gross - tax - payoff });
+    return { gross, tax, payoff, net: gross - tax - payoff, unitsLeft: a.units };
+  },
+
+  /**
+   * Buyer side of a committed share transfer. Eligibility and cash were checked before the
+   * shared transfer committed, so this applies it exactly once (op id = transfer id).
+   */
+  venture_buy(d, { ventureId, units, gross, companyValue, title }) {
+    assertActive(d);
+    if (d.requireLanding && d.opportunity && !d.opportunity.used && d.opportunity.category === 'green') d.opportunity.used = true;
+    d.cash -= gross;
+    const existing = d.assets.find(x => isActive(x) && x.holding === 'venture_stake' && x.ventureId === ventureId);
+    if (existing) {
+      existing.units += units;
+      existing.basis += gross;
+      existing.companyValue = companyValue;
+    } else {
+      d.assets.push({
+        id: `stake-${ventureId}`, cardId: 'YSH_COMPLEX', kind: 'investment', title, holding: 'venture_stake', status: 'active',
+        acquiredAt: d.progress, basis: gross, exposure: ['operating_business', 'rental_property'], stages: [], ventureId, units, companyValue,
+        profile: 'house_locked',
+      });
+    }
+    observe(d, { opportunity: `venture-${ventureId}-${d.turn}`, dimension: 'investment', outcome: 'acquire', label: `Bought ${units / 100}% of ${title}` });
+    observe(d, { opportunity: `venture-${ventureId}-${d.turn}`, dimension: 'risk_appetite', outcome: 'choose_high', label: 'Shared sports complex' });
+    log(d, { type: 'venture_buy', label: `Bought ${units / 100}% of ${title}`, cashDelta: -gross });
+    return { units, gross };
+  },
+
+  /** A partner's view of the founder's published company value (no cash effect). */
+  venture_sync(d, { ventureId, companyValue, stopped = false, failed = false }) {
+    assertActive(d);
+    const a = d.assets.find(x => isActive(x) && x.holding === 'venture_stake' && x.ventureId === ventureId);
+    if (!a) return { synced: false };
+    a.companyValue = companyValue;
+    a.companyStopped = stopped;
+    a.companyFailed = failed;
+    return { synced: true };
+  },
+
   /** Answer the drawn yellow card. Its base benefit has already posted. */
   yellow_choose(d, { choiceId }) {
     assertActive(d);
@@ -2608,6 +2677,36 @@ export function quoteScenario(s, choiceId, elect = {}) {
   } catch (e) {
     return { available: false, reason: e.message, cashDelta: 0, assistance: 0, newBills: [], lines: [], chance: false, points: { rep: 0, career: 0 } };
   }
+}
+
+/** What a founder publishes for their shared company (null if they have none). */
+export function founderVenture(s) {
+  const a = s.assets.find(x => x.holding === 'growth' && x.ventureId && (isActive(x) || x.status === 'sold'));
+  if (!a) return null;
+  return {
+    ventureId: a.ventureId,
+    title: a.title,
+    value: isActive(a) ? companyValueOf(s, a) : a.closedValue || 0,
+    rateBps: a.rateBps,
+    progress: s.progress,
+    units: a.units,
+    failed: Boolean(a.failed) || (isActive(a) && companyValueOf(s, a) === 0),
+    stopped: Boolean(s.snapshot),
+  };
+}
+
+/** Can this player buy listed shares right now? Returns { ok, reason }. */
+export function ventureBuyStatus(s, { gross, sellerId, selfId, founderStopped }) {
+  if (s.snapshot) return { ok: false, reason: 'Your game is finished.' };
+  if (founderStopped) return { ok: false, reason: 'The founder has finished; no new purchases.' };
+  if (sellerId === selfId) return { ok: false, reason: 'These are your own shares.' };
+  const missing = PARTNER_REQUIREMENTS.filter(id => !s.milestones.includes(id));
+  if (missing.length) return { ok: false, reason: 'Sponsor a youth team and host a clinic first.' };
+  if (s.requireLanding && !(s.opportunity && !s.opportunity.used && s.opportunity.category === 'green')) {
+    return { ok: false, reason: 'Land on a green space to buy shares.' };
+  }
+  if (gross > s.cash) return { ok: false, reason: 'Shares are cash only and you need more Available Cash.' };
+  return { ok: true };
 }
 
 let opCounter = 0;

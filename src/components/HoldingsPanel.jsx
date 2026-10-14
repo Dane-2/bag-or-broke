@@ -93,6 +93,7 @@ function GrowthCard({ ledger, a, act }) {
         {a.failed && <span className="text-[11px] font-bold text-red-800">Closed</span>}
       </div>
       {a.ownershipBps && a.ownershipBps !== 10000 && <p className="text-xs text-slate-700">You own {a.ownershipBps / 100}%</p>}
+      {a.units !== undefined && a.units < 10000 && <p className="text-xs text-slate-700">You own {a.units / 100}% of the shared company</p>}
       <Row k="Value" v={formatCents(value)} />
       <Row k="Cost basis" v={formatCents(a.basis)} />
       {debt > 0 && <Row k="Linked loan" v={formatCents(debt)} tone="bad" />}
@@ -102,7 +103,7 @@ function GrowthCard({ ledger, a, act }) {
       {(a.stages || []).length > 0 && (
         <Row k="Upgrades" v={a.stages.map(id => catalogEntry(id)?.title || id).join(', ')} />
       )}
-      {entry?.saleRoute === 'central_market_sale' && (
+      {entry?.saleRoute === 'central_market_sale' && !(a.units !== undefined && a.units < 10000) && (
         <button type="button" className={secondary} onClick={() => sellFlow(ledger, a, act)}>
           Sell
         </button>
@@ -218,6 +219,15 @@ export default function HoldingsPanel({ ledger, act }) {
     <div className="space-y-4">
       {section('Businesses & property', active.filter(a => a.holding === 'growth'), a => <GrowthCard key={a.id} ledger={ledger} a={a} act={act} />)}
       {section('Market positions', active.filter(a => a.holding === 'market'), a => <GrowthCard key={a.id} ledger={ledger} a={a} act={act} />)}
+      {section('Shared company stakes', active.filter(a => a.holding === 'venture_stake'), a => (
+        <div key={a.id} className={card}>
+          <p className="text-sm font-bold text-slate-900">{a.title}</p>
+          <Row k="Your share" v={`${a.units / 100}%`} />
+          <Row k="Stake value" v={formatCents(assetValue(ledger, a))} />
+          <Row k="Cost basis" v={formatCents(a.basis)} />
+          <p className="text-xs text-slate-700">Value follows the founder's company. Offer shares from the share market below.</p>
+        </div>
+      ))}
       {section('Life insurance', active.filter(a => a.holding === 'life'), a => <LifeCard key={a.id} ledger={ledger} a={a} act={act} />)}
       {section('Annuities', active.filter(a => a.holding === 'annuity'), a => <AnnuityCard key={a.id} ledger={ledger} a={a} act={act} />)}
       {section('Protections', active.filter(a => a.holding === 'plan'), a => <PlanCard key={a.id} a={a} />)}
