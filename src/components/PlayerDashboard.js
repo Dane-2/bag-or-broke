@@ -40,6 +40,7 @@ import { holdingsValue } from '../rules/holdings';
 import { investmentsView, luxuriesView } from '../rules/views';
 import { YELLOW_COPY, unusedTokens } from '../rules/nil';
 import { revealTitle, nextTimeSuggestion, PROFILE_COPY } from '../rules/reveal';
+import { NIL_VALUATION_HELP } from '../data/tiers';
 import { formatCents, fromCents, toCents } from '../rules/money';
 import { RULESET_ID, SAVE_PREFIX } from '../rules';
 
@@ -49,6 +50,7 @@ function PlayerDashboard({
   startingCash,
   showFinal,
   totalLaps: initialTotalLaps,
+  nilTierId = null,
   roomInfo, // multiplayer info (null in offline mode)
   onLeaveRoom // callback when player leaves room
 }) {
@@ -60,7 +62,7 @@ function PlayerDashboard({
   // Cash, Tax Bucket, loans, taxes, credit and the lap clock live in the finance ledger.
   // `cash`, `debt`, `credit` and `laps` below are read-only views of it.
   const { ledger, run, replace: replaceLedger, setCash, current: ledgerRef } = useLedger(() =>
-    createLedger({ openingCash: toCents(startingCash || 0), totalLaps })
+    createLedger({ openingCash: toCents(startingCash || 0), totalLaps, nilTierId })
   );
   const cash = fromCents(ledger.cash);
   const credit = ledger.creditScore;
@@ -1070,7 +1072,7 @@ function PlayerDashboard({
               >
                 <div className="absolute inset-0 bg-gradient-to-tr from-green-400/10 to-transparent pointer-events-none" />
                 <div className="relative">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-700/90 mb-1">Cash balance</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-700/90 mb-1">Available Cash</p>
                   <div className="mb-4">
                     <CashTracker cash={cash} setCash={setCash} variant="amountOnly" />
                   </div>
@@ -1093,6 +1095,26 @@ function PlayerDashboard({
                   )}
                 </div>
               </div>
+
+              {/* NIL tier: annual valuation is shown apart from cash and never posts to the wallet */}
+              {ledger.nilTier && (
+                <div className={glassSection}>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-700">
+                    Roll {ledger.nilTier.roll} - {ledger.nilTier.label}
+                  </p>
+                  <div className="grid grid-cols-2 gap-3 mt-2 text-sm">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">Annual NIL Valuation</p>
+                      <p className="text-lg font-bold text-slate-900 tabular-nums">{formatCents(ledger.nilTier.annualValuation)}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">NIL paid to date</p>
+                      <p className="text-lg font-bold text-slate-900 tabular-nums">{formatCents(ledger.nilPaidToDate || 0)}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-700 mt-2">{NIL_VALUATION_HELP}</p>
+                </div>
+              )}
 
               {/* REP + Career */}
               <div className="grid grid-cols-2 gap-4">

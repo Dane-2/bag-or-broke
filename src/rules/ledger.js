@@ -17,6 +17,7 @@ import { RULESET_ID, BOARD_SIZE, boardSpace } from './index';
 import { catalogEntry, isActivation, INVESTMENT_CATALOG, LUXURY_CATALOG } from './catalog';
 import { classify, RESPONSE_EVIDENCE, EXTERNAL_SETBACKS, riskOutcome } from './reveal';
 import authored from './config/authored_producers.json';
+import nilTiers from './config/nil_tiers.json';
 import { STARTING_CREDITS } from './coach';
 import { ENABLED_VENTURES, PARTNER_REQUIREMENTS, GAIN_TAX_BPS } from './venture';
 import {
@@ -53,7 +54,13 @@ export class LedgerError extends Error {
 // Construction and read-only views
 // ---------------------------------------------------------------------------
 
-export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZE, landingEvents = true }) {
+/** NIL tier record: the approved annual valuation is display-only and never posts cash. */
+export function nilTierRecord(roll) {
+  const t = nilTiers.tiers.find(x => x.roll === Number(roll));
+  return t ? { roll: t.roll, label: t.label, annualValuation: t.annual_nil_valuation_cents, rulesetId: nilTiers.ruleset_id } : null;
+}
+
+export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZE, landingEvents = true, nilTierId = null }) {
   return {
     rulesetId: RULESET_ID,
     boardSize,
@@ -124,6 +131,9 @@ export function createLedger({ openingCash, totalLaps = 5, boardSize = BOARD_SIZ
     perks: [],
     academicRisk: false,
     coach: { credits: STARTING_CREDITS, cache: {} },
+    // NIL tier (BOB-NIL-RESET-2026-01): valuation is separate from Available Cash.
+    nilTier: nilTierRecord(nilTierId),
+    nilPaidToDate: 0,
   };
 }
 
@@ -803,6 +813,7 @@ function landingActionable(d, kind) {
 function postCashIncome(d, amount, taxClass) {
   d.cash += amount;
   recordIncome(d, taxClass === 'business' ? 'business' : 'nil', amount);
+  if (taxClass !== 'business') d.nilPaidToDate = (d.nilPaidToDate || 0) + amount;
   if (taxClass !== 'business') applyIncomeShare(d, amount);
 }
 
@@ -1694,7 +1705,10 @@ const handlers = {
     d.cash += amount - setAside;
     d.taxBucket += setAside;
     recordIncome(d, taxClass, amount);
-    if (taxClass === 'nil') applyIncomeShare(d, amount);
+    if (taxClass === 'nil') {
+      d.nilPaidToDate = (d.nilPaidToDate || 0) + amount;
+      applyIncomeShare(d, amount);
+    }
     observe(d, {
       opportunity: `income-${d.seq + 1}`,
       dimension: 'planning',

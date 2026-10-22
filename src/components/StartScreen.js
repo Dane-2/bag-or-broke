@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import tiers from '../data/tiers';
+import tiers, { NIL_VALUATION_HELP } from '../data/tiers';
 
 const shellClass =
   'min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center p-4';
@@ -98,10 +98,10 @@ function StartScreen({ onStart, onMultiplayer }) {
             onChange={(e) => setRollValue(e.target.value)}
             className={selectClass}
           >
-            <option value="">Select your NIL deal</option>
+            <option value="">Select your roll</option>
             {[1, 2, 3, 4, 5, 6].map((num) => (
               <option key={num} value={num}>
-                {num}
+                {num} - {tiers[num].label}
               </option>
             ))}
           </select>
@@ -126,20 +126,24 @@ function StartScreen({ onStart, onMultiplayer }) {
         {selectedTier && (
           <div className="rounded-2xl border border-white/50 bg-white/35 backdrop-blur-md p-5 space-y-3 text-center shadow-inner">
             <p className="text-base font-bold text-slate-900">
-              NIL tier: {selectedTier.label}
+              Roll {rollValue} - {selectedTier.label}
             </p>
-            <p className="text-sm text-slate-700">
-              Base cash: ${selectedTier.amount.toLocaleString()}
+            <p className="text-sm text-slate-800">
+              Annual NIL Valuation: <span className="font-bold">${selectedTier.annualValuation.toLocaleString()}</span>
             </p>
-            <p className="text-sm text-slate-700">+ $2,500 scholarship</p>
-            <p className="text-xl font-black text-sky-800 tabular-nums">
-              Total: ${totalCash.toLocaleString()}
-            </p>
+            <p className="text-xs text-slate-600">{NIL_VALUATION_HELP}</p>
+            <div className="border-t border-white/50 pt-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">Available Cash to start</p>
+              <p className="text-xl font-black text-sky-800 tabular-nums">${totalCash.toLocaleString()}</p>
+              <p className="text-xs text-slate-600">
+                ${selectedTier.amount.toLocaleString()} opening capital + $2,500 scholarship
+              </p>
+            </div>
 
             <button
               type="button"
               onClick={() =>
-                onStart(playerName, totalCash, selectedTier.label, parseInt(gameLength, 10))
+                onStart(playerName, totalCash, selectedTier.label, parseInt(gameLength, 10), selectedTier.id)
               }
               disabled={!playerName || !rollValue || !gameLength}
               className="w-full mt-2 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold shadow-lg shadow-emerald-600/25 hover:from-emerald-600 hover:to-green-700 disabled:opacity-45 disabled:cursor-not-allowed disabled:shadow-none transition"

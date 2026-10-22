@@ -90,6 +90,7 @@ export default function RoomScreen({ hostMode, onJoin }) {
       hostPlayerId: player.player_id,
       isHost: true,
       startingCash,
+      nilTierId: selectedTier ? selectedTier.id : 1,
       totalLaps
     });
   }
@@ -149,6 +150,7 @@ export default function RoomScreen({ hostMode, onJoin }) {
       hostPlayerId: room.host_player_id || null,
       isHost,
       startingCash: player.cash || startingCash, // Use cash from player_state if available
+      nilTierId: selectedTier ? selectedTier.id : 1,
       totalLaps
     });
   }
@@ -186,14 +188,15 @@ export default function RoomScreen({ hostMode, onJoin }) {
           >
             {[1, 2, 3, 4, 5, 6].map(num => (
               <option key={num} value={num.toString()}>
-                {num} - {tiers[num].label} (${(tiers[num].amount + 2500).toLocaleString()})
+                {num} - {tiers[num].label} (valuation ${tiers[num].annualValuation.toLocaleString()})
               </option>
             ))}
           </select>
           {selectedTier && (
             <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-              <p className="font-semibold">🎲 NIL Tier: {selectedTier.label}</p>
-              <p className="text-gray-700">Base Cash: ${selectedTier.amount.toLocaleString()}</p>
+              <p className="font-semibold">🎲 Roll {tierNumber} - {selectedTier.label}</p>
+              <p className="text-gray-700">Annual NIL Valuation: ${selectedTier.annualValuation.toLocaleString()} (not spendable cash)</p>
+              <p className="text-gray-700">Opening capital: ${selectedTier.amount.toLocaleString()}</p>
               <p className="text-gray-700">+ $2,500 Scholarship</p>
               <p className="text-lg font-bold text-blue-600">Total: ${startingCash.toLocaleString()}</p>
             </div>

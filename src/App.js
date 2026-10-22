@@ -15,6 +15,7 @@ function App() {
   const [startingCash, setStartingCash] = useState(null);
   const [avatar, setAvatar] = useState('');
   const [totalLaps, setTotalLaps] = useState(5);
+  const [nilTierId, setNilTierId] = useState(null);
 
   const [finalScoresVisible, setFinalScoresVisible] = useState(false);
   const [finalData, setFinalData] = useState(null);
@@ -83,6 +84,7 @@ function App() {
     if (info.avatar) setAvatar(info.avatar);
     if (typeof info.startingCash === 'number') setStartingCash(info.startingCash);
     if (typeof info.totalLaps === 'number') setTotalLaps(info.totalLaps);
+    if (info.nilTierId) setNilTierId(info.nilTierId);
 
     // store room information
     setRoomInfo(info);
@@ -111,8 +113,9 @@ function App() {
     if (!mode) {
       return (
         <StartScreen
-          onStart={(name, cash, label, laps) => {
+          onStart={(name, cash, label, laps, tierId) => {
             setMode("offline");
+            setNilTierId(tierId);
             setPlayerName(name);
             setAvatar(label);
             setStartingCash(cash);
@@ -178,6 +181,7 @@ function App() {
       avatar={avatar}
       startingCash={startingCash}
       totalLaps={totalLaps}
+      nilTierId={nilTierId}
       roomInfo={roomInfo}
       onLeaveRoom={handleLeaveRoom}
       showFinal={(data) => {

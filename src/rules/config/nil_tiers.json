@@ -1,0 +1,16 @@
+{
+  "ruleset_id": "BOB-NIL-RESET-2026-01",
+  "source": "Bag_or_Broke_Approved_NIL_Tiers_Dane_v1_0.pdf (approved by Jabari Smith, 2026-10-21)",
+  "status": "Approved tier labels and annual valuations. Payout schedule, opening-cash policy and tax classification of paid NIL are NOT yet set.",
+  "die": "one six-sided die, equal 1-in-6 odds, one shared table for football and basketball",
+  "help_text": "Your NIL valuation sets your game tier. It is not cash you can spend. Only money actually paid into your wallet is available.",
+  "opening_cash_policy": "pending_founder_confirmation: keep the legacy opening capital (finance.json starting_tiers) plus the $2,500 scholarship until a new policy is approved",
+  "tiers": [
+    { "roll": 1, "label": "Walk-On / Roster Player", "annual_nil_valuation_cents": 1000000, "legacy_opening_capital_cents": 1000000 },
+    { "roll": 2, "label": "Reserve / Depth Player", "annual_nil_valuation_cents": 5000000, "legacy_opening_capital_cents": 2500000 },
+    { "roll": 3, "label": "Emerging Starter", "annual_nil_valuation_cents": 12500000, "legacy_opening_capital_cents": 5000000 },
+    { "roll": 4, "label": "3-Star / Established Player", "annual_nil_valuation_cents": 20000000, "legacy_opening_capital_cents": 7500000 },
+    { "roll": 5, "label": "4-Star / Impact Player", "annual_nil_valuation_cents": 35000000, "legacy_opening_capital_cents": 10000000 },
+    { "roll": 6, "label": "5-Star / Elite Prospect", "annual_nil_valuation_cents": 75000000, "legacy_opening_capital_cents": 15000000 }
+  ]
+}
