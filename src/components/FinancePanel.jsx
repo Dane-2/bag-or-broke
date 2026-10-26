@@ -227,7 +227,7 @@ export default function FinancePanel({ ledger, act }) {
           NIL income and the lap award are taxed at 20% when each lap closes. Asset sale gains are taxed at the sale.
         </p>
         {lapEstimate && lapEstimate.tax > 0 && (
-          <Row label={`Lap ${lap} so far (estimate)`} value={formatCents(lapEstimate.tax)} />
+          <Row label={`Year ${lap} so far (estimate)`} value={formatCents(lapEstimate.tax)} />
         )}
         {ledger.taxBills.length === 0 && <p className="text-sm text-slate-800">No tax bills yet.</p>}
         {[...ledger.taxBills].sort((a, b) => a.lap - b.lap).map(bill => {
@@ -235,7 +235,7 @@ export default function FinancePanel({ ledger, act }) {
           return (
             <div key={bill.id} className="rounded-xl bg-white/40 border border-white/50 p-3 space-y-1">
               <div className="flex justify-between text-sm">
-                <span className="font-bold text-slate-900">Lap {bill.lap} tax</span>
+                <span className="font-bold text-slate-900">Year {bill.lap} tax (Lap {bill.lap})</span>
                 <span className={`text-xs font-semibold ${status.tone === 'bad' ? 'text-red-800' : status.tone === 'good' ? 'text-emerald-800' : 'text-slate-700'}`}>
                   {status.text}
                 </span>

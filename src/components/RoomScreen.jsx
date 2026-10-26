@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createRoom, joinRoom } from "../utils/roomApi";
+import { createRoom, joinRoom, rejoinRoom } from "../utils/roomApi";
 import { supabase } from "../utils/supabaseClient";
 import tiers from "../data/tiers";
 
@@ -107,12 +107,38 @@ export default function RoomScreen({ hostMode, onJoin }) {
     setLoading(true);
     setError("");
 
-    const res = await joinRoom(code.trim().toUpperCase(), name.trim(), avatarLabel, startingCash);
+    const roomCode = code.trim().toUpperCase();
+    const res = await joinRoom(roomCode, name.trim(), avatarLabel, startingCash);
 
     console.log("💬 joinRoom response:", res);
-    setLoading(false);
 
     if (!res || res.error) {
+      // A player who already has a seat (game started, or name taken by their own offline
+      // seat) goes back into that same seat instead of a new or private game.
+      const back = await rejoinRoom({ code: roomCode, name: name.trim() });
+      setLoading(false);
+      if (back?.room?.id && back?.player?.player_id) {
+        onJoin({
+          roomId: back.room.id,
+          code: back.room.code,
+          name: back.player.name,
+          avatar: back.player.avatar || avatarLabel,
+          playerId: back.player.player_id,
+          hostPlayerId: back.room.host_player_id || null,
+          isHost: back.room.host_player_id === back.player.player_id,
+          startingCash: back.player.cash || startingCash,
+          nilTierId: back.save?.nilTier?.roll || (selectedTier ? selectedTier.id : 1),
+          totalLaps: back.room.total_laps || totalLaps,
+          status: back.room.status,
+          serverSave: back.save || null,
+          rejoined: true,
+        });
+        return;
+      }
+      if (back?.answered && back.status === 409) {
+        setError(back.error);
+        return;
+      }
       // User-friendly error messages
       const errorMsg = res?.error || "Failed to join room";
       if (errorMsg.includes("Room not found")) {
@@ -127,6 +153,7 @@ export default function RoomScreen({ hostMode, onJoin }) {
       return;
     }
 
+    setLoading(false);
     const { room, player } = res;
 
     if (!room?.id) {

@@ -31,12 +31,13 @@ test('rolling closes a lap, posts the award and bills tax on NIL income', () => 
 
   // Exactly one lap, stepping only on green, diamond and purple spaces (no cash events).
   [5, 6, 6, 6, 6, 5, 5, 1].forEach(roll);
-  expect(screen.getByText('Lap 1 / 5 complete')).toBeInTheDocument();
+  expect(screen.getByText('1 of 5 laps complete')).toBeInTheDocument();
+  expect(screen.getAllByText('Year 2 of 5 · Lap 2')).toHaveLength(2); // header and Turn Tracker agree
   expect(screen.getByText('$55,000')).toBeInTheDocument(); // + $2,500 lap award
 
   // Finance shows the lap tax bill: 20% of $52,500.
   fireEvent.click(screen.getAllByText('Finance').pop());
-  expect(screen.getByText('Lap 1 tax')).toBeInTheDocument();
+  expect(screen.getByText('Year 1 tax (Lap 1)')).toBeInTheDocument();
   expect(screen.getAllByText('$10,500').length).toBeGreaterThan(0);
   fireEvent.click(screen.getByText(/^Pay \$10,000$/));
   expect(screen.getByText('Taxes Owed').nextSibling.textContent).toBe('$500');

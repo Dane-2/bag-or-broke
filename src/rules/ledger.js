@@ -149,6 +149,13 @@ export function incomeLap(s) {
   return Math.min(s.totalLaps, Math.floor(s.progress / s.boardSize) + 1);
 }
 
+/**
+ * One lap is one year (Fix Log v1.2 #6): the lap in progress and the year shown are the same
+ * number. It advances when the player's roll crosses Start, and stays at the last year during
+ * the final window. Derived from board progress only, so a restored save shows the same year.
+ */
+export const currentYear = incomeLap;
+
 export const currentRateBps = s => band(s.creditScore).rateBps;
 
 const sumAmounts = list => list.reduce((t, x) => t + x.amount, 0);

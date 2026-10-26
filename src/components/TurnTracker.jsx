@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import brand from '../rules/config/brand.json';
-import { completedLaps, finalProgress, inFinalWindow, position } from '../rules/ledger';
+import { completedLaps, currentYear, finalProgress, inFinalWindow, position } from '../rules/ledger';
 import { boardSpace } from '../rules';
 
 const SPACE_COLORS = {
@@ -30,6 +30,7 @@ export default function TurnTracker({ ledger, onRoll, onOpenTab }) {
   const locked = ledger.diceCount !== null;
   const dice = locked ? ledger.diceCount : diceCount;
   const done = completedLaps(ledger);
+  const year = currentYear(ledger);
   const final = inFinalWindow(ledger) || Boolean(ledger.snapshot);
   const pct = Math.min(100, Math.round((ledger.progress / finalProgress(ledger)) * 100));
   const space = ledger.progress > 0 && !final ? boardSpace(position(ledger)) : null;
@@ -42,9 +43,12 @@ export default function TurnTracker({ ledger, onRoll, onOpenTab }) {
           <span aria-hidden>🏁</span> Game progress
         </h3>
         <span className="text-sm font-semibold text-slate-800 tabular-nums">
-          Lap {done} / {ledger.totalLaps} complete
+          Year {year} of {ledger.totalLaps} · Lap {year}
         </span>
       </div>
+      <p className="text-xs text-slate-700 tabular-nums -mt-1">
+        {done} of {ledger.totalLaps} laps complete
+      </p>
 
       <div className="h-3 rounded-full bg-white/30 overflow-hidden border border-white/25">
         <div

@@ -24,11 +24,12 @@ import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 import { selectCoachJBoWinner } from '../utils/coachJBo';
 import RoomHUD from "./RoomHUD";
 import ToastContainer from "./ToastContainer";
-import { leaveRoom as leaveRoomRequest } from '../utils/roomApi';
+import { leaveRoom as leaveRoomRequest, rejoinRoom } from '../utils/roomApi';
+import { getServerSave, newerSave, putServerSave } from '../utils/saveApi';
 import { rollDice, randomPick } from '../utils/dice';
 import useLedger from '../hooks/useLedger';
 import {
-  createLedger, completedLaps, totalBorrowing, taxesOwed, inFinalWindow, newOpId, eventLiabilities, displayRep,
+  createLedger, completedLaps, currentYear, totalBorrowing, taxesOwed, inFinalWindow, newOpId, eventLiabilities, displayRep,
   founderVenture, ventureBuyStatus,
 } from '../rules/ledger';
 import {
@@ -116,30 +117,41 @@ function PlayerDashboard({
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimeoutRef = useRef(null);
   const channelRef = useRef(null);
+  const loadPlayersRef = useRef(() => {});
+  const pushFullStateRef = useRef(() => {});
+  // Connection state shown to the player: true while changes wait to reach the group.
+  const [syncPending, setSyncPending] = useState(false);
+  const [seatError, setSeatError] = useState('');
 
   // =====================================================
   // AUTOSAVE / AUTOLOAD
   // =====================================================
   const restoringRef = useRef(false);
-  const saveKey = `${SAVE_PREFIX}${playerName || 'Player'}`;
+  // A group seat has its own save so it never mixes with an offline game under the same name.
+  const saveKey = roomId && currentPlayerId
+    ? `${SAVE_PREFIX}room_${roomId}_${currentPlayerId}`
+    : `${SAVE_PREFIX}${playerName || 'Player'}`;
 
+  // Restore the furthest-along copy of this game: this device's save, or the server copy a
+  // rejoin from another device brought back (Fix Log v1.2 #5).
   useEffect(() => {
-    const saved = localStorage.getItem(saveKey);
-    if (!saved) return;
-
+    let local = null;
     try {
-      const s = JSON.parse(saved);
-      restoringRef.current = true;
-
-      if (s.finance && s.finance.rulesetId === RULESET_ID) replaceLedger(s.finance);
-
+      const saved = localStorage.getItem(saveKey);
+      if (saved) local = JSON.parse(saved).finance || null;
     } catch (e) {
       console.error('Failed to parse saved game:', e);
-    } finally {
-      setTimeout(() => {
-        restoringRef.current = false;
-      }, 0);
     }
+    const valid = (f) => (f && f.rulesetId === RULESET_ID ? f : null);
+    const best = newerSave(valid(local), valid(roomInfo?.serverSave));
+    if (!best) return;
+    restoringRef.current = true;
+    replaceLedger(best);
+    setTimeout(() => {
+      restoringRef.current = false;
+    }, 0);
+    // roomInfo.serverSave is read once when the seat opens.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saveKey, replaceLedger]);
 
   useEffect(() => {
@@ -152,6 +164,20 @@ function PlayerDashboard({
       cash,
       finance: ledger,
       totalLaps,
+      savedAt: Date.now(),
+      // Group seat to return to after a refresh or going offline (Fix Log v1.2 #3).
+      room: roomId && currentPlayerId ? {
+        roomId,
+        code: roomInfo?.code || null,
+        playerId: currentPlayerId,
+        name: playerName,
+        avatar,
+        hostPlayerId: roomInfo?.hostPlayerId || null,
+        isHost: !!roomInfo?.isHost,
+        startingCash,
+        nilTierId: nilTierId || null,
+        totalLaps,
+      } : null,
     };
 
     try {
@@ -166,6 +192,11 @@ function PlayerDashboard({
     cash,
     ledger,
     totalLaps,
+    roomId,
+    currentPlayerId,
+    roomInfo,
+    startingCash,
+    nilTierId,
   ]);
 
   const clearSave = () => {
@@ -229,6 +260,7 @@ function PlayerDashboard({
       }
     }
 
+    loadPlayersRef.current = loadPlayers;
     loadPlayers();
     
     // Periodically check for disconnected players (every 15 seconds)
@@ -260,18 +292,15 @@ function PlayerDashboard({
   // Reconnection logic with exponential backoff
   const attemptReconnect = useRef(() => {});
   attemptReconnect.current = () => {
-    if (reconnectAttemptsRef.current >= 5) return;
+    // Keep trying for as long as the player is in the game; the delay caps at 30 seconds.
+    if (reconnectTimeoutRef.current) return;
 
     reconnectAttemptsRef.current += 1;
     const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current - 1), 30000);
 
     reconnectTimeoutRef.current = setTimeout(() => {
-      // Force re-render to re-subscribe by incrementing trigger
-      const currentChannel = channelRef.current;
-      if (currentChannel) {
-        supabase.removeChannel(currentChannel);
-        channelRef.current = null;
-      }
+      reconnectTimeoutRef.current = null;
+      // Re-subscribing (the effect cleanup closes the old channel) by incrementing trigger
       setReconnectTrigger(prev => prev + 1);
     }, delay);
   };
@@ -279,6 +308,7 @@ function PlayerDashboard({
   // Listen for realtime updates with reconnection
   useEffect(() => {
     if (!roomId || !isSupabaseConfigured) return;
+    let active = true; // closing this channel ourselves is not a dropped connection
 
     // Clear any existing reconnection attempts
     if (reconnectTimeoutRef.current) {
@@ -400,10 +430,14 @@ function PlayerDashboard({
       )
       .subscribe((status) => {
         console.log("📡 Player state subscription status:", status);
+        if (!active) return;
         channelRef.current = channel;
         
         if (status === "SUBSCRIBED") {
           reconnectAttemptsRef.current = 0;
+          // Back in sync with the group: reload everyone and resend this player's full row.
+          loadPlayersRef.current();
+          pushFullStateRef.current();
         } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
           attemptReconnect.current();
         }
@@ -411,8 +445,10 @@ function PlayerDashboard({
 
     return () => {
       console.log("🟠 Unsubscribing:", roomId);
+      active = false;
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
       }
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
@@ -484,36 +520,21 @@ function PlayerDashboard({
   // SEND DELTAS (your changes)
   // =====================================================
 
-  // Retry queue for failed syncs
-  const failedSyncsRef = useRef([]);
-  const retrySyncs = useRef(() => {});
+  // Changes that have not reached the group yet, merged field by field (newest value wins).
+  // They are retried until they land, so going offline never loses a change.
+  const pendingSyncRef = useRef({});
+  const retryTimerRef = useRef(null);
+  const retryDelayRef = useRef(2000);
+  const flushPending = useRef(() => {});
 
-  retrySyncs.current = async () => {
-    if (failedSyncsRef.current.length === 0) return;
-
-    const toRetry = [...failedSyncsRef.current];
-    failedSyncsRef.current = [];
-
-    for (const syncData of toRetry) {
-      const { partial, isHeartbeat, retries = 0 } = syncData;
-      
-      if (retries >= 3) {
-        addToast('Failed to sync some changes. Please refresh the page.', 'error', 5000);
-        continue;
-      }
-
-      // Retry the sync
-      const success = await syncToRoomInternal(partial, isHeartbeat, false);
-      if (!success) {
-        // Re-queue with incremented retry count
-        failedSyncsRef.current.push({ ...syncData, retries: retries + 1 });
-      }
-    }
-
-    // Retry remaining failed syncs after delay
-    if (failedSyncsRef.current.length > 0) {
-      setTimeout(() => retrySyncs.current(), 5000);
-    }
+  const queueRetry = () => {
+    setSyncPending(true);
+    if (retryTimerRef.current) return;
+    retryTimerRef.current = setTimeout(() => {
+      retryTimerRef.current = null;
+      flushPending.current();
+    }, retryDelayRef.current);
+    retryDelayRef.current = Math.min(retryDelayRef.current * 2, 30000);
   };
 
   const syncToRoomInternal = useCallback(async (partial, isHeartbeat = false, showErrors = true) => {
@@ -555,16 +576,28 @@ function PlayerDashboard({
 
     if (error) {
       console.error("🔥 SYNC ERROR:", error);
-      if (showErrors && !isHeartbeat) {
-        // Queue for retry
-        failedSyncsRef.current.push({ partial, isHeartbeat, retries: 0 });
-        setTimeout(() => retrySyncs.current(), 2000);
-      }
+      if (showErrors && !isHeartbeat) pendingSyncRef.current = { ...pendingSyncRef.current, ...partial };
+      queueRetry();
       return false;
     }
 
+    if (showErrors && Object.keys(pendingSyncRef.current).length) flushPending.current();
     return true;
+    // queueRetry only touches refs and a state setter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomInfo]);
+
+  flushPending.current = async () => {
+    const batch = pendingSyncRef.current;
+    pendingSyncRef.current = {};
+    const ok = await syncToRoomInternal(batch, true, false);
+    if (!ok) {
+      pendingSyncRef.current = { ...batch, ...pendingSyncRef.current };
+    } else if (!Object.keys(pendingSyncRef.current).length) {
+      retryDelayRef.current = 2000;
+      setSyncPending(false);
+    }
+  };
 
   const syncToRoom = useCallback(async (partial, isHeartbeat = false) => {
     return await syncToRoomInternal(partial, isHeartbeat, true);
@@ -585,6 +618,15 @@ function PlayerDashboard({
   // Views are rebuilt on every ledger change; sync only when their content changes.
   const luxuriesJson = JSON.stringify(luxuries);
   const investmentsJson = JSON.stringify(investments);
+
+  // Whole row, resent after every reconnect so the group sees this player's latest state.
+  pushFullStateRef.current = () => {
+    if (!roomId || !currentPlayerId) return;
+    syncToRoom({
+      cash: syncedCash, debt: syncedDebt, credit, rep, laps, redCurveballLoss, blueCurveballLoss,
+      luxuries: JSON.parse(luxuriesJson), investments: JSON.parse(investmentsJson),
+    });
+  };
   useEffect(() => {
     if (roomId && currentPlayerId) {
       syncToRoom({ luxuries: JSON.parse(luxuriesJson) });
@@ -711,28 +753,58 @@ function PlayerDashboard({
   }, [roomId, currentPlayerId, syncToRoom]);
 
   // =====================================================
-  // CLEANUP: Remove player when component unmounts (page close/refresh)
+  // SESSION RECOVERY (Fix Log v1.2 #3 / #5)
+  // Closing the tab, refreshing or losing signal never removes a player from the group; only
+  // the Leave Room button does. Coming back reclaims the same seat and resyncs.
   // =====================================================
   useEffect(() => {
-    if (!roomId || !currentPlayerId) return;
-
-    const handleBeforeUnload = async () => {
-      // Try to leave room when page is closing (may not always work due to browser restrictions)
-      try {
-        await leaveRoomRequest(roomId, currentPlayerId);
-      } catch (e) {
-        // Ignore errors - page is closing anyway
+    if (!roomId || !currentPlayerId || !isSupabaseConfigured) return;
+    let cancelled = false;
+    (async () => {
+      const res = await rejoinRoom({ roomId, playerId: currentPlayerId, name: playerName, avatar });
+      if (cancelled) return;
+      if (res?.error && res.answered && res.status === 404) {
+        setSeatError(`${res.error} Your progress is still saved on this device.`);
+        return;
       }
+      // A newer server copy (played on another device) replaces this device's copy.
+      const server = await getServerSave(roomId, currentPlayerId);
+      if (cancelled || !server || server.rulesetId !== RULESET_ID) return;
+      if (newerSave(ledgerRef.current, server) === server) replaceLedger(server);
+    })();
+    return () => { cancelled = true; };
+    // Runs once per seat; name and avatar only matter if the seat must be restored.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId, currentPlayerId, replaceLedger, ledgerRef]);
+
+  // Back online or back to the tab: reconnect now instead of waiting out the backoff.
+  useEffect(() => {
+    if (!roomId || !currentPlayerId) return;
+    const resume = () => {
+      if (document.visibilityState === 'hidden') return;
+      reconnectAttemptsRef.current = 0;
+      retryDelayRef.current = 2000;
+      flushPending.current();
+      setReconnectTrigger(prev => prev + 1);
     };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
+    window.addEventListener('online', resume);
+    document.addEventListener('visibilitychange', resume);
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      // Note: Component cleanup (leaving room) should be handled by explicit Leave Room button
-      // This is just a fallback for unexpected unmounts
+      window.removeEventListener('online', resume);
+      document.removeEventListener('visibilitychange', resume);
     };
   }, [roomId, currentPlayerId]);
+
+  // Server copy of the save, a few seconds after the last change (and retried after failures).
+  const [serverSaveTick, setServerSaveTick] = useState(0);
+  useEffect(() => {
+    if (!roomId || !currentPlayerId || !isSupabaseConfigured) return;
+    const timer = setTimeout(async () => {
+      const res = await putServerSave(roomId, currentPlayerId, ledgerRef.current);
+      if (res.error) setTimeout(() => setServerSaveTick(t => t + 1), 15000);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [ledger, roomId, currentPlayerId, ledgerRef, serverSaveTick]);
 
   // =====================================================
   // GAME LOGIC
@@ -1008,8 +1080,8 @@ function PlayerDashboard({
   // =====================================================
 
   const glassSection = 'rounded-2xl bg-white/20 backdrop-blur-lg border border-white/30 shadow-lg p-4 md:p-6';
-  const displayYear =
-    laps >= totalLaps ? totalLaps : Math.min(laps + 1, totalLaps);
+  // One lap = one year; the header and Turn Tracker read the same ledger value.
+  const displayYear = currentYear(ledger);
   const primaryNavIds = ['home', 'invest', 'luxury', 'finance', 'curveballs'];
   const navItemActive = (id) => primaryNavIds.includes(activeTab) && activeTab === id;
 
@@ -1018,6 +1090,11 @@ function PlayerDashboard({
       <ToastContainer toasts={toasts} onRemove={removeToast} />
 
       <div className="max-w-md mx-auto min-h-[100dvh] px-4 pt-4 pb-28">
+        {roomInfo && (seatError || syncPending) && (
+          <div role="status" className={`mb-3 rounded-xl border px-3 py-2 text-xs font-semibold ${seatError ? 'bg-red-100/90 border-red-300 text-red-900' : 'bg-amber-100/90 border-amber-300 text-amber-900'}`}>
+            {seatError || 'Reconnecting to your group… your moves are saved and will sync automatically.'}
+          </div>
+        )}
         {/* Top bar */}
         <header className="flex items-start justify-between gap-3 mb-6">
           <div className="min-w-0 flex-1">
@@ -1029,7 +1106,7 @@ function PlayerDashboard({
                 {avatar}
               </span>
               <span className="text-xs font-medium text-slate-900/80 tabular-nums">
-                Year {displayYear} of {totalLaps}
+                Year {displayYear} of {totalLaps} · Lap {displayYear}
               </span>
             </div>
           </div>
@@ -1305,7 +1382,7 @@ function PlayerDashboard({
                   onClick={async () => {
                     if (
                       window.confirm(
-                        'Are you sure you want to leave the room? Your progress will be saved.'
+                        'Leave this group game for good? You will be removed from the group. (Closing the tab or going offline does not remove you.)'
                       )
                     ) {
                       const res = await leaveRoomRequest(roomId, currentPlayerId);

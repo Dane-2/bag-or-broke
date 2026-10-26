@@ -7,6 +7,7 @@ import LobbyScreen from './components/LobbyScreen';
 import PlayerDashboard from './components/PlayerDashboard';
 import FinalScoreboard from './components/FinalScoreboard';
 import { LEGACY_SAVE_PREFIXES, RULESET_ID, SAVE_PREFIX } from './rules';
+import { leaveRoom } from './utils/roomApi';
 
 function App() {
   // GAME STATE
@@ -26,7 +27,7 @@ function App() {
   const [roomInfo, setRoomInfo] = useState(null);
 
 
-  // AUTO RESUME OFFLINE GAME
+  // AUTO RESUME (offline game or group seat)
   useEffect(() => {
     // Use setTimeout to prevent blocking initial render
     const timer = setTimeout(() => {
@@ -45,25 +46,40 @@ function App() {
           }
         });
 
-        if (saves.length > 0) {
-          const key = saves[saves.length - 1];
-          const saved = JSON.parse(localStorage.getItem(key));
+        // Newest save first (group seats and offline games are saved under separate keys).
+        const parsed = saves
+          .map(k => ({ key: k, saved: JSON.parse(localStorage.getItem(k)) }))
+          .filter(x => x.saved && x.saved.playerName)
+          .sort((a, b) => (b.saved.savedAt || 0) - (a.saved.savedAt || 0));
 
-          if (saved && saved.playerName) {
-            const resume = window.confirm(
-              `Resume your last offline game as ${saved.playerName}?`
-            );
+        if (parsed.length > 0) {
+          const { key, saved } = parsed[0];
+          const restore = () => {
+            setPlayerName(saved.playerName);
+            setAvatar(saved.avatar || '');
+            setStartingCash(saved.finance?.cash !== undefined ? saved.finance.cash / 100 : saved.cash || 0);
+            setTotalLaps(saved.totalLaps || 5);
+            if (saved.room?.nilTierId) setNilTierId(saved.room.nilTierId);
+          };
 
-            if (resume) {
-              setMode("offline");
-              setPlayerName(saved.playerName);
-              setAvatar(saved.avatar || '');
-              setStartingCash(saved.finance?.cash !== undefined ? saved.finance.cash / 100 : saved.cash || 0);
-              setTotalLaps(saved.totalLaps || 5);
+          if (saved.room?.roomId && saved.room?.playerId) {
+            // A group game returns to the same room and seat, never to a private copy (Fix Log v1.2 #3).
+            const label = saved.room.code ? ` (room ${saved.room.code})` : '';
+            if (window.confirm(`Rejoin your group game${label} as ${saved.playerName}?`)) {
+              restore();
+              setMode("multiplayer");
+              setRoomInfo(saved.room);
               setGameStarted(true);
-            } else {
-              saves.forEach(k => localStorage.removeItem(k));
+            } else if (window.confirm('Leave that group game for good? Choose Cancel to keep your seat for later.')) {
+              leaveRoom(saved.room.roomId, saved.room.playerId);
+              localStorage.removeItem(key);
             }
+          } else if (window.confirm(`Resume your last offline game as ${saved.playerName}?`)) {
+            restore();
+            setMode("offline");
+            setGameStarted(true);
+          } else {
+            parsed.filter(x => !x.saved.room).forEach(x => localStorage.removeItem(x.key));
           }
         }
       } catch (error) {

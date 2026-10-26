@@ -54,7 +54,7 @@ serve(async (req) => {
     // Check max players limit (6 players)
     const { data: existingPlayers, error: countErr } = await supabase
       .from("player_state")
-      .select("player_id")
+      .select("player_id, name")
       .eq("room_id", room.id);
 
     if (countErr) {
@@ -67,6 +67,15 @@ serve(async (req) => {
     if (existingPlayers && existingPlayers.length >= 6) {
       return new Response(
         JSON.stringify({ error: "Room is full (6 players maximum). Please join another room." }),
+        { status: 400, headers: { "Access-Control-Allow-Origin": "*" } }
+      );
+    }
+
+    // Names identify a seat when a player rejoins from another device (rejoinRoom).
+    const wanted = String(name).trim().toLowerCase();
+    if ((existingPlayers || []).some((p) => (p.name || "").trim().toLowerCase() === wanted)) {
+      return new Response(
+        JSON.stringify({ error: "That name is already taken in this room. Please choose another." }),
         { status: 400, headers: { "Access-Control-Allow-Origin": "*" } }
       );
     }

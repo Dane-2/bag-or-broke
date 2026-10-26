@@ -89,7 +89,7 @@ export default function RoomHUD({ roomPlayers, currentPlayerId, roomStatus }) {
                 }
                 ${
                   p.isDisconnected
-                    ? "bg-gray-200 border-gray-300 opacity-60"
+                    ? "bg-gray-200 border-gray-300 opacity-80"
                     : p.player_id === currentPlayerId
                     ? "bg-blue-100 border-blue-400"
                     : "bg-gray-100"
@@ -97,12 +97,13 @@ export default function RoomHUD({ roomPlayers, currentPlayerId, roomStatus }) {
               `}
             >
               <div>
-                <p className={`font-semibold ${p.isDisconnected ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
+                <p className={`font-semibold ${p.isDisconnected ? 'text-gray-500' : 'text-gray-800'}`}>
                   #{idx + 1} {p.name}
-                  {p.isDisconnected && <span className="ml-2 text-xs text-red-500">⚠️ Disconnected</span>}
+                  {/* Offline players keep their seat until they choose Leave room (Fix Log v1.2 #3). */}
+                  {p.isDisconnected && <span className="ml-2 text-xs text-amber-700">Offline · still in group</span>}
                 </p>
                 <p className={`text-xs ${p.isDisconnected ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Laps: {p.laps || 0}
+                  Laps complete: {p.laps || 0}
                 </p>
               </div>
 

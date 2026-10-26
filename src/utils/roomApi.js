@@ -94,3 +94,30 @@ export async function leaveRoom(roomId, playerId) {
     return { error: err.message || "leaveRoom failed" };
   }
 }
+
+/**
+ * Return to a group game this player already belongs to: { roomId, playerId } from the saved
+ * seat on this device, or { code, name } from another device. Never creates a new seat.
+ */
+export async function rejoinRoom(seat) {
+  try {
+    const response = await fetch(
+      `${process.env.REACT_APP_SUPABASE_URL}/functions/v1/rejoinRoom`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: process.env.REACT_APP_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify(seat),
+      }
+    );
+    const payload = await response.json().catch(() => ({}));
+    // `answered` is false when the function itself could not be reached (not deployed, gateway error).
+    if (!response.ok) return { error: payload?.error || `rejoinRoom failed (${response.status})`, status: response.status, answered: Boolean(payload?.error) };
+    return payload;
+  } catch (err) {
+    return { error: err.message || "rejoinRoom failed", offline: true };
+  }
+}
